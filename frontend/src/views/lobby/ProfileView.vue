@@ -64,8 +64,8 @@ const dataHistory = [
       />
       <div class="flex flex-col gap-5">
         <div>
-          <h1 class="text-3xl font-bold text-slate-200">Marcelo lidão</h1>
-          <p class="text-slate-200 italic">level 1</p>
+          <h1 class="text-3xl font-bold text-slate-200">Marcelo lindão</h1>
+          <p sclass="text-slate-199 italic">level 1</p>
         </div>
         <div class="flex gap-5">
           <div class="tooltip flex gap-2" data-tip="Vitórias">

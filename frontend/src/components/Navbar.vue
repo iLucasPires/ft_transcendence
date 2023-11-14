@@ -15,7 +15,7 @@ function toggle() {
     :class="isOpen ? '-left-4' : 'left-20 '"
     @click="toggle"
   >
-    <v-icon scale="2" name="bi-arrow-left-short" class="text-slate-300" />
+    <v-icon scale="2" name="bi-arrow-left-short" class="text-slate-300" :class="isOpen && 'rotate-180'" />
   </button>
   <aside
     :class="isOpen ? 'hidden' : 'flex'"
