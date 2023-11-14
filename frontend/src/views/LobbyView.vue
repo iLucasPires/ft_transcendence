@@ -2,6 +2,7 @@
 import ListFriend from "@/components/ListFriend.vue";
 import Navbar from "@/components/Navbar.vue";
 import { RouterView } from "vue-router";
+import Achievement from "@/components/Achievement.vue";
 
 const dataHistory = [
   {

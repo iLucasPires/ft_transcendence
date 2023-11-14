@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import History from "@/components/History.vue";
+import Achievement from "@/components/Achievement.vue";
 const dataHistory = [
   {
     lobby: "Lobby 1",
@@ -78,6 +79,7 @@ const dataHistory = [
           </div>
         </div>
       </div>
+      <Achievement />
     </div>
     <History class="h-3/5" :data="dataHistory" />
   </div>
