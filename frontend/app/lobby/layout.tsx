@@ -1,5 +1,4 @@
-import Link  from "next/link";
-import "./globals.css";
+import AsideBar from "@/app/components/AsideBar";
 
 interface iRootLayoutProps {
   children: React.ReactNode;
@@ -9,7 +8,8 @@ export default function RootLayout({ children }: iRootLayoutProps) {
   return (
     <html lang="en">
       <body className="flex flex-row h-screen">
-        {children}
+        <AsideBar />
+        <div className="w-full h-full">{children}</div>
       </body>
     </html>
   );
