@@ -3,23 +3,24 @@ import { RouterLink } from "vue-router";
 import { ref } from "vue";
 
 const isOpen = ref(false);
-
-function toggle() {
-  isOpen.value = !isOpen.value;
-}
 </script>
 
 <template>
   <button
-    class="absolute bottom-2/3 rounded-box bg-primary z-10"
-    :class="isOpen ? '-left-4' : 'left-20 '"
-    @click="toggle"
+    @click="() => (isOpen = !isOpen)"
+    class="absolute h-20 bottom-2/3 rounded z-10 "
+    :class="isOpen ? '-left-4 border-2 border-primary ' : 'left-20 bg-primary '"
   >
-    <v-icon scale="2" name="bi-arrow-left-short" class="text-slate-300" :class="isOpen && 'rotate-180'" />
+    <v-icon
+      scale="2"
+      name="bi-arrow-left-short"
+      class="text-slate-300"
+      :class="isOpen && 'rotate-180 text-primary'"
+    />
   </button>
   <aside
     :class="isOpen ? 'hidden' : 'flex'"
-    class="flex flex-col w-32 h-full justify-between bg-primary items-center p-5"
+    class="flex flex-col w-32 h-full transition ease-in-out delay-150 justify-between bg-primary items-center p-5"
   >
     <RouterLink to="/lobby">
       <v-icon scale="3" name="gi-forward-field" class="text-slate-300" />

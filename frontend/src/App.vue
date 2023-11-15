@@ -7,6 +7,13 @@ import { RouterView } from "vue-router";
 </template>
 
 <style>
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+
 ::-webkit-scrollbar {
   width: 10px;
   padding: 10px;

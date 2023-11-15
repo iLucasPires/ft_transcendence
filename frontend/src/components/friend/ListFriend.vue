@@ -26,8 +26,8 @@ const friends = [
 </script>
 
 <template>
-  <aside class="hidden md:flex flex-col w-96 gap-5 h-full p-5">
-    <ul class="flex flex-col gap-5 bg-neutral h-full p-5 rounded overflow-auto">
+  <aside class="hidden md:flex flex-col w-96 gap-5 h-full py-5">
+    <ul class="gap-5 border-2 border-neutral h-full p-5 rounded overflow-auto">
       <li v-for="friend in friends" :key="friend.name">
         <CardFriend :friend="friend" />
       </li>

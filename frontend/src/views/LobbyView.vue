@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ListFriend from "@/components/ListFriend.vue";
+import ListFriend from "@/components/friend/ListFriend.vue";
 import Navbar from "@/components/Navbar.vue";
 import { RouterView } from "vue-router";
 import Achievement from "@/components/Achievement.vue";
@@ -24,11 +24,9 @@ const dataHistory = [
 </script>
 
 <template>
-  <main class="h-screen flex flex-row relative">
+  <main class="h-screen w-full gap-5 relative flex">
     <Navbar />
-    <div class="p-10 w-full">
-      <RouterView />
-    </div>
+    <RouterView />
     <ListFriend />
   </main>
 </template>
