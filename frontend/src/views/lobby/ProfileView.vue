@@ -17,6 +17,7 @@ type iUser = {
 };
 
 const user: Ref<iUser | undefined> = ref();
+const loading = ref(true);
 
 onMounted(async () => {
   async function fetchUser() {
@@ -25,12 +26,13 @@ onMounted(async () => {
     return data.results[0];
   }
   user.value = await fetchUser();
+  loading.value = false;
 });
 </script>
 
 <template>
   <div class="flex flex-col gap-5 w-full h-full p-5">
-    <div class="flex flex-col md:flex-row items-center gap-5">
+    <div v-if="!loading" class="flex flex-col md:flex-row items-center gap-5">
       <UserDetail
         :name="user?.name?.first + ' ' + user?.name?.last"
         :picture="user?.picture?.large || ''"

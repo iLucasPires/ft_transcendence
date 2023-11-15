@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 
 const props = defineProps({
   name: {
@@ -23,7 +22,7 @@ const props = defineProps({
   >
     <img
       class="mask mask-circle w-1/3 mr-5"
-      :src="avatar"
+      :src="picture"
       alt="profile"
     />
     <div class="flex flex-col">
