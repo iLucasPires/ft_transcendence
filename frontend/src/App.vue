@@ -7,12 +7,14 @@ import { RouterView } from "vue-router";
 </template>
 
 <style>
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 #app {
   width: 100vw;
   height: 100vh;
 }
-
 
 ::-webkit-scrollbar {
   width: 10px;

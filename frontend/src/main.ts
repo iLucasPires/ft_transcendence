@@ -1,5 +1,3 @@
-import "./assets/main.css";
-
 import App from "./App.vue";
 import router from "./router";
 
@@ -11,7 +9,7 @@ import * as AllIcons from "./icons";
 addIcons(...Object.values({ ...AllIcons }));
 
 createApp(App)
-  .component("v-icon", OhVueIcon)
   .use(createPinia())
   .use(router)
+  .component("v-icon", OhVueIcon)
   .mount("#app");
