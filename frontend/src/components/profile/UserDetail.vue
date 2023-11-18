@@ -1,45 +1,53 @@
 <script setup lang="ts">
-
 const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  level: {
-    type: Number,
-    required: true,
-  },
-  picture: {
-    type: String,
-    required: true,
-  },
+  name: { type: String, required: true },
+  level: { type: Number, required: true },
+  picture: { type: String, required: true },
+  wins: { type: Number, required: true },
+  losses: { type: Number, required: true },
 });
 </script>
 
 <template>
-  <div
-    class="flex items-center md:w-2/5 border-2 border-neutral h-full w-full p-10 rounded"
-  >
-    <img
-      class="mask mask-circle w-1/3 mr-5"
-      :src="picture"
-      alt="profile"
-    />
-    <div class="flex flex-col">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-200">{{ name }}</h1>
-        <p class="text-slate-199 italic">Nível: {{ level }}</p>
+  <div class="container">
+    <h2 class="title">Profile</h2>
+    <div class="container-content">
+      <img
+        :src="picture"
+        alt="Profile Picture"
+        class="w-3/12 block mask mask-circle min-w-[100px] min-h-[100px]"
+      />
+      <div class="">
+        <h3 class="text-2xl font-bold">{{ name }}</h3>
+        <p class="text-xl italic">Level {{ level }}</p>
       </div>
-      <div class="flex flex-wrap gap-5">
-        <div class="tooltip flex gap-2" data-tip="Vitórias">
-          <v-icon name="ri-ping-pong-fill" class="text-3xl text-green-400" />
-          <p class="text-slate-200">232</p>
+      <div class="">
+        <div class="flex flex-col items-center">
+          <p class="text-xl">Wins</p>
+          <p class="text-xl">{{ wins }}</p>
         </div>
-        <div class="tooltip flex gap-2" data-tip="Derrotas">
-          <v-icon name="ri-ping-pong-fill" class="text-3xl text-red-400" />
-          <p class="text-slate-200">232</p>
+        <div class="flex flex-col items-center">
+          <p class="text-xl">Losses</p>
+          <p class="text-xl">{{ losses }}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.container {
+  @apply md:min-w-[300px] md:w-2/6 w-full h-full;
+  @apply border-2 border-neutral rounded;
+  @apply p-10;
+}
+
+.container-content {
+  @apply flex flex-col gap-5;
+}
+
+.title {
+  @apply text-2xl font-semibold;
+  @apply mb-2;
+}
+</style>
