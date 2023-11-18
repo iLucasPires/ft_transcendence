@@ -1,77 +1,21 @@
 <script setup lang="ts">
-const achievements = [
-  {
-    name: "dezano",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/libfte.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
+export interface iAchievement {
+  name: string;
+  url: string;
+};
 
-];
+defineProps({
+  achievements: {
+    type: Array as PropType<iAchievement[]>,
+    required: true,
+  },
+});
 </script>
 
 <template>
-  <div class="w-full p-5 flex flex-col gap-5 border-2 border-neutral rounded">
-    <h1 class="text-2xl font-semibold">Achievements</h1>
-    <ul class="carousel rounded-box gap-4">
+  <div class="p-10 w-full md:w-4/6 h-full border-2 border-neutral rounded">
+    <h2 class="text-2xl font-semibold mb-5">Achievements</h2>
+    <ul class="carousel rounded-box">
       <li
         class="carousel-item"
         v-for="achievement in achievements"
@@ -82,3 +26,4 @@ const achievements = [
     </ul>
   </div>
 </template>
+@/types/props

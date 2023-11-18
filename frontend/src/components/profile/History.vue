@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
-import type { iHistory } from "@/types/history";
+import { type PropType } from "vue";
+import { type iHistory } from "@/types/props.js";
 
 const dataHistory = [
   {
@@ -13,16 +13,20 @@ const dataHistory = [
     players: "Player 1, Player 2, Player 3",
     scoreboard: "Player 1: 100, Player 2: 200, Player 3: 300",
   },
+  {
+    lobby: "Lobby 2",
+    players: "Player 1, Player 2, Player 3",
+    scoreboard: "Player 1: 100, Player 2: 200, Player 3: 300",
+  },
 ];
-
 
 const isDataEmpty: boolean = dataHistory?.length !== 0;
 </script>
 
 <template>
-  <div class="h-full flex flex-col border-2 border-neutral p-5 rounded">
+  <div class="h-4/6 flex flex-col border-2 border-neutral p-5 rounded">
     <h1 class="text-2xl font-bold mb-5">History</h1>
-    <div v-if="isDataEmpty" class="overflow-y-auto">
+    <div v-if="isDataEmpty" class="overflow-auto h-full w-full">
       <table class="table table-zebra">
         <thead>
           <tr>
@@ -45,3 +49,4 @@ const isDataEmpty: boolean = dataHistory?.length !== 0;
     </div>
   </div>
 </template>
+@/types/props
