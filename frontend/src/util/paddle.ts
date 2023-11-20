@@ -14,13 +14,13 @@ export class Paddle {
   }
   moveUp() {
     if (this.y > 0){
-      this.y -= 6
+      this.y -= 10
     }
   
   }
   moveDown() {
     if (this.y < this.canvasHeight - this.height) {
-      this.y += 6
+      this.y += 10
     }
   }
 

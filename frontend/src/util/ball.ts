@@ -36,7 +36,7 @@ export class Ball {
   reset() {
     this.x = this.canvasWidth / 2
     this.y = this.canvasHeight / 2
-    this.xSpeed = this.randomBetween(10, 11)
+    this.xSpeed = this.randomBetween(14, 20)
     let isLeft = this.randomBetween(0, 1) > 0.5
     if (isLeft) {
       this.xSpeed = -this.xSpeed
