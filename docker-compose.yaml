@@ -10,6 +10,16 @@ services:
     networks:
       - transcendence
 
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - transcendence
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+
 networks:
   transcendence:
     name: "transcendence-network"
