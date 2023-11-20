@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PFive from "p5";
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
-
+import { Paddle } from "@/util/paddle"
 import Player from "@/util/player";
 
 const pFiveRef = ref<PFive | null>(null);
@@ -21,28 +21,39 @@ onMounted(function () {
       gameRef.value?.clientHeight || 0
     );
 
+    let player: Paddle
     p5.setup = function () {
-      playerRef.value = new Player(p5);
-      p5.createCanvas(sizeScreen.x, sizeScreen.y)
-        .parent("game")
-        .mouseOut(() => {
-          playerRef.value?.stop();
-        });
+      p5.createCanvas(sizeScreen.x, sizeScreen.y).parent("game")
+      player = new Paddle(26, p5.height / 2, p5.height)
     };
+
+    function displayPaddle(paddle: Paddle) {
+    p5.stroke(255)
+    p5.rect(paddle.x, paddle.y, paddle.width, paddle.height)
+    };
+
+    p5.keyPressed = () => {
+      if (p5.keyCode === p5.UP_ARROW) {
+        player.isUp = true
+      } else if (p5.keyCode === p5.DOWN_ARROW) {
+        player.isDown = true
+      }
+    }
+
+    p5.keyReleased = () => {
+      if (p5.keyCode === p5.UP_ARROW) {
+        player.isUp = false
+      } else if(p5.keyCode === p5.DOWN_ARROW) {
+        player.isDown = false
+      }
+    }
 
     p5.draw = function () {
-      p5.background(0);
-      playerRef.value?.draw();
-      playerRef.value?.handleInput();
+      p5.background(0)
+      displayPaddle(player)
+      player.update()
     };
 
-    p5.keyPressed = function () {
-      playerRef.value?.updateDirection(p5.keyCode, true);
-    };
-
-    p5.keyReleased = function () {
-      playerRef.value?.updateDirection(p5.keyCode, false);
-    };
   });
 });
 </script>
