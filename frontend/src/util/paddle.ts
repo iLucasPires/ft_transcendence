@@ -1,4 +1,6 @@
-export class Paddle {
+import { Ball } from "@/util/ball"
+
+export abstract class Paddle {
   readonly x: number
   y: number
   readonly height: number = 80
@@ -30,5 +32,11 @@ export class Paddle {
     } else if (this.isDown) {
       this.moveDown()
     }
+  }
+
+  abstract wasReachedBy(ball: Ball): boolean
+
+  isAtTheSameHeightOf(ball: Ball): boolean {
+    return ball.y >= this.y && ball.y <= this.y + this.height
   }
 }

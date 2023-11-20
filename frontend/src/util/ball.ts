@@ -46,4 +46,7 @@ export class Ball {
   randomBetween(min: number, max: number) {
     return Math.random() * (max - min) + min
   }
+  changeDirection() {
+    this.xSpeed = -this.xSpeed
+  }
 }

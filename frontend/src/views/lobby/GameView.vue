@@ -3,7 +3,8 @@ import PFive from "p5";
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import { Paddle } from "@/util/paddle"
 import { Ball } from "@/util/ball"
-import Player from "@/util/player";
+import { Player } from "@/util/player";
+import { Player2 } from "@/util/player2";
 
 const pFiveRef = ref<PFive | null>(null);
 const playerRef = ref<Player | null>(null);
@@ -22,13 +23,13 @@ onMounted(function () {
       gameRef.value?.clientHeight || 0
     );
 
-    let player: Paddle
-    let player2: Paddle
+    let player: Player 
+    let player2: Player2
     let ball: Ball
     p5.setup = function () {
       p5.createCanvas(sizeScreen.x, sizeScreen.y).parent("game")
-      player = new Paddle(26, p5.height / 2, p5.height)
-      player2 = new Paddle(p5.width - 48, p5.height / 2, p5.height)
+      player = new Player(26, p5.height / 2, p5.height)
+      player2 = new Player2(p5.width - 48, p5.height / 2, p5.height)
       ball = new Ball(p5.width, p5.height)
     }
 
@@ -58,6 +59,14 @@ onMounted(function () {
       p5.ellipse(ball.x, ball.y, ball.radius * 2, ball.radius * 2)
     }
 
+    function handleColision(player: Paddle, player2: Paddle, ball: Ball) {
+      if (player.wasReachedBy(ball)) {
+        ball.changeDirection()
+      } else if (player2.wasReachedBy(ball)) {
+        ball.changeDirection()
+      }
+    }
+
     p5.draw = function () {
       p5.clear()
       p5.background(0)
@@ -66,6 +75,7 @@ onMounted(function () {
       displayBall(ball)
       player.update()
       ball.update()
+      handleColision(player, player2, ball)
     };
 
   });
