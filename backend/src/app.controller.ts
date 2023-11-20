@@ -5,4 +5,9 @@ export class AppController {
   @Get()
   @Redirect("/api")
   getDocs() {}
+
+  @Get("/health")
+  getHealth() {
+    return "OK";
+  }
 }
