@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -19,8 +20,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         username: configService.get("DB_USERNAME"),
         password: configService.get("DB_PASSWORD"),
         synchronize: configService.get("NODE_ENV") !== "production",
+        autoLoadEntities: true,
       }),
     }),
+    UsersModule,
   ],
   controllers: [AppController],
 })
