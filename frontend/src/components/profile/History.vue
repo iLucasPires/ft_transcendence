@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type PropType } from "vue";
 import { type iHistory } from "@/types/props.js";
+import Typography from "../Typography.vue";
 
 const dataHistory = [
   {
@@ -24,9 +25,11 @@ const isDataEmpty: boolean = dataHistory?.length !== 0;
 </script>
 
 <template>
-  <div class="h-4/6 flex flex-col border-2 border-neutral p-5 rounded">
-    <h1 class="text-2xl font-bold mb-5">History</h1>
-    <div v-if="isDataEmpty" class="overflow-auto h-full w-full">
+  <div
+    class="h-full w-full flex flex-col border-2 border-neutral p-5 rounded overflow-auto"
+  >
+    <Typography :level="2" weight="semibold" size="xl"> History </Typography>
+    <div v-if="isDataEmpty" class="h-full w-full overflow-auto">
       <table class="table table-zebra">
         <thead>
           <tr>
@@ -49,4 +52,3 @@ const isDataEmpty: boolean = dataHistory?.length !== 0;
     </div>
   </div>
 </template>
-@/types/props

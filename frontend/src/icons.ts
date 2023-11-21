@@ -8,14 +8,22 @@ import {
   GiHamburgerMenu,
   MdExpandmoreRound,
   BiArrowLeftShort,
+  MdKeyboarddoublearrowleft,
+  MdDoublearrowRound,
+  MdWorkhistoryRound,
+  MdLogout,
 } from "oh-vue-icons/icons";
 
 addIcons(
+  MdLogout,
+  MdDoublearrowRound,
   IoGameController,
   IoChatbubblesSharp,
   RiPingPongFill,
   GiForwardField,
   GiHamburgerMenu,
   MdExpandmoreRound,
-  BiArrowLeftShort
+  BiArrowLeftShort,
+  MdWorkhistoryRound,
+  MdKeyboarddoublearrowleft
 );
