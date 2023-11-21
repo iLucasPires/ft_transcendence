@@ -9,5 +9,5 @@ import { OhVueIcon } from "oh-vue-icons";
 createApp(App)
   .use(createPinia())
   .use(createRouter())
-  .component("v-icon", OhVueIcon)
+  .component("Icon", OhVueIcon)
   .mount("#app");
