@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { CreateUserDto, ListUsersDto } from "./dto";
+import { FindOrCreateUserDto, ListUsersDto } from "./dto";
 
 @Injectable()
 export class UsersService {
@@ -11,12 +11,13 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async findOrCreate(createUserDto: FindOrCreateUserDto): Promise<User> {
     return this.userRepository
       .createQueryBuilder()
       .insert()
       .into(User)
       .values(createUserDto)
+      .orUpdate(["avatarUrl", "displayName"], ["intraId", "username", "email"])
       .returning("*")
       .execute()
       .then((result) => result.generatedMaps[0] as User);

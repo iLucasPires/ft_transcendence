@@ -1,14 +1,24 @@
-import { Entity, Index, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Index, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
+@Unique("intra_unique_constraint", ["intraId", "username", "email"])
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
+  @Column({ unique: true })
+  intraId: number;
+
+  @Column({ unique: true })
   @Index({ unique: true })
   username: string;
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  displayName: string;
+
+  @Column({ nullable: true })
+  avatarUrl?: string;
 }
