@@ -41,8 +41,4 @@ import { RouterView } from "vue-router";
   border-radius: 14px;
   border: 3px solid var(--primary);
 }
-
-p {
-  @apply text-slate-200;
-}
 </style>

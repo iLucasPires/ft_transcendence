@@ -2,6 +2,7 @@
 import History from "@/components/profile/History.vue";
 import UserDetail from "@/components/profile/UserDetail.vue";
 import Achievement from "@/components/profile/Achievement.vue";
+import Loading from "@/components/Loading.vue";
 
 import { type Ref, ref, onMounted } from "vue";
 import { type iUser, type iAchievement } from "@/types/props.js";
@@ -19,26 +20,144 @@ onMounted(async () => {
   loading.value = false;
 });
 
-const achievements : iAchievement[] = [
+const achievements: iAchievement[] = [
   {
-    name: "dezano",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/libfte.png",
+    name: "Achievement 1",
+    url: "https://i.pravatar.cc/",
   },
   {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
+    name: "Achievement 2",
+    url: "https://i.pravatar.cc/",
   },
   {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
+  },
+  {
+    name: "Achievement 3",
+    url: "https://i.pravatar.cc/",
   },
 ];
 </script>
 
 <template>
-  <div class="w-full relative p-5">
-    <div class="flex flex-col gap-5 md:h-full">
-      <div class="h-2/6 flex flex-col md:flex-row gap-5 items-center">
+  <div class="flex flex-col overflow-hidden items-center p-10 w-full"
+  >
+    <Loading :loading="loading" />
+    <div v-if="!loading" class="flex flex-col w-full  h-full">
+      <div class="flex flex-col md:flex-row items-center w-full my-5 gap-5 ">
         <UserDetail
           :name="user?.name?.first + ' ' + user?.name?.last || 'Loading...'"
           :picture="user?.picture?.large || 'https://i.pravatar.cc/'"
@@ -50,11 +169,5 @@ const achievements : iAchievement[] = [
       </div>
       <History />
     </div>
-    <div v-if="loading" class="absolute inset-0 bg-base-100 z-30">
-      <span
-        className="relative text-primary inset-1/2 loading loading-spinner"
-      ></span>
-    </div>
   </div>
 </template>
-@/types/props
