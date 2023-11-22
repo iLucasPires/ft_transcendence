@@ -1,13 +1,10 @@
 import { Entity, Index, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
-@Unique("intra_unique_constraint", ["intraId", "username", "email"])
+@Unique("intra_unique_constraint", ["intraId", "email"])
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-
-  @Column({ unique: true })
-  intraId: number;
 
   @Column({ unique: true })
   @Index({ unique: true })
@@ -15,6 +12,9 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({ unique: true })
+  intraId: number;
 
   @Column()
   displayName: string;

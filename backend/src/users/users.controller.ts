@@ -14,7 +14,7 @@ export class UsersController {
 
   @Get(":username")
   findOne(@Param("username") username: string): Promise<User> {
-    return this.usersService.findOne(username);
+    return this.usersService.findOneByUsername(username);
   }
 
   @Delete(":username")

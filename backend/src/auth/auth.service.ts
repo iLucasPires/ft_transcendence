@@ -1,20 +1,26 @@
 import { Injectable } from "@nestjs/common";
 import { Profile } from "passport";
-import { User } from "src/users/user.entity";
-import { UsersService } from "src/users/users.service";
+import { User } from "../users/user.entity";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
-  authenticateUser(userProfile: Profile): Promise<User> {
-    const { id: intraId, username, displayName, emails, photos } = userProfile;
+  async authenticateUser(userProfile: Profile): Promise<User> {
+    const {
+      id: _intraId,
+      username: intraLogin,
+      displayName,
+      emails: [{ value: email }],
+      photos,
+    } = userProfile;
 
     const payload = {
-      intraId: parseInt(intraId),
-      username,
+      username: intraLogin,
+      intraId: parseInt(_intraId),
       displayName,
-      email: emails[0].value,
+      email,
       avatarUrl: photos[0]?.value,
     };
 

@@ -11,13 +11,13 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findOrCreate(createUserDto: FindOrCreateUserDto): Promise<User> {
+  async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<User> {
     return this.userRepository
       .createQueryBuilder()
       .insert()
+      .values(findOrCreateUserDto)
       .into(User)
-      .values(createUserDto)
-      .orUpdate(["avatarUrl", "displayName"], ["intraId", "username", "email"])
+      .orUpdate(["displayName", "username"], ["intraId", "email"])
       .returning("*")
       .execute()
       .then((result) => result.generatedMaps[0] as User);
@@ -30,7 +30,11 @@ export class UsersService {
     });
   }
 
-  findOne(username: string): Promise<User> {
+  findOneById(id: string): Promise<User> {
+    return this.userRepository.findOneBy({ id });
+  }
+
+  findOneByUsername(username: string): Promise<User> {
     return this.userRepository.findOneBy({ username });
   }
 
