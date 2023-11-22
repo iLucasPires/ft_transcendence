@@ -16,7 +16,7 @@ const isMenuOpen: Ref<boolean> = ref(true);
       <Icon
         scale="1.5"
         name="md-keyboarddoublearrowleft"
-        :class="{ 'transform -rotate-180': isMenuOpen }"
+        :class="{ 'transform -rotate-180': !isMenuOpen }"
         @click="isMenuOpen = !isMenuOpen"
       />
     </div>
@@ -24,6 +24,7 @@ const isMenuOpen: Ref<boolean> = ref(true);
       <ul class="flex flex-col gap-2">
         <ItemNavBar
           v-for="item in [
+            { url: '/lobby/profile', icon: 'md-person', text: 'Profile' },
             { url: '/lobby/game', icon: 'io-game-controller', text: 'Game' },
             {
               url: '/lobby/friends',
@@ -49,7 +50,7 @@ const isMenuOpen: Ref<boolean> = ref(true);
       type="button"
       :isMenuOpen="isMenuOpen"
       url="/lobby/profile"
-      icon="io-chatbubbles-sharp"
+      icon="md-logout"
       text="Logout"
     >
       Logout

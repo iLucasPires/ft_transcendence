@@ -12,9 +12,12 @@ import {
   MdDoublearrowRound,
   MdWorkhistoryRound,
   MdLogout,
+  MdPerson  
+
 } from "oh-vue-icons/icons";
 
 addIcons(
+  MdPerson,
   MdLogout,
   MdDoublearrowRound,
   IoGameController,
