@@ -6,9 +6,10 @@
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Welcome to Transcendence</h1>
         <p class="py-6">enjoy the game with your friends and family</p>
-        <RouterLink to="/lobby" class="btn btn-primary">
-          Get Started Game
-        </RouterLink>
+        <button class="btn btn-neutral w-1/2 join-item font-semibold ">
+          Connect with
+          <img src="/public/42_logo.svg" alt="42 logo" class="w-6 h-6" />
+        </button>
       </div>
     </div>
   </div>
