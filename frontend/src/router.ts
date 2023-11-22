@@ -21,6 +21,11 @@ export default function () {
         component: HomeView,
       },
       {
+        path: "/auth/login",
+        name: "login",
+        component: () => import("./views/LoginView.vue"),
+      },
+      {
         path: "/about",
         name: "about",
         component: AboutView,

@@ -12,7 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="h-full w-full border-2 border-neutral rounded p-5">
+  <div class="h-full w-96 border-2 border-neutral rounded p-5">
     <Typography :level="2" weight="semibold" size="2xl"> Profile </Typography>
     <div class="flex w-full h-full items-center gap-2">
       <Picture :url="picture" :alt="name" />
