@@ -1,10 +1,9 @@
 import {
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   InternalServerErrorException,
   Post,
+  Redirect,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -26,6 +25,7 @@ export class AuthController {
 
   @Post("logout")
   @UseGuards(IsAuthenticatedGuard)
+  @Redirect("/")
   async logout(@Req() request: Request) {
     const logoutError = await new Promise((resolve) =>
       request.logOut({ keepSessionInfo: false }, (error) => resolve(error)),
@@ -34,6 +34,5 @@ export class AuthController {
     if (logoutError) {
       throw new InternalServerErrorException("Could not logout user");
     }
-    return { logout: true };
   }
 }
