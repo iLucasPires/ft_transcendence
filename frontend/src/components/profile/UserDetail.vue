@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Typography from "../Typography.vue";
 import Picture from "../Picture.vue";
+
 const props = defineProps({
   name: { type: String, required: true },
   level: { type: Number, required: true },
@@ -17,7 +18,9 @@ const props = defineProps({
       <Picture :url="picture" :alt="name" />
       <div>
         <div>
-          <Typography :level="2" weight="semibold" size="xl">{{ name }}</Typography>
+          <Typography :level="2" weight="semibold" size="xl">{{
+            name
+          }}</Typography>
           <Typography :italic="true"> Level {{ level }} </Typography>
         </div>
         <div class="flex gap-2">

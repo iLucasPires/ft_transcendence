@@ -11,6 +11,11 @@ export default function () {
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
       {
+        path: "/:catchAll(.*)",
+        name: "not-found",
+        component: () => import("./views/NotFoundView.vue"),
+      },
+      {
         path: "/",
         name: "home",
         component: HomeView,

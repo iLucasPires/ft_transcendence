@@ -26,6 +26,26 @@ import { RouterView } from "vue-router";
   scrollbar-color: var(--secondary) var(--primary);
 }
 
+li {
+  list-style: none;
+}
+
+.container-flex-col {
+  @apply flex flex-col items-center justify-center;
+}
+
+.container-flex-row {
+  @apply flex flex-row items-center justify-center;
+}
+
+.container-center-row {
+  @apply flex items-center justify-center;
+}
+
+.container-center-col {
+  @apply flex flex-col items-center justify-center;
+}
+
 *::-webkit-scrollbar {
   width: 15px;
   height: 10px;

@@ -3,13 +3,12 @@ import { computed } from "vue";
 
 const props = defineProps({
   level: { type: Number, default: 0 },
-  italic: { type: Boolean, default: false },
   weight: { type: String, default: "normal" },
   size: { type: String, default: "md" },
   color: { type: String, default: "neutral" },
   align: { type: String, default: "left" },
   transform: { type: String, default: "none" },
-  type: { type: String, default: "normal" },
+  extraClass: { type: String, default: "" },
 });
 
 const headings = computed(() => {
@@ -21,8 +20,8 @@ const headings = computed(() => {
 <template>
   <component
     :is="headings"
-    :class="`text-${color} text-${size} font-${weight} text-${align} text-${transform} font-${type}`"
+    :class="`text-${color} text-${size} font-${weight} text-${align} text-${transform} ${extraClass}`"
   >
     <slot></slot>
   </component>
-</template>
+</template> 

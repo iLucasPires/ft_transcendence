@@ -1,55 +1,58 @@
 <script setup lang="ts">
+import { ref, type Ref } from "vue";
 import { RouterLink } from "vue-router";
 import Typography from "./Typography.vue";
+import ItemNavBar from "./ItemNavBar.vue";
+
+const isMenuOpen: Ref<boolean> = ref(true);
 </script>
 
 <template>
-  <aside class="h-full w-96 p-5 z-10 flex flex-col bg-primary">
-    <div class="flex flex-row justify-between items-center gap-2 w-full">
-      <RouterLink to="/lobby">
-        <Typography class="uppercase" :level="1" size="2xl"
-          >Transcendence</Typography
-        >
-      </RouterLink>
-      <Icon scale="1.5" name="md-keyboarddoublearrowleft" />
+  <aside
+    :class="{ 'w-64': isMenuOpen, 'w-24': !isMenuOpen }"
+    class="p-5 flex flex-col bg-base-300 transition-all duration-300"
+  >
+    <div class="container-center-row gap-2 w-full">
+      <Icon
+        scale="1.5"
+        name="md-keyboarddoublearrowleft"
+        :class="{ 'transform -rotate-180': isMenuOpen }"
+        @click="isMenuOpen = !isMenuOpen"
+      />
     </div>
     <nav class="flex flex-col flex-1 justify-between mt-10">
-      <ul class>
-        <li>
-          <RouterLink
-            to="/lobby/game"
-            class="btn btn-ghost w-full justify-start"
-          >
-            <Icon scale="1" name="io-game-controller" />
-            <Typography class="uppercase" :level="2">Game</Typography>
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/lobby/game"
-            class="btn btn-ghost w-full justify-start"
-          >
-            <Icon scale="1" name="io-chatbubbles-sharp" />
-            <Typography class="uppercase" :level="2">Chat</Typography>
-          </RouterLink>
-        </li>
-        <li>
-          <RouterLink
-            to="/lobby/game"
-            class="btn btn-ghost w-full justify-start"
-          >
-            <Icon scale="1" name="md-workhistory-round" />
-            <Typography class="uppercase" :level="2">History</Typography>
-          </RouterLink>
-        </li>
-      </ul>
-
-      <button class="btn btn-ghost w-full justify-start">
-        <Icon scale="1" name="md-logout" />
-        <Typography class="uppercase" :level="2"
-          >Logout</Typography
+      <ul class="flex flex-col gap-2">
+        <ItemNavBar
+          v-for="item in [
+            { url: '/lobby/game', icon: 'io-game-controller', text: 'Game' },
+            {
+              url: '/lobby/friends',
+              icon: 'io-chatbubbles-sharp',
+              text: 'Friends',
+            },
+            {
+              url: '/lobby/history',
+              icon: 'md-workhistory-round',
+              text: 'History',
+            },
+          ]"
+          :key="item.url"
+          :isMenuOpen="isMenuOpen"
+          :url="item.url"
+          :icon="item.icon"
         >
-      </button>
+          {{ item.text }}
+        </ItemNavBar>
+      </ul>
     </nav>
+    <ItemNavBar
+      type="button"
+      :isMenuOpen="isMenuOpen"
+      url="/lobby/profile"
+      icon="io-chatbubbles-sharp"
+      text="Logout"
+    >
+      Logout
+    </ItemNavBar>
   </aside>
 </template>
