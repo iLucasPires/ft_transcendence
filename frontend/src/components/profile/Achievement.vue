@@ -1,83 +1,30 @@
 <script setup lang="ts">
-const achievements = [
-  {
-    name: "dezano",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/libfte.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
-  {
-    name: "luquinhas",
-    url: "https://github.com/byaliego/42-project-badges/raw/main/badges/so_longe.png",
-  },
+import Typography from "../Typography.vue";
+import Picture from "../Picture.vue";
+export interface iAchievement {
+  name: string;
+  url: string;
+}
 
-];
+defineProps({
+  achievements: {
+    type: Array<iAchievement>,
+    required: true,
+  },
+});
 </script>
 
 <template>
-  <div class="w-full p-5 flex flex-col gap-5 border-2 border-neutral rounded">
-    <h1 class="text-2xl font-semibold">Achievements</h1>
-    <ul class="carousel rounded-box gap-4">
-      <li
-        class="carousel-item"
-        v-for="achievement in achievements"
-        :key="achievement.name"
-      >
-        <img :src="achievement.url" alt="Burger" />
+  <div
+    class="h-full w-full p-5 flex flex-col border-2 border-neutral overflow-hidden rounded"
+  >
+    <Typography :level="2" size="2xl" weight="semibold" class="mb-5">
+      Achievements
+    </Typography>
+
+    <ul class="carousel gap-5">
+      <li class="carousel-item" :key="achievement.name" v-for="achievement in achievements">
+        <Picture size="md" :url="achievement.url" :alt="achievement.name" />
       </li>
     </ul>
   </div>

@@ -1,57 +1,59 @@
 <script setup lang="ts">
+import { ref, type Ref } from "vue";
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import Typography from "./Typography.vue";
+import ItemNavBar from "./ItemNavBar.vue";
 
-const isOpen = ref(false);
+const isMenuOpen: Ref<boolean> = ref(true);
 </script>
 
 <template>
-  <button
-    @click="() => (isOpen = !isOpen)"
-    class="absolute h-20 bottom-2/3 rounded z-20"
-    :class="isOpen ? '-left-4 border-2 border-primary ' : 'left-20 bg-primary '"
+  <aside
+    :class="{ 'w-64': isMenuOpen, 'w-24': !isMenuOpen }"
+    class="p-5 flex flex-col bg-base-300 transition-all duration-300"
   >
-    <v-icon
-      scale="2"
-      name="bi-arrow-left-short"
-      class="text-slate-300"
-      :class="isOpen && 'rotate-180 text-primary'"
-    />
-  </button>
-  <aside :class="isOpen ? 'hidden' : 'flex'">
-    <RouterLink to="/lobby">
-      <v-icon scale="3" name="gi-forward-field" class="text-slate-300" />
-    </RouterLink>
-    <div>
-      <nav>
-        <ul class="flex flex-col gap-5">
-          <li>
-            <RouterLink class="btn flex-1" to="/lobby/game">
-              <v-icon
-                scale="1"
-                name="io-game-controller"
-                class="text-slate-300"
-              />
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink class="btn flex-1" to="/lobby/game">
-              <v-icon
-                scale="1"
-                name="io-chatbubbles-sharp"
-                class="text-slate-300 flex-1"
-              />
-            </RouterLink>
-          </li>
-        </ul>
-      </nav>
+    <div class="container-center-row gap-2 w-full">
+      <Icon
+        scale="1.5"
+        name="md-keyboarddoublearrowleft"
+        :class="{ 'transform -rotate-180': !isMenuOpen }"
+        @click="isMenuOpen = !isMenuOpen"
+      />
     </div>
+    <nav class="flex flex-col flex-1 justify-between mt-10">
+      <ul class="flex flex-col gap-2">
+        <ItemNavBar
+          v-for="item in [
+            { url: '/lobby/profile', icon: 'md-person', text: 'Profile' },
+            { url: '/lobby/game', icon: 'io-game-controller', text: 'Game' },
+            {
+              url: '/lobby/friends',
+              icon: 'io-chatbubbles-sharp',
+              text: 'Friends',
+            },
+            {
+              url: '/lobby/history',
+              icon: 'md-workhistory-round',
+              text: 'History',
+            },
+          ]"
+          :key="item.url"
+          :isMenuOpen="isMenuOpen"
+          :url="item.url"
+          :icon="item.icon"
+        >
+          {{ item.text }}
+        </ItemNavBar>
+      </ul>
+    </nav>
+    <ItemNavBar
+      type="button"
+      :isMenuOpen="isMenuOpen"
+      url="/lobby/profile"
+      icon="md-logout"
+      text="Logout"
+    >
+      Logout
+    </ItemNavBar>
   </aside>
 </template>
-
-<style scoped>
-aside {
-  @apply w-32 h-full p-5 z-10 absolute md:relative;
-  @apply flex-col justify-between bg-primary items-center;
-}
-</style>
