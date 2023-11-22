@@ -1,24 +1,59 @@
 version: "3.8"
 
 services:
-  backend:
-    image: backend:transcendence
-    build: ./backend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    networks:
-      - transcendence
-
   db:
     image: postgres:16-alpine
+    container_name: "postgres"
     restart: unless-stopped
     networks:
       - transcendence
     environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  backend:
+    image: backend:transcendence
+    container_name: "backend"
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    networks:
+      - transcendence
+    environment:
+      - BASE_URL
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME
+      - DB_USERNAME
+      - DB_PASSWORD
+      - FT_CLIENT_ID
+      - FT_CLIENT_SECRET
+      - SESSIONS_SECRET
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/health`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    depends_on:
+      - backend
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    networks:
+      - transcendence
+    ports:
+      - "8000:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 networks:
   transcendence:

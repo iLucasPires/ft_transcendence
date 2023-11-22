@@ -30,6 +30,9 @@ export class AuthModule implements NestModule {
           secret: this.configService.get("SESSIONS_SECRET"),
           resave: false,
           saveUninitialized: false,
+          cookie: {
+            domain: this.configService.get<URL>("BASE_URL").hostname,
+          },
         }),
         passport.session(),
       )
