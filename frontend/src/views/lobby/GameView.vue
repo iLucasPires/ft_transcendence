@@ -12,7 +12,6 @@ const gameRef: Ref<HTMLElement | null> = ref(null);
 
 onUnmounted(function () {
   pFiveRef.value?.remove();
-  playerRef.value?.stop();
   playerRef.value = null;
 });
 
@@ -68,7 +67,6 @@ onMounted(function () {
     }
 
     p5.draw = function () {
-      p5.clear()
       p5.background(0)
       displayPaddle(player)
       displayPaddle(player2)
