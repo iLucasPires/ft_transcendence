@@ -145,3 +145,4 @@ dist
 
 # Nix `nix build` result directory
 result
+.helix/
