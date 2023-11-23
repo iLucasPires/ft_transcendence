@@ -19,8 +19,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-    ports:
-      - "3000:3000"
     networks:
       - transcendence
     environment:
