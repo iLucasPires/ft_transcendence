@@ -36,11 +36,29 @@ services:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/health`)"
       - "traefik.http.routers.backend.entrypoints=web"
 
+  frontend:
+    image: frontend:transcendence
+    container_name: "frontend"
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - transcendence
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+
   traefik:
     image: "traefik:v2.10"
     container_name: "traefik"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
