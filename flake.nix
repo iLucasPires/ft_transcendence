@@ -34,6 +34,7 @@
         nodePackages_latest.npm
         nodePackages_latest.prettier
         nodePackages_latest.typescript-language-server
+        nodePackages_latest.serve
         nodePackages_latest.vscode-langservers-extracted
       ];
     };
