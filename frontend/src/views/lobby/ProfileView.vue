@@ -14,7 +14,7 @@ const loading : Ref<boolean> = ref(true);
 const user = useUserStore();
 
 onMounted(async () => {
-  await user.setDataUser();
+  await user.login();
   loading.value = false;
 });
 

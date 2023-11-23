@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import { RouterLink } from "vue-router";
-import Typography from "./Typography.vue";
 import ItemNavBar from "./ItemNavBar.vue";
+import UseTheme from "@/stores/themeStore";
+import UseUser from "@/stores/userStore";
 
+const themeStore = UseTheme();
+const userStore = UseUser();
 const isMenuOpen: Ref<boolean> = ref(true);
 </script>
 
@@ -21,8 +23,8 @@ const isMenuOpen: Ref<boolean> = ref(true);
       />
     </div>
     <nav class="flex flex-col flex-1 justify-between mt-10">
-      <ul class="flex flex-col gap-2">
-        <ItemNavBar
+      <ul>
+        <RouterLink
           v-for="item in [
             { url: '/lobby/profile', icon: 'md-person', text: 'Profile' },
             { url: '/lobby/game', icon: 'io-game-controller', text: 'Game' },
@@ -37,23 +39,46 @@ const isMenuOpen: Ref<boolean> = ref(true);
               text: 'History',
             },
           ]"
+          :to="item.url"
           :key="item.url"
-          :isMenuOpen="isMenuOpen"
-          :url="item.url"
-          :icon="item.icon"
         >
-          {{ item.text }}
-        </ItemNavBar>
+          <ItemNavBar
+            :isMenuOpen="isMenuOpen"
+            :url="item.url"
+            :icon="item.icon"
+          >
+            {{ item.text }}
+          </ItemNavBar>
+        </RouterLink>
       </ul>
     </nav>
-    <ItemNavBar
-      type="button"
-      :isMenuOpen="isMenuOpen"
-      url="/lobby/profile"
-      icon="md-logout"
-      text="Logout"
-    >
-      Logout
-    </ItemNavBar>
+    <button class="w-full dropdown dropdown-right dropdown-end">
+      <ItemNavBar type="span" :isMenuOpen="isMenuOpen" icon="md-settings">
+        Settings
+      </ItemNavBar>
+      <ul
+        class="dropdown-content w-52 z-10 mx-2 border-2 border-primary menu p-2 bg-base-100 rounded-box gap-2"
+      >
+        <ItemNavBar
+          type="span"
+          @click="themeStore.toggleTheme()"
+          :icon="themeStore.isDarkTheme() ? 'md-lightmode' : 'md-nightlight'"
+        >
+          {{ themeStore.isDarkTheme() ? "Light Mode" : "Dark Mode" }}
+        </ItemNavBar>
+        <ItemNavBar
+          @click="
+            () => {
+              userStore.logout();
+              $router.push('/');
+            }
+          "
+          type="span"
+          icon="md-logout"
+        >
+          Logout
+        </ItemNavBar>
+      </ul>
+    </button>
   </aside>
 </template>

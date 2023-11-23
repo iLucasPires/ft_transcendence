@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { type iUser, type iAchievement } from "@/types/props.js";
+import router from "@/router"; // Import your router instance
 
 export default defineStore("use", {
   state: () => {
@@ -12,7 +13,7 @@ export default defineStore("use", {
   },
 
   actions: {
-    async setDataUser(): Promise<void> {
+    async login(): Promise<void> {
       async function fetchUser(): Promise<iUser> {
         const res = await fetch("https://randomuser.me/api/");
         const data = await res.json();
@@ -24,6 +25,10 @@ export default defineStore("use", {
         this.useData = data;
         localStorage.setItem("user", JSON.stringify(data));
       }
+    },
+
+    logout(): void {
+      this.clearDataUser();
     },
 
     getDataUser(): iUser | null {

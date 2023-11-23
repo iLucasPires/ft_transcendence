@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import themeStore from "./stores/themeStore";
+
+const useTheme = themeStore();
+useTheme.initializeTheme();
 </script>
 
 <template>
