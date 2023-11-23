@@ -26,7 +26,7 @@ const isDataEmpty: boolean = dataHistory?.length !== 0;
 
 <template>
   <div
-    class="h-full w-full flex flex-col border-2 border-neutral p-5 rounded overflow-auto"
+    class="h-full w-full flex flex-col border-2 border-base-300 p-5 rounded overflow-auto"
   >
     <Typography :level="2" weight="semibold" size="xl"> History </Typography>
     <div v-if="isDataEmpty" class="h-full w-full overflow-auto">

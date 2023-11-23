@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Typography from "../Typography.vue";
-import Picture from "../Picture.vue";
 export interface iAchievement {
   name: string;
   url: string;
@@ -16,7 +14,7 @@ defineProps({
 
 <template>
   <div
-    class="h-full w-full p-5 flex flex-col border-2 border-neutral overflow-hidden rounded"
+    class="h-full w-full p-5 flex flex-col border-2 border-base-300 overflow-hidden rounded"
   >
     <Typography :level="2" size="2xl" weight="semibold" class="mb-5">
       Achievements

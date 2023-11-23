@@ -8,7 +8,7 @@
         <p class="py-6">enjoy the game with your friends and family</p>
         <button class="btn btn-neutral w-1/2 join-item font-semibold ">
           Connect with
-          <img src="/public/42_logo.svg" alt="42 logo" class="w-6 h-6" />
+          <img src="/42_logo.svg" alt="42 logo" class="w-6 h-6" />
         </button>
       </div>
     </div>

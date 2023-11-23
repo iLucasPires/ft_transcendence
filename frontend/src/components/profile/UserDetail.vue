@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import Typography from "../Typography.vue";
-import Picture from "../Picture.vue";
-
 const props = defineProps({
   name: { type: String, required: true },
   level: { type: Number, required: true },
@@ -12,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="h-full w-96 border-2 border-neutral rounded p-5">
+  <div class="h-full w-96 border-2 border-base-300 rounded p-5">
     <Typography :level="2" weight="semibold" size="2xl"> Profile </Typography>
     <div class="flex w-full h-full items-center gap-2">
       <Picture :url="picture" :alt="name" />
