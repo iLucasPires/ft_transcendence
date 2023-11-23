@@ -4,29 +4,26 @@ import {
   IoGameController,
   IoChatbubblesSharp,
   RiPingPongFill,
-  GiForwardField,
-  GiHamburgerMenu,
-  MdExpandmoreRound,
-  BiArrowLeftShort,
   MdKeyboarddoublearrowleft,
-  MdDoublearrowRound,
   MdWorkhistoryRound,
   MdLogout,
-  MdPerson  
-
+  MdPerson,
+  MdLightmode,
+  MdNightlight,
+  MdSettings,
+  Si42,
 } from "oh-vue-icons/icons";
 
 addIcons(
+  MdSettings,
   MdPerson,
   MdLogout,
-  MdDoublearrowRound,
   IoGameController,
   IoChatbubblesSharp,
   RiPingPongFill,
-  GiForwardField,
-  GiHamburgerMenu,
-  MdExpandmoreRound,
-  BiArrowLeftShort,
   MdWorkhistoryRound,
-  MdKeyboarddoublearrowleft
+  MdKeyboarddoublearrowleft,
+  MdNightlight,
+  MdLightmode,
+  Si42
 );
