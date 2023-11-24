@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { FindOrCreateUserDto, ListUsersDto } from "./dto";
+import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
 
 @Injectable()
 export class UsersService {
@@ -37,7 +41,7 @@ export class UsersService {
       throw new NotFoundException(`User not found: ${id}`);
     }
 
-    return (user);
+    return user;
   }
 
   async findOneByUsername(username: string): Promise<User> {
@@ -47,7 +51,34 @@ export class UsersService {
       throw new NotFoundException(`User not found: ${username}`);
     }
 
-    return (user);
+    return user;
+  }
+
+  async update(username: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOneBy({ username });
+
+    if (!user) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    const isUsernameTaken = await this.userRepository.exist({
+      where: { username: updateUserDto.username },
+    });
+
+    if (isUsernameTaken) {
+      throw new ConflictException(
+        `Username already taken: ${updateUserDto.username}`,
+      );
+    }
+
+    return this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set(updateUserDto)
+      .whereEntity(user)
+      .returning("*")
+      .execute()
+      .then((result) => result.generatedMaps[0] as User);
   }
 
   async remove(id: string): Promise<void> {
