@@ -5,6 +5,7 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.set("trust proxy", true)
   app.setGlobalPrefix("api", {
     exclude: ["/", "health"],
   });
