@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
+import { FindOrCreateUserDto, UpdateUserDto } from "./dto";
 
 @Injectable()
 export class UsersService {
@@ -27,11 +27,8 @@ export class UsersService {
       .then((result) => result.generatedMaps[0] as User);
   }
 
-  findAll(listUsersDto: ListUsersDto): Promise<User[]> {
-    return this.userRepository.find({
-      skip: listUsersDto.offset,
-      take: listUsersDto.limit,
-    });
+  findAll(offset: number = 0, limit: number = 10): Promise<User[]> {
+    return this.userRepository.find({ skip: offset, take: limit });
   }
 
   async findOneById(id: string): Promise<User> {

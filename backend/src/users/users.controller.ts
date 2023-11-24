@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Query,
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { ListUsersDto, UpdateUserDto } from "./dto";
 import { User } from "./user.entity";
@@ -8,8 +16,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll(listUsersDto: ListUsersDto): Promise<User[]> {
-    return this.usersService.findAll(listUsersDto);
+  findAll(@Query() listUsersDto: ListUsersDto): Promise<User[]> {
+    return this.usersService.findAll(listUsersDto?.offset, listUsersDto?.limit);
   }
 
   @Get(":username")
