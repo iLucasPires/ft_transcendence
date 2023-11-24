@@ -13,9 +13,7 @@ async function bootstrap() {
   });
 
   app.set("trust proxy", true)
-  app.setGlobalPrefix("api", {
-    exclude: ["/", "health"],
-  });
+  app.setGlobalPrefix("api", { exclude: ["health"] });
 
   const config = new DocumentBuilder()
     .setTitle("42 Transcedence")
