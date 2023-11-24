@@ -9,10 +9,10 @@ async function bootstrap() {
       origin: [process.env.BASE_URL],
       credentials: true,
       exposedHeaders: ["set-cookie"],
-    }
+    },
   });
 
-  app.set("trust proxy", true)
+  app.set("trust proxy", true);
   app.setGlobalPrefix("api", { exclude: ["health"] });
 
   const config = new DocumentBuilder()
