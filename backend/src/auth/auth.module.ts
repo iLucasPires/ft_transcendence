@@ -31,7 +31,9 @@ export class AuthModule implements NestModule {
           resave: false,
           saveUninitialized: false,
           cookie: {
-            domain: this.configService.get<URL>("BASE_URL").hostname,
+            sameSite: "strict",
+            secure: this.configService.get("NODE_ENV") === "production",
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days,
           },
         }),
         passport.session(),

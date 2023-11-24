@@ -19,13 +19,12 @@ export class AuthController {
 
   @Get("/42/callback")
   @UseGuards(FortyTwoAuthGuard)
-  fortyTwoCallback(@Req() req: Request) {
-    return req.user;
-  }
+  @Redirect("/")
+  fortyTwoCallback() {}
 
   @Post("logout")
   @UseGuards(IsAuthenticatedGuard)
-  @Redirect("/")
+  @Redirect("/login")
   async logout(@Req() request: Request) {
     const logoutError = await new Promise((resolve) =>
       request.logOut({ keepSessionInfo: false }, (error) => resolve(error)),
