@@ -6,7 +6,7 @@ import AboutView from "./views/AboutView.vue";
 import GameViewVue from "./views/GameView.vue";
 import ProfileViewVue from "./views/ProfileView.vue";
 
-const routes: [
+const routes = [
   {
     path: "/:catchAll(.*)",
     name: "not-found",
