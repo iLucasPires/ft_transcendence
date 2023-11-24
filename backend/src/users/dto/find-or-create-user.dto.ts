@@ -3,5 +3,4 @@ export class FindOrCreateUserDto {
   username: string;
   displayName: string;
   email: string;
-  avatarUrl?: string;
 }

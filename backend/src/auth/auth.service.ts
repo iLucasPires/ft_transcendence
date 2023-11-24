@@ -13,7 +13,6 @@ export class AuthService {
       username: intraLogin,
       displayName,
       emails: [{ value: email }],
-      photos,
     } = userProfile;
 
     const payload = {
@@ -21,7 +20,6 @@ export class AuthService {
       intraId: parseInt(_intraId),
       displayName,
       email,
-      avatarUrl: photos[0]?.value,
     };
 
     return this.usersService.findOrCreate(payload);
