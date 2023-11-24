@@ -26,15 +26,15 @@ const isMenuOpen: Ref<boolean> = ref(true);
       <ul>
         <RouterLink
           v-for="item in [
-            { url: '/lobby/profile', icon: 'md-person', text: 'Profile' },
-            { url: '/lobby/game', icon: 'io-game-controller', text: 'Game' },
+            { url: '/profile', icon: 'md-person', text: 'Profile' },
+            { url: '/game', icon: 'io-game-controller', text: 'Game' },
             {
-              url: '/lobby/friends',
+              url: '/friends',
               icon: 'io-chatbubbles-sharp',
               text: 'Friends',
             },
             {
-              url: '/lobby/history',
+              url: '/history',
               icon: 'md-workhistory-round',
               text: 'History',
             },
