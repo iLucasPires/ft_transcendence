@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  HttpRedirectResponse,
+  HttpStatus,
   InternalServerErrorException,
   Post,
   Redirect,
@@ -10,17 +12,25 @@ import {
 import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
 import { Request } from "express";
 import { IsAuthenticatedGuard } from "./guards/authenticated.guard";
+import { ConfigService } from "@nestjs/config";
 
 @Controller("auth")
 export class AuthController {
+  constructor(private readonly configService: ConfigService) {}
+
   @Get("42")
   @UseGuards(FortyTwoAuthGuard)
   connectWith42() {}
 
   @Get("/42/callback")
   @UseGuards(FortyTwoAuthGuard)
-  @Redirect("/")
-  fortyTwoCallback() {}
+  @Redirect()
+  fortyTwoCallback(): HttpRedirectResponse {
+    return {
+      statusCode: HttpStatus.FOUND,
+      url: this.configService.get<string>("FRONTEND_URL"),
+    };
+  }
 
   @Post("logout")
   @UseGuards(IsAuthenticatedGuard)

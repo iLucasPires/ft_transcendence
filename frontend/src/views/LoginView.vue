@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { inject } from "vue";
+
+const backendUrl = inject("backendUrl");
 
 function handleLogin() {
-  window.location.href = "/api/auth/42";
+  window.location.href = backendUrl + "/api/auth/42";
 }
 
 </script>
@@ -13,8 +16,9 @@ function handleLogin() {
         <h1 class="text-5xl font-bold">Welcome to Transcendence</h1>
         <p class="py-6">enjoy the game with your friends and family</p>
         <button 
-        @click="handleLogin()"
-        class="btn btn-neutral w-1/2 join-item font-semibold">
+          @click="handleLogin()"
+          class="btn btn-neutral w-1/2 join-item font-semibold"
+        >
           Connect with
           <Icon scale="1.5" name="si-42" />
         </button>

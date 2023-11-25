@@ -22,7 +22,8 @@ services:
     networks:
       - transcendence
     environment:
-      - BASE_URL
+      - BASE_URL=${BACKEND_URL}
+      - FRONTEND_URL
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME
@@ -46,6 +47,9 @@ services:
         condition: service_healthy
     networks:
       - transcendence
+    environment:
+      - BASE_URL=${FRONTEND_URL}
+      - VITE_BACKEND_URL=${BACKEND_URL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"

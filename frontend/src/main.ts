@@ -10,6 +10,7 @@ import Typography from "./components/Typography.vue";
 import Picture from "./components/Picture.vue";
 
 createApp(App)
+  .provide("backendUrl", import.meta.env.VITE_BACKEND_URL)
   .component("Typography", Typography)
   .component("Picture", Picture)
   .component("Icon", OhVueIcon)

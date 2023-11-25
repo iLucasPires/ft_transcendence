@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/typescript-node:20-bookworm
+    container_name: workspace
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      - ..:/home/vscode/workspace:cached
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=pong
+      - POSTGRES_USER=pong
+      - POSTGRES_PASSWORD=password
