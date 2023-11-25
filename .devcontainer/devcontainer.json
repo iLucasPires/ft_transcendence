@@ -25,8 +25,8 @@
         "christian-kohler.npm-intellisense",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "octref.vetur",
         "sdras.vue-vscode-snippets",
+        "Vue.volar",
         "xabikos.JavaScriptSnippets"
       ],
       "settings": {
