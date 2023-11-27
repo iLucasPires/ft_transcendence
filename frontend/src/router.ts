@@ -5,6 +5,7 @@ import LobbyView from "./views/LobbyView.vue";
 import AboutView from "./views/AboutView.vue";
 import GameViewVue from "./views/GameView.vue";
 import ProfileViewVue from "./views/ProfileView.vue";
+import FirstLoginView from "./views/FirstLoginView.vue";
 import NotFoundView from "./views/NotFoundView.vue";
 
 const routes = [
@@ -12,6 +13,11 @@ const routes = [
     path: "/:catchAll(.*)",
     name: "not-found",
     component: NotFoundView,
+  },
+  {
+    path: "/first-login",
+    name: "first-login",
+    component: FirstLoginView,
   },
   {
     path: "/login",
@@ -42,6 +48,7 @@ const routes = [
     ],
   },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -3,10 +3,11 @@ import { computed } from "vue";
 
 const props = defineProps({
   size: { type: String, default: "md" },
-  url: { type: String, required: true },
+  url: { type: String, default: "https://picsum.photos/200" },
   alt: { type: String, required: true },
   maskType: { type: String, default: "circle" },
 });
+
 
 const size = computed(() => {
   switch (props.size) {
