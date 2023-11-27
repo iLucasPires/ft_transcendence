@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 import ItemNavBar from "./ItemNavBar.vue";
-import UseTheme from "@/stores/themeStore";
-import UseUser from "@/stores/userStore";
+import useStore from "@/store";
 
-const themeStore = UseTheme();
-const userStore = UseUser();
+const store = useStore();
+
 const isMenuOpen: Ref<boolean> = ref(true);
 </script>
 
@@ -61,21 +60,12 @@ const isMenuOpen: Ref<boolean> = ref(true);
       >
         <ItemNavBar
           type="span"
-          @click="themeStore.toggleTheme()"
-          :icon="themeStore.isDarkTheme() ? 'md-lightmode' : 'md-nightlight'"
+          @click="store.changeTheme()"
+          :icon="store.isThemeDark ? 'md-lightmode' : 'md-nightlight'"
         >
-          {{ themeStore.isDarkTheme() ? "Light Mode" : "Dark Mode" }}
+          {{ store.isThemeDark ? "Light Mode" : "Dark Mode" }}
         </ItemNavBar>
-        <ItemNavBar
-          @click="
-            () => {
-              userStore.logout();
-              $router.push('/');
-            }
-          "
-          type="span"
-          icon="md-logout"
-        >
+        <ItemNavBar @click="$router.push('/')" type="span" icon="md-logout">
           Logout
         </ItemNavBar>
       </ul>
