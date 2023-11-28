@@ -10,7 +10,7 @@
   ],
   "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
   "remoteEnv": {
-    "BACKEND_URL": "http://localhost:3000",
+    "VITE_BACKEND_URL": "http://localhost:3000",
     "FRONTEND_URL": "http://localhost:5173",
     "DB_HOST": "db",
     "DB_PORT": "5432",
