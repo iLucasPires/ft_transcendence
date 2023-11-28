@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
-import { Repository } from "typeorm";
+import { Repository, Not } from "typeorm";
 import { FindOrCreateUserDto, UpdateUserDto } from "./dto";
 
 @Injectable()
@@ -72,7 +72,10 @@ export class UsersService {
     }
 
     const isUsernameTaken = await this.userRepository.exist({
-      where: { username: updateUserDto.username },
+      where: {
+        id: Not(user.id),
+        username: updateUserDto.username,
+      },
     });
 
     if (isUsernameTaken) {
