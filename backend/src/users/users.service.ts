@@ -21,7 +21,7 @@ export class UsersService {
       .insert()
       .values(findOrCreateUserDto)
       .into(User)
-      .orUpdate(["displayName", "username"], ["intraId", "email"])
+      .orUpdate(["displayName"], ["intraId", "email"])
       .returning("*")
       .execute()
       .then((result) => result.generatedMaps[0] as User);
@@ -83,7 +83,9 @@ export class UsersService {
       .then((result) => result.generatedMaps[0] as User);
   }
 
-  async remove(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+  async remove(username: string): Promise<void> {
+    await this.userRepository.delete({
+      username,
+    });
   }
 }
