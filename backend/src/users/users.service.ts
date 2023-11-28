@@ -27,7 +27,7 @@ export class UsersService {
       SELECT * FROM insert
       UNION ALL
       SELECT * FROM "user"
-      WHERE username = $1
+      WHERE "intraId" = $3
       LIMIT 1;
     `,
       [
