@@ -16,9 +16,6 @@ export class User {
   @Column({ unique: true })
   intraId: number;
 
-  @Column()
-  displayName: string;
-
   @Column({ default: false })
   registrationComplete: boolean;
 }

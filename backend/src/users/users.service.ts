@@ -16,15 +16,28 @@ export class UsersService {
   ) {}
 
   async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<User> {
-    return this.userRepository
-      .createQueryBuilder()
-      .insert()
-      .values(findOrCreateUserDto)
-      .into(User)
-      .orUpdate(["displayName"], ["intraId", "email"])
-      .returning("*")
-      .execute()
-      .then((result) => result.generatedMaps[0] as User);
+    const result = await this.userRepository.query(
+      `
+      WITH insert AS (
+        INSERT INTO "user" ("username", "email", "intraId")
+        VALUES ($1, $2, $3)
+        ON CONFLICT ("intraId", "email") DO NOTHING
+        RETURNING *
+      )
+      SELECT * FROM insert
+      UNION ALL
+      SELECT * FROM "user"
+      WHERE username = $1
+      LIMIT 1;
+    `,
+      [
+        findOrCreateUserDto.username,
+        findOrCreateUserDto.email,
+        findOrCreateUserDto.intraId,
+      ],
+    );
+
+    return result[0] as User;
   }
 
   findAll(offset: number = 0, limit: number = 10): Promise<User[]> {

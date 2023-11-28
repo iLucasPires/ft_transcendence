@@ -10,18 +10,16 @@ export class AuthService {
   async authenticateUser(userProfile: Profile): Promise<User> {
     const {
       id: _intraId,
-      username: intraLogin,
-      displayName,
+      displayName: intraLogin,
       emails: [{ value: email }],
     } = userProfile;
 
-    const payload = {
+    const user = this.usersService.findOrCreate({
       username: intraLogin,
       intraId: parseInt(_intraId),
-      displayName,
       email,
-    };
+    });
 
-    return this.usersService.findOrCreate(payload);
+    return user;
   }
 }

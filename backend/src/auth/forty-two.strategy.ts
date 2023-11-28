@@ -17,15 +17,10 @@ Strategy.prototype.userProfile = function (accessToken, done) {
         const json = JSON.parse(body);
         const profile: Profile = {
           id: json.id,
-          username: json.login,
-          displayName:
-            json.usual_full_name ?? `${json.first_name} ${json.last_name}`,
+          displayName: json.login,
           emails: [{ value: json.email }],
           provider: "forty-two",
         };
-        if (json.image.link) {
-          profile.photos = [{ value: json.image.link }];
-        }
         return done(null, profile);
       } catch (err) {
         return done(err);
