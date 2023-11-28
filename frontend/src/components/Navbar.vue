@@ -7,7 +7,7 @@ import ItemNavBar from "@/components/ItemNavBar.vue";
 
 const store = UseData();
 const menuOpen: Ref<boolean> = ref(true);
-const modal = ref<HTMLDialogElement | null>(null);
+const modal: Ref<HTMLDialogElement | null> = ref(null);
 
 function handleclick(url: string) {
   if (store.status.isGame) {
@@ -28,16 +28,18 @@ function handleclick(url: string) {
       <div class="modal-action">
         <form method="dialog">
           <div class="join">
-            <button @click="modal?.close()" class="btn join-item">
+            <button @click="() => modal?.close()" class="btn join-item">
               Back to game
             </button>
             <button
-              @click="
-                store.status.isGame = false;
-                store.gameData?.remove();
-                modal?.close();
-              "
               class="btn join-item btn-primary"
+              @click="
+                () => {
+                  store.status.isGame = false;
+                  store.gameData?.remove();
+                  modal?.close();
+                }
+              "
             >
               get out
             </button>
@@ -55,7 +57,7 @@ function handleclick(url: string) {
         scale="1.5"
         name="md-keyboarddoublearrowleft"
         :class="{ 'transform -rotate-180': !menuOpen }"
-        @click="menuOpen = !menuOpen"
+        @click="() => (menuOpen = !menuOpen)"
       />
     </div>
     <nav class="flex flex-col flex-1 justify-between mt-10">
@@ -65,9 +67,9 @@ function handleclick(url: string) {
             { url: '/profile', icon: 'md-person', text: 'Profile' },
             { url: '/game', icon: 'io-game-controller', text: 'Game' },
             {
-              url: '/friends',
+              url: '/chat',
               icon: 'io-chatbubbles-sharp',
-              text: 'Friends',
+              text: 'Chat',
             },
             {
               url: '/history',
@@ -75,7 +77,7 @@ function handleclick(url: string) {
               text: 'History',
             },
           ]"
-          @click="handleclick(item.url)"
+          @click="() => handleclick(item.url)"
           :to="item.url"
           :key="item.url"
           :menuOpen="menuOpen"
@@ -94,12 +96,16 @@ function handleclick(url: string) {
       >
         <ItemNavBar
           type="span"
-          @click="store.changeTheme()"
+          @click="() => store.changeTheme()"
           :icon="store.isThemeDark ? 'md-lightmode' : 'md-nightlight'"
         >
           {{ store.isThemeDark ? "Light Mode" : "Dark Mode" }}
         </ItemNavBar>
-        <ItemNavBar @click="$router.push('/')" type="span" icon="md-logout">
+        <ItemNavBar
+          @click="() => $router.push('/')"
+          type="span"
+          icon="md-logout"
+        >
           Logout
         </ItemNavBar>
       </ul>

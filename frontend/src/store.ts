@@ -2,11 +2,12 @@ import { defineStore } from "pinia";
 import { THEMES, DOMHtml } from "./design/theme";
 import type { iUser, iAchievement } from "@/types/props.js";
 import type PFive from "p5";
+import { router } from "./router";
 
 export default defineStore("store", {
   state: function () {
+    const useData = null as iUser | null ;
     const achievementData: Array<iAchievement> = [];
-    const useData: iUser = JSON.parse(localStorage.getItem("user") || "null");
     const themeData = localStorage.getItem("theme") as string;
 
     return {
@@ -23,14 +24,19 @@ export default defineStore("store", {
 
   actions: {
     async getUseData() {
-      async function fetchUser(): Promise<iUser> {
-        const res = await fetch("https://randomuser.me/api/");
-        return await res.json();
+      async function fetchUser(): Promise<Response> {
+        const res = await fetch("http://localhost:3000/api/me", {
+          method: "GET",
+          credentials: "include",
+        });
+        return res;
       }
+      const response: Response = await fetchUser();
 
-      if (!this.useData != null) {
-        this.useData = await fetchUser();
-        localStorage.setItem("use", JSON.stringify(this.useData));
+      if (response.status === 403) {
+        router.push("/login");
+      } else {
+        this.useData = await response.json();
       }
     },
 

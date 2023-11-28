@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-
-import ListFriend from "@/components/friend/ListFriend.vue";
 import Navbar from "@/components/Navbar.vue";
+import { onMounted } from "vue";
+import useStore from "@/store";
+
+const store = useStore();
+
+onMounted(() => {
+  if (!store.useData) store.getUseData();
+});
+
 </script>
 
 <template>

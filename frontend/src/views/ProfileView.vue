@@ -11,7 +11,7 @@ import { type iAchievement } from "@/types/props.js";
 
 const achievements: iAchievement[] = [];
 const loading: Ref<boolean> = ref(true);
-const user = useStore();
+const store = useStore();
 
 onMounted(async () => {
   loading.value = false;
@@ -26,13 +26,12 @@ onMounted(async () => {
         class="flex flex-col md:flex-row items-center w-full my-5 gap-5 h-72"
       >
         <UserDetail
-          :name="user.useData?.name?.first || 'User'"
-          :picture="user?.useData?.picture?.large || ''"
+          :name="store.useData?.username || ''"
+          picture="https://picsum.photos/200/300"
           :level="10"
           :wins="10"
           :losses="5"
         />
-        <Achievement :achievements="achievements" />
       </div>
       <History />
     </div>

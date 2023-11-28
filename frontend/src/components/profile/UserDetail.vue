@@ -9,17 +9,20 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="h-full w-96 border-2 border-base-300 rounded p-5">
-    <Typography :level="2" weight="semibold" size="2xl"> Profile </Typography>
-    <div class="flex w-full h-full items-center gap-2">
+  <div
+    class="h-full w-full border-2 border-base-300 rounded flex p-5 flex-col items-center"
+  >
+    <Typography :level="2" weight="semibold" size="2xl" extraClass="self-start">
+      Profile
+    </Typography>
+    <div class="flex items-center gap-5 h-full w-full">
       <Picture :url="picture" :alt="name" />
-      <div>
-        <div>
-          <Typography :level="2" weight="semibold" size="xl">{{
-            name
-          }}</Typography>
-          <Typography :italic="true"> Level {{ level }} </Typography>
-        </div>
+      <div class="">
+        <Typography :level="2" weight="semibold" size="xl">{{
+          name
+        }}</Typography>
+        <Typography :italic="true"> Level {{ level }} </Typography>
+
         <div class="flex gap-2">
           <span class="tooltip flex" data-tip="Vitórias">
             <Icon name="ri-ping-pong-fill" class="text-green-400" />

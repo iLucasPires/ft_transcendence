@@ -5,10 +5,11 @@ export type iHistory = {
 };
 
 export type iUser = {
-  name: {
-    first: string;
-    last: string;
-  };
+  username: string;
+  email: string;
+  intraId: number;
+  displayName: string;
+  registrationComplete: boolean;
   picture: {
     large: string;
   };

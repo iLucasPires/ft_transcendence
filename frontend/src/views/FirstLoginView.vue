@@ -1,22 +1,57 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import useStore from "@/store";
+import { router } from "@/router";
+import Message from "@/components/Message.vue";
 
 const message = ref("");
 const messageError = ref("");
+const store = useStore();
 
-function handleSubmit() {
+watch(message, () => {
   if (message.value.length < 2) {
-    messageError.value = "Nickname must be at least 1 characters";
+    messageError.value = "error: Nickname must be at least 2 characters";
   } else if (message.value.length > 12) {
-    messageError.value = "Nickname must be less than 12 characters";
+    messageError.value = "error: Nickname must be at most 12 characters";
+  } else if (message.value === store?.useData?.username) {
+    messageError.value = "error: Nickname must be different from current";
   } else {
     messageError.value = "";
+  }
+});
+
+onMounted(() => {
+  store.getUseData();
+});
+
+async function handleSubmit() {
+  if (messageError.value === "") {
+    const response = await fetch(
+      "http://localhost:3000/api/users/" + store.useData?.username,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: message.value }),
+      }
+    );
+      console.log(response);
+
+    if (response.status === 200) {
+      await store.getUseData();
+      router.push({ name: "lobby" });
+    }
   }
 }
 </script>
 
 <template>
-  <div class="hero min-h-screen bg-base-200 ">
+  <div class="hero min-h-screen bg-base-200">
+    <Message
+      v-show="messageError"
+      :type="messageError.substring(0, messageError.indexOf(':'))"
+      :message="messageError.substring(messageError.indexOf(':') + 2)"
+    />
     <div class="hero-content flex-col lg:flex-row-reverse">
       <div class="text-center lg:text-left">
         <h1 class="text-5xl font-bold">Almost there</h1>
@@ -25,8 +60,8 @@ function handleSubmit() {
         </p>
       </div>
 
-      <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-        <form className="card-body " @submit.prevent="handleSubmit">
+      <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+        <form class="card-body" @submit.prevent="handleSubmit">
           <div class="container-center-row">
             <Picture size="lg" alt="Picture of the author" />
           </div>
@@ -35,20 +70,21 @@ function handleSubmit() {
               type="text"
               placeholder="Nickname"
               v-model="message"
-              className="input input-bordered input-primary w-full max-w-xs"
+              class="input input-bordered input-primary w-full max-w-xs"
             />
-            <span className="text-xs text-gray-500 my-1" v-if="messageError">
-              {{ messageError }}
-            </span>
           </div>
-
           <input
             type="file"
-            className="file-input file-input-bordered file-input-primary w-full max-w-xs"
+            class="file-input file-input-bordered file-input-primary w-full max-w-xs"
           />
 
-          <div className="form-control ">
-            <button className="btn btn-primary">Finish</button>
+          <div class="form-control">
+            <button
+              class="btn btn-primary"
+              :class="'btn-disabled' && messageError"
+            >
+              Finish
+            </button>
           </div>
         </form>
       </div>

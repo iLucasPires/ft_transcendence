@@ -8,7 +8,6 @@ const props = defineProps({
   maskType: { type: String, default: "circle" },
 });
 
-
 const size = computed(() => {
   switch (props.size) {
     case "sm":
@@ -24,7 +23,7 @@ const size = computed(() => {
 </script>
 
 <template>
-  <div :class="` ${size}`">
+  <div :class="`flex items-center w-20 h-20 `">
     <img
       :src="url"
       :alt="alt"
