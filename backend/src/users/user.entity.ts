@@ -18,4 +18,7 @@ export class User {
 
   @Column()
   displayName: string;
+
+  @Column({ default: false })
+  registrationComplete: boolean;
 }

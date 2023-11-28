@@ -68,10 +68,15 @@ export class UsersService {
       );
     }
 
+    const data = {
+      ...updateUserDto,
+      registrationComplete: true,
+    };
+
     return this.userRepository
       .createQueryBuilder()
       .update(User)
-      .set(updateUserDto)
+      .set(data)
       .whereEntity(user)
       .returning("*")
       .execute()
