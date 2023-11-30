@@ -24,4 +24,4 @@ const headings = computed(() => {
   >
     <slot></slot>
   </component>
-</template> 
+</template>

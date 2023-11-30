@@ -1,19 +1,17 @@
 import { defineStore } from "pinia";
 import { THEMES, DOMHtml } from "./design/theme";
-import type { iUser, iAchievement } from "@/types/props.js";
+import type { iUser } from "@/types/props.js";
 import type PFive from "p5";
-import { router } from "./router";
+import api from "./api";
 
 export default defineStore("store", {
   state: function () {
-    const useData = null as iUser | null ;
-    const achievementData: Array<iAchievement> = [];
+    const useData: iUser = JSON.parse(localStorage.getItem("user") || "null");
     const themeData = localStorage.getItem("theme") as string;
 
     return {
       useData: useData,
       themeData: themeData,
-      achievementData: achievementData,
       gameData: null as PFive | null,
       status: {
         isGame: false,
@@ -23,21 +21,8 @@ export default defineStore("store", {
   },
 
   actions: {
-    async getUseData() {
-      async function fetchUser(): Promise<Response> {
-        const res = await fetch("http://localhost:3000/api/me", {
-          method: "GET",
-          credentials: "include",
-        });
-        return res;
-      }
-      const response: Response = await fetchUser();
-
-      if (response.status === 403) {
-        router.push("/login");
-      } else {
-        this.useData = await response.json();
-      }
+    async setMe() {
+      this.useData = await api.getMe();
     },
 
     changeStatusGame() {
@@ -56,6 +41,13 @@ export default defineStore("store", {
   },
 
   getters: {
+    hasUserData: (state) => state.useData !== null,
     isThemeDark: (state) => state.themeData === THEMES[0],
+    isCompleteRegistration: (state) => {
+      console.log(state.useData);
+      return (
+        state.useData !== null && state.useData.registrationComplete === true
+      );
+    },
   },
 });
