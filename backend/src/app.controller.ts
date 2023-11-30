@@ -1,6 +1,4 @@
-import { Controller, Get, Redirect, Req, UseGuards } from "@nestjs/common";
-import { IsAuthenticatedGuard } from "./auth/guards/authenticated.guard";
-import { Request } from "express";
+import { Controller, Get, Redirect } from "@nestjs/common";
 
 @Controller()
 export class AppController {
@@ -11,11 +9,5 @@ export class AppController {
   @Get("/health")
   getHealth() {
     return "OK";
-  }
-
-  @Get("/me")
-  @UseGuards(IsAuthenticatedGuard)
-  getMe(@Req() req: Request) {
-    return req.user;
   }
 }
