@@ -26,6 +26,7 @@ export default {
     });
 
     if (response.status === 200) {
+       
       return await response.json();
     }
 
@@ -55,7 +56,6 @@ export default {
     if (response.status === 403) {
       router.push({ name: "login" });
       localStorage.removeItem("user");
-
       return null;
     }
   },

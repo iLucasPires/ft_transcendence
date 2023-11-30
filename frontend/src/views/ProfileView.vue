@@ -2,20 +2,18 @@
 import { ref } from "vue";
 import type { Ref } from "vue";
 
-import api from "@/api";
 import useStore from "@/store";
-
 import History from "@/components/profile/History.vue";
 import UserDetail from "@/components/profile/UserDetail.vue";
 
-const modalEditProfile: Ref<HTMLDialogElement | null> = ref(null);
-const message: Ref<string> = ref("");
 const store = useStore();
+const message: Ref<string> = ref("");
+const modalEditProfile: Ref<HTMLDialogElement | null> = ref(null);
 
 function handleClick() {
-  api.updateUsernameMe(store.useData?.username, message.value);
-  store.setMe();
+  store.changeUsername(message.value);
 }
+
 </script>
 
 <template>
@@ -43,8 +41,8 @@ function handleClick() {
 
   <div class="flex flex-col overflow-hidden items-center p-10 w-full gap-5">
     <UserDetail
-      :name="store.useData?.username"
       picture="https://picsum.photos/200/300"
+      :name="store.useData?.username"
       :level="10"
       :wins="10"
       :losses="5"

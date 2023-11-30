@@ -22,7 +22,14 @@ export default defineStore("store", {
 
   actions: {
     async setMe() {
-      this.useData = await api.getMe();
+      if (this.useData === null) this.useData = await api.getMe();
+    },
+
+    changeUsername(newUsername: string) {
+      if (api.updateUsernameMe(this.useData.username, newUsername) !== null) {
+        this.useData!.username = newUsername;
+        localStorage.setItem("user", JSON.stringify(this.useData));
+      }
     },
 
     changeStatusGame() {

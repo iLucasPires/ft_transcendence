@@ -61,16 +61,4 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  // We check if a flag cookie is set, if not we redirect to the login page
-  const isCookieSet = document.cookie.indexOf("connect.flag=") !== -1;
-
-  if (!isCookieSet && to.name !== "login") {
-    console.log("No cookie set, redirecting to login");
-    return next({ name: "login" });
-  }
-
-  next();
-});
-
 export { router, routes };

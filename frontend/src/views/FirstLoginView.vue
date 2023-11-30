@@ -2,9 +2,9 @@
 import { onMounted, ref, watch } from "vue";
 import type { Ref } from "vue";
 
-import api from "@/api";
 import useStore from "@/store";
 import Message from "@/components/Message.vue";
+import { router } from "@/router";
 
 const store = useStore();
 const message: Ref<string> = ref("");
@@ -26,10 +26,11 @@ watch(message, (newMessage) => {
 onMounted(() => {
   store.setMe();
 });
-
+  
 async function handleSubmit() {
   if (messageError.value === "") {
-    api.updateUsernameMe(store.useData.username, message.value);
+    store.changeUsername(message.value);
+    router.push({ name: "lobby" });
   }
 }
 </script>
