@@ -35,8 +35,5 @@
         }
       }
     }
-  },
-  "features": {
-    "ghcr.io/devcontainers-contrib/features/direnv": {}
   }
 }

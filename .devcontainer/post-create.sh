@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "eval $(direnv hook bash)" >> $HOME/.bashrc
 
 cat << EOF
