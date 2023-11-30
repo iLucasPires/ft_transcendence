@@ -8,7 +8,6 @@ import GameViewVue from "./views/GameView.vue";
 import ProfileViewVue from "./views/ProfileView.vue";
 import FirstLoginView from "./views/FirstLoginView.vue";
 import NotFoundView from "./views/NotFoundView.vue";
-import ChatViewVue from "./views/ChatView.vue";
 
 const routes = [
   {
@@ -47,11 +46,6 @@ const routes = [
         name: "profile",
         component: ProfileViewVue,
       },
-      {
-        path: "chat",
-        name: "chat",
-        component: ChatViewVue,
-      },
     ],
   },
 ];
@@ -75,7 +69,6 @@ router.beforeEach((to, from, next) => {
   }
 
   if (!isCookieSet && to.name !== "login") {
-
     return next({ name: "login" });
   }
 
