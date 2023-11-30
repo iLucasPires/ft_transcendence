@@ -20,7 +20,7 @@ const headings = computed(() => {
 <template>
   <component
     :is="headings"
-    :class="`text-${color} text-${size} font-${weight} text-${align} text-${transform} ${extraClass}`"
+    :class="`text-${color} text-${size} font-${weight} text-${align} text-${transform} ${extraClass} whitespace-pre`"
   >
     <slot></slot>
   </component>

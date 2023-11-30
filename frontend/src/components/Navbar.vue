@@ -48,24 +48,15 @@ const menuList = [
     :class="{ 'w-64': menuOpen, 'w-24': !menuOpen }"
     class="p-5 flex flex-col bg-base-300 transition-all duration-300"
   >
-    <div class="flex items-center justify-between gap-2 w-full">
-      <RouterLink to="/">
-        <Typography
-          class="text-2xl font-bold"
-          :level="menuOpen ? 2 : 0"
-          extraClass="text-primary"
-        >
-          {{ menuOpen ? "Pong" : "P" }}
-        </Typography>
-      </RouterLink>
+    <RouterLink to="/">
+      <Typography
+        class="text-2xl font-bold"
+        extraClass="text-primary text-center"
+      >
+        Pong
+      </Typography>
+    </RouterLink>
 
-      <Icon
-        scale="1.5"
-        name="md-keyboarddoublearrowleft"
-        :class="{ 'transform -rotate-180': !menuOpen }"
-        @click="menuOpen = !menuOpen"
-      />
-    </div>
     <nav class="flex flex-col flex-1 justify-between mt-10">
       <menu class="flex flex-col gap-2">
         <ItemNavBar
@@ -82,6 +73,14 @@ const menuList = [
     </nav>
 
     <menu class="flex flex-col gap-2">
+      <ItemNavBar
+        @click="menuOpen = !menuOpen"
+        icon="md-keyboarddoublearrowleft"
+        :invertIcon="!menuOpen"
+      >
+        Resize Menu
+      </ItemNavBar>
+
       <ItemNavBar
         @click="store.changeTheme()"
         :menuOpen="menuOpen"
