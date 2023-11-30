@@ -1,9 +1,9 @@
 export class Ball {
   readonly radius = 10
-  x: number
-  y: number
-  private ySpeed: number
-  private xSpeed: number
+  x: number = 0
+  y: number = 0
+  private ySpeed: number = 0
+  private xSpeed: number = 0
   private readonly canvasHeight:number
   private readonly canvasWidth:number
 
@@ -26,11 +26,11 @@ export class Ball {
   }
 
   playerScored():boolean {
-    return this.x > this.canvasWidth + this.radius
+    return this.x > (this.canvasWidth - 42) + this.radius
   }
 
   player2Scored():boolean {
-    return this.x < this.radius
+    return this.x - 25 < this.radius
   }
 
   reset() {

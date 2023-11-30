@@ -1,0 +1,42 @@
+{
+  "name": "42 Transcendence",
+  "service": "workspace",
+  "dockerComposeFile": "docker-compose.workspace.yaml",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/home/vscode/workspace",
+  "forwardPorts": [
+    3000,
+    5173
+  ],
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
+  "remoteEnv": {
+    "VITE_BACKEND_URL": "http://localhost:3000",
+    "FRONTEND_URL": "http://localhost:5173",
+    "DB_HOST": "db",
+    "DB_PORT": "5432",
+    "DB_NAME": "pong",
+    "DB_USERNAME": "pong",
+    "DB_PASSWORD": "password",
+    "SESSIONS_SECRET": "BIG STRING"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "christian-kohler.npm-intellisense",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "sdras.vue-vscode-snippets",
+        "Vue.volar",
+        "xabikos.JavaScriptSnippets"
+      ],
+      "settings": {
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/direnv": {}
+  }
+}

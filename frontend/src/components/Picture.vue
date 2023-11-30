@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 const props = defineProps({
   size: { type: String, default: "md" },
-  url: { type: String, required: true },
+  url: { type: String, default: "https://picsum.photos/200" },
   alt: { type: String, required: true },
   maskType: { type: String, default: "circle" },
 });
@@ -23,7 +23,7 @@ const size = computed(() => {
 </script>
 
 <template>
-  <div :class="` ${size}`">
+  <div :class="`flex items-center w-20 h-20 `">
     <img
       :src="url"
       :alt="alt"
