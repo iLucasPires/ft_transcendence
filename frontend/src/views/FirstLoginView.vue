@@ -1,46 +1,36 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
+import type { Ref } from "vue";
+
 import useStore from "@/store";
-import { router } from "@/router";
 import Message from "@/components/Message.vue";
+import { router } from "@/router";
 
-const message = ref("");
-const messageError = ref("");
 const store = useStore();
+const message: Ref<string> = ref("");
+const messageError: Ref<string> = ref("");
 
-watch(message, () => {
-  if (message.value.length < 2) {
-    messageError.value = "error: Nickname must be at least 2 characters";
-  } else if (message.value.length > 12) {
-    messageError.value = "error: Nickname must be at most 12 characters";
-  } else if (message.value === store?.useData?.username) {
-    messageError.value = "error: Nickname must be different from current";
-  } else {
-    messageError.value = "";
-  }
+watch(message, (newMessage) => {
+  const length = newMessage.length;
+
+  messageError.value =
+    length < 2
+      ? "error: Nickname must be at least 2 characters"
+      : length > 12
+      ? "error: Nickname must be at most 12 characters"
+      : message.value === store?.useData?.username
+      ? "error: Nickname must be different from current"
+      : "";
 });
 
 onMounted(() => {
-  store.getUseData();
+  store.setMe();
 });
-
+  
 async function handleSubmit() {
   if (messageError.value === "") {
-    const response = await fetch(
-      "http://localhost:3000/api/users/" + store.useData?.username,
-      {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: message.value }),
-      }
-    );
-      console.log(response);
-
-    if (response.status === 200) {
-      await store.getUseData();
-      router.push({ name: "lobby" });
-    }
+    store.changeUsername(message.value);
+    router.push({ name: "lobby" });
   }
 }
 </script>

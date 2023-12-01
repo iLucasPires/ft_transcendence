@@ -8,6 +8,7 @@ import GameViewVue from "./views/GameView.vue";
 import ProfileViewVue from "./views/ProfileView.vue";
 import FirstLoginView from "./views/FirstLoginView.vue";
 import NotFoundView from "./views/NotFoundView.vue";
+import UsersView from "./views/UsersView.vue";
 
 const routes = [
   {
@@ -46,6 +47,11 @@ const routes = [
         name: "profile",
         component: ProfileViewVue,
       },
+      {
+        path: "users",
+        name: "users",
+        component: UsersView,
+      },
     ],
   },
 ];
@@ -53,26 +59,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-});
-
-router.beforeEach((to, from, next) => {
-  // We check if a flag cookie is set, if not we redirect to the login page
-  const isCookieSet = document.cookie.indexOf("connect.flag=") !== -1;
-  const store = useStore();
-
-  if (
-    store.useData &&
-    store.useData.registrationComplete === false &&
-    to.name !== "first-login"
-  ) {
-    return next({ name: "first-login" });
-  }
-
-  if (!isCookieSet && to.name !== "login") {
-    return next({ name: "login" });
-  }
-
-  next();
 });
 
 export { router, routes };
