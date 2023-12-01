@@ -39,8 +39,8 @@ export default {
     }
   },
 
-  updateUsernameMe: async function (username: string, newUsername: string) {
-    const response = await fetch(`${URL}/api/users/${username}`, {
+  updateUsernameMe: async function (newUsername: string) {
+    const response = await fetch(`${URL}/api/me/`, {
       method: "PATCH",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

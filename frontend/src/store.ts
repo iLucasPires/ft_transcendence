@@ -31,7 +31,7 @@ export default defineStore("store", {
     },
 
     changeUsername(newUsername: string) {
-      if (api.updateUsernameMe(this.useData.username, newUsername) !== null) {
+      if (api.updateUsernameMe(newUsername) !== null) {
         this.useData!.username = newUsername;
         localStorage.setItem("user", JSON.stringify(this.useData));
       } else {
