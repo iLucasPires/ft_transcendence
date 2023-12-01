@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
-import Navbar from "@/components/Navbar.vue";
 import { onMounted } from "vue";
+import { RouterView } from "vue-router";
+
 import useStore from "@/store";
+import Navbar from "@/components/Navbar.vue";
 
 const store = useStore();
 
 onMounted(() => {
-  if (!store.useData) store.getUseData();
+  store.setMe();
 });
-
 </script>
 
 <template>

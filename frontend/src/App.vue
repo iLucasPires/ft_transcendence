@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import "./design/style.css";
+
 import { onMounted } from "vue";
 import { RouterView } from "vue-router";
 
-import "./design/style.css";
-import { initThemeData } from "./design/theme";
+import useStore from "@/store";
 
-onMounted(() => initThemeData());
+const store = useStore();
+
+onMounted(() => {
+  store.setTheme();
+});
 </script>
 
 <template>

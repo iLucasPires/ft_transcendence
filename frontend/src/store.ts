@@ -1,20 +1,19 @@
 import { defineStore } from "pinia";
-import { THEMES, DOMHtml } from "./design/theme";
-import type { iUser, iAchievement } from "@/types/props.js";
+import { THEMES, DOMHtml, initThemeData } from "./design/theme";
+import type { iUser } from "@/types/props.js";
 import type PFive from "p5";
-import { router } from "./router";
+import api from "./api";
 
 export default defineStore("store", {
   state: function () {
-    const useData = null as iUser | null ;
-    const achievementData: Array<iAchievement> = [];
+    const useData: iUser = JSON.parse(localStorage.getItem("user") || "null");
     const themeData = localStorage.getItem("theme") as string;
 
     return {
       useData: useData,
       themeData: themeData,
-      achievementData: achievementData,
       gameData: null as PFive | null,
+      erroData: null as string | null,
       status: {
         isGame: false,
         isOnline: false,
@@ -23,21 +22,25 @@ export default defineStore("store", {
   },
 
   actions: {
-    async getUseData() {
-      async function fetchUser(): Promise<Response> {
-        const res = await fetch("http://localhost:3000/api/me", {
-          method: "GET",
-          credentials: "include",
-        });
-        return res;
-      }
-      const response: Response = await fetchUser();
+    async setMe() {
+      if (this.useData === null) this.useData = await api.getMe();
+    },
 
-      if (response.status === 403) {
-        router.push("/login");
+    setTheme() {
+      initThemeData();
+    },
+
+    changeUsername(newUsername: string) {
+      if (api.updateUsernameMe(this.useData.username, newUsername) !== null) {
+        this.useData!.username = newUsername;
+        localStorage.setItem("user", JSON.stringify(this.useData));
       } else {
-        this.useData = await response.json();
+        this.changeStatusErro("Erro ao atualizar o nome de usuário");
       }
+    },
+
+    changeStatusErro(erro: string) {
+      this.erroData = erro;
     },
 
     changeStatusGame() {
@@ -56,6 +59,13 @@ export default defineStore("store", {
   },
 
   getters: {
+    hasUserData: (state) => state.useData !== null,
     isThemeDark: (state) => state.themeData === THEMES[0],
+    isCompleteRegistration: (state) => {
+      console.log(state.useData);
+      return (
+        state.useData !== null && state.useData.registrationComplete === true
+      );
+    },
   },
 });

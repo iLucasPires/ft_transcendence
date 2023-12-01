@@ -148,3 +148,6 @@ result
 .helix/
 .direnv/
 .envrc
+
+# Vscode
+.vscode/
