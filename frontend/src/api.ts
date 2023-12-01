@@ -57,4 +57,20 @@ export default {
       return null;
     }
   },
+
+  async updateAvatarMe(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    console.log(formData);
+
+    const res = await fetch(`${URL}/api/me/avatar`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    console.log(res);
+    
+  },
 };

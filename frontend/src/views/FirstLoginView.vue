@@ -5,9 +5,14 @@ import type { Ref } from "vue";
 import useStore from "@/store";
 import Message from "@/components/Message.vue";
 import { router } from "@/router";
+import api from "@/api";
 
 const store = useStore();
 const message: Ref<string> = ref("");
+
+const fileInput: Ref<HTMLInputElement | null> = ref(null);
+const files = ref();
+
 const messageError: Ref<string> = ref("");
 
 watch(message, (newMessage) => {
@@ -26,10 +31,13 @@ watch(message, (newMessage) => {
 onMounted(() => {
   store.setMe();
 });
-  
+
 async function handleSubmit() {
   if (messageError.value === "") {
     store.changeUsername(message.value);
+    console.log(files.value[0]);
+    api.updateAvatarMe(files.value[0]);
+
     router.push({ name: "lobby" });
   }
 }
@@ -65,6 +73,8 @@ async function handleSubmit() {
           </div>
           <input
             type="file"
+            ref="fileInput"
+            @change="() => (files = fileInput?.files)"
             class="file-input file-input-bordered file-input-primary w-full max-w-xs"
           />
 
