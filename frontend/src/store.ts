@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { THEMES, DOMHtml } from "./design/theme";
+import { THEMES, DOMHtml, initThemeData } from "./design/theme";
 import type { iUser } from "@/types/props.js";
 import type PFive from "p5";
 import api from "./api";
@@ -13,6 +13,7 @@ export default defineStore("store", {
       useData: useData,
       themeData: themeData,
       gameData: null as PFive | null,
+      erroData: null as string | null,
       status: {
         isGame: false,
         isOnline: false,
@@ -25,11 +26,21 @@ export default defineStore("store", {
       if (this.useData === null) this.useData = await api.getMe();
     },
 
+    setTheme() {
+      initThemeData();
+    },
+
     changeUsername(newUsername: string) {
       if (api.updateUsernameMe(this.useData.username, newUsername) !== null) {
         this.useData!.username = newUsername;
         localStorage.setItem("user", JSON.stringify(this.useData));
+      } else {
+        this.changeStatusErro("Erro ao atualizar o nome de usuário");
       }
+    },
+
+    changeStatusErro(erro: string) {
+      this.erroData = erro;
     },
 
     changeStatusGame() {
