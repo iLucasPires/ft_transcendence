@@ -1,8 +1,10 @@
 import { router } from "./router";
 
+const URL = import.meta.env.VITE_BACKEND_URL;
+
 export default {
   getMe: async function () {
-    const response = await fetch("http://localhost:3000/api/me", {
+    const response = await fetch(`${URL}/api/me`, {
       method: "GET",
       credentials: "include",
     });
@@ -20,13 +22,12 @@ export default {
   },
 
   getAllUsers: async function () {
-    const response = await fetch("http://localhost:3000/api/users", {
+    const response = await fetch(`${URL}/api/users`, {
       method: "GET",
       credentials: "include",
     });
 
     if (response.status === 200) {
-       
       return await response.json();
     }
 
@@ -39,15 +40,12 @@ export default {
   },
 
   updateUsernameMe: async function (username: string, newUsername: string) {
-    const response = await fetch(
-      "http://localhost:3000/api/users/" + username,
-      {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: newUsername }),
-      }
-    );
+    const response = await fetch(`${URL}/api/users/${username}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: newUsername }),
+    });
 
     if (response.status === 200) {
       return await response.json();
