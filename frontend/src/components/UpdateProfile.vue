@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <dialog class="modal bg-primary" id="modalUpdate">
+  <dialog class="modal" id="modalUpdate">
     <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
       <form class="card-body" @submit.prevent="handleSubmit">
         <Typography

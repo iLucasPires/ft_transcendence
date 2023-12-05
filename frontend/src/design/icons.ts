@@ -12,7 +12,9 @@ import {
   MdNightlight,
   MdSettings,
   Si42,
-  MdModeedit
+  MdBlock,
+  MdModeedit,
+  MdInfoRound
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -27,5 +29,7 @@ addIcons(
   MdNightlight,
   MdLightmode,
   Si42,
-  MdModeedit
+  MdBlock,
+  MdModeedit,
+  MdInfoRound
 );
