@@ -8,8 +8,8 @@ import UpdateProfile from "@/components/UpdateProfile.vue";
 
 const store = useStore();
 
-onMounted(() => {
-  store.setMe();
+onMounted(async () => {
+  await store.setMe();
   if (store.useData?.registrationComplete === false) {
     store.openModal();
   }
