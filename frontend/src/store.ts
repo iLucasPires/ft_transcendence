@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
+
+import api from "./api";
 import { THEMES, DOMHtml, initThemeData } from "./design/theme";
+
 import type { iUser } from "@/types/props.js";
 import type PFive from "p5";
-import api from "./api";
 
 export default defineStore("store", {
   state: function () {
@@ -14,6 +16,7 @@ export default defineStore("store", {
       themeData: themeData,
       gameData: null as PFive | null,
       erroData: null as string | null,
+      modal: null as HTMLDialogElement | null,
       status: {
         isGame: false,
         isOnline: false,
@@ -23,19 +26,54 @@ export default defineStore("store", {
 
   actions: {
     async setMe() {
-      if (this.useData === null) this.useData = await api.getMe();
+      const useData = await api.getMe();
+      if (useData !== null) {
+        this.useData = useData;
+        this.useData.avatarUrl = api.getAvatarMe(useData.avatarUrl);
+        localStorage.setItem("user", JSON.stringify(this.useData));
+      }
     },
 
     setTheme() {
       initThemeData();
     },
 
-    changeUsername(newUsername: string) {
-      if (api.updateUsernameMe(newUsername) !== null) {
-        this.useData!.username = newUsername;
+    setModal() {
+      this.modal = document.querySelector("#modalUpdate");
+    },
+
+    async changeMe(newUsername: string, file: File | null) {
+      if (newUsername.length > 2 && newUsername.length < 20) {
+        const usernameResponse = await api.updateUsernameMe(newUsername);
+        if (usernameResponse !== null) {
+          this.useData = usernameResponse;
+        }
+      }
+
+      if (file !== null) {
+        const avatarResponse = await api.updateAvatarMe(file);
+        if (avatarResponse !== null) {
+          this.useData = avatarResponse;
+        }
+      }
+
+      this.useData.avatarUrl = api.getAvatarMe(this.useData.avatarUrl);
+      localStorage.setItem("user", JSON.stringify(this.useData));
+    },
+    async changeUsername(newUsername: string) {
+      const response = await api.updateUsernameMe(newUsername);
+      if (response !== null) {
+        this.useData = response;
         localStorage.setItem("user", JSON.stringify(this.useData));
-      } else {
-        this.changeStatusErro("Erro ao atualizar o nome de usuário");
+      }
+    },
+
+    async changeAvatar(file: File) {
+      const response = await api.updateAvatarMe(file);
+      if (response !== null) {
+        const useData = response;
+        this.useData.avatarUrl = api.getAvatarMe(useData.avatarUrl);
+        localStorage.setItem("user", JSON.stringify(this.useData));
       }
     },
 
@@ -55,6 +93,14 @@ export default defineStore("store", {
       this.themeData = THEMES[+!THEMES.indexOf(this.themeData)];
       DOMHtml?.setAttribute("data-theme", this.themeData);
       localStorage.setItem("theme", this.themeData);
+    },
+
+    openModal() {
+      this.modal?.showModal();
+    },
+
+    closeModal() {
+      this.modal?.close();
     },
   },
 

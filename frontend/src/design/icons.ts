@@ -12,6 +12,7 @@ import {
   MdNightlight,
   MdSettings,
   Si42,
+  MdModeedit
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -25,5 +26,6 @@ addIcons(
   MdKeyboarddoublearrowleft,
   MdNightlight,
   MdLightmode,
-  Si42
+  Si42,
+  MdModeedit
 );

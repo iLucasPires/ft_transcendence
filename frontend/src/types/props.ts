@@ -10,9 +10,7 @@ export type iUser = {
   intraId: number;
   displayName: string;
   registrationComplete: boolean;
-  picture: {
-    large: string;
-  };
+  avatarUrl: string | null;
 };
 
 export type iFriend = {
