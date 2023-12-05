@@ -31,9 +31,7 @@ export class AuthController {
 
     return {
       statusCode: HttpStatus.FOUND,
-      url: user.registrationComplete
-        ? this.configService.get<string>("FRONTEND_URL")
-        : this.configService.get<string>("FRONTEND_URL") + "/first-login",
+      url: this.configService.get<string>("FRONTEND_URL"),
     };
   }
 
