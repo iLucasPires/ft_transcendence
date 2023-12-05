@@ -21,6 +21,8 @@ services:
       - db
     networks:
       - transcendence
+    volumes:
+      - files:/app/uploads
     environment:
       - BASE_URL=${BACKEND_URL}
       - FRONTEND_URL
@@ -79,3 +81,7 @@ networks:
   transcendence:
     name: "transcendence-network"
     driver: bridge
+
+volumes:
+  files:
+    name: "transcendence-files"

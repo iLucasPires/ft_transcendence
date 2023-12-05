@@ -7,12 +7,14 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository, Not } from "typeorm";
 import { FindOrCreateUserDto, UpdateUserDto } from "./dto";
+import { FilesService } from "src/files/files.service";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly filesService: FilesService,
   ) {}
 
   async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<User> {
@@ -64,13 +66,7 @@ export class UsersService {
     return user;
   }
 
-  async update(username: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOneBy({ username });
-
-    if (!user) {
-      throw new NotFoundException(`User not found: ${username}`);
-    }
-
+  async update(user: User, updateUserDto: UpdateUserDto): Promise<User> {
     const isUsernameTaken = await this.userRepository.exist({
       where: {
         id: Not(user.id),
@@ -97,6 +93,30 @@ export class UsersService {
       .returning("*")
       .execute()
       .then((result) => result.generatedMaps[0] as User);
+  }
+
+  async updateAvatar(user: User, avatar: Express.Multer.File): Promise<User> {
+    const oldAvatarUrl = user.avatarUrl;
+    const newAvatar = await this.filesService.uploadFile(avatar);
+
+    const updatedUser = await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ avatarUrl: newAvatar.path })
+      .whereEntity(user)
+      .returning("*")
+      .execute()
+      .then((result) => result.generatedMaps[0] as User);
+
+    if (!!oldAvatarUrl) {
+      const oldAvatar = await this.filesService.findFile(oldAvatarUrl);
+
+      if (!!oldAvatar) {
+        await this.filesService.deleteFile(oldAvatar);
+      }
+    }
+
+    return updatedUser;
   }
 
   async remove(username: string): Promise<void> {

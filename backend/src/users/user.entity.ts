@@ -16,6 +16,9 @@ export class User {
   @Column({ unique: true })
   intraId: number;
 
+  @Column({ nullable: true })
+  avatarUrl?: string;
+
   @Column({ default: false })
   registrationComplete: boolean;
 }

@@ -77,28 +77,30 @@ function startGame() {
     };
   });
 }
+
+function handleClickStartGame() {
+  startGame();
+  store.changeStatusGame();
+}
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-10">
-    <h1 class="text-2xl font-bold mb-5">Game</h1>
-    <div
-      id="game"
-      class="h-full w-full flex justify-center items-center bg-base-300"
-      ref="gameRef"
-    >
-      <button
-        v-if="!store.status.isGame"
-        @click="
-          () => {
-            startGame();
-            store.changeStatusGame();
-          }
-        "
-        class="btn btn-primary"
+  <div class="w-full h-full p-10">
+    <div class="border-2 border-base-300 rounded h-full w-full p-5">
+      <h1 class="text-2xl font-bold mb-5">Game</h1>
+      <div
+        id="game"
+        ref="gameRef"
+        class="flex justify-center items-center bg-base-300 w-full h-[94%]"
       >
-        Start Game
-      </button>
+        <button
+          v-if="!store.status.isGame"
+          class="btn btn-primary"
+          @click="handleClickStartGame()"
+        >
+          Start Game
+        </button>
+      </div>
     </div>
   </div>
 </template>

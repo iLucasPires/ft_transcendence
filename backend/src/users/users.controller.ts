@@ -1,18 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Query,
-  UseGuards,
-} from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { ListUsersDto, UpdateUserDto } from "./dto";
-import { User } from "./user.entity";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
-import { SelfGuard } from "src/auth/guards/self.guard";
+import { ListUsersDto } from "./dto";
+import { User } from "./user.entity";
+import { UsersService } from "./users.service";
 
 @Controller("users")
 export class UsersController {
@@ -28,14 +18,5 @@ export class UsersController {
   @UseGuards(IsAuthenticatedGuard)
   findOne(@Param("username") username: string): Promise<User> {
     return this.usersService.findOneByUsername(username);
-  }
-
-  @Patch(":username")
-  @UseGuards(IsAuthenticatedGuard, SelfGuard)
-  update(
-    @Param("username") username: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.update(username, updateUserDto);
   }
 }
