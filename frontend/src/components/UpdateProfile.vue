@@ -43,10 +43,7 @@ onMounted(() => {
         </Typography>
 
         <div class="container-center-row gap-1 m-5">
-          <Picture
-            :url="prevAvatar! ?? store.useData.avatarUrl"
-            :alt="store.useData?.username"
-          />
+          <Picture :url="prevAvatar!" :alt="store.useData?.username" />
           <Typography size="2xl" weight="bold" :level="2">
             {{ store.useData?.username }}
           </Typography>
