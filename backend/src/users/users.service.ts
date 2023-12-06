@@ -139,7 +139,12 @@ export class UsersService {
     const isAlreadyBlocked = await this.userRepository.exist({
       where: {
         id: blocker.id,
-        blockedUsers: user,
+        blockedUsers: {
+          id: user.id,
+        },
+      },
+      relations: {
+        blockedUsers: true,
       },
     });
 

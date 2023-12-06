@@ -37,7 +37,7 @@ export class UserEntity {
   @Column({ name: "registration_complete", default: false })
   registrationComplete: boolean;
 
-  @ManyToMany(() => UserEntity, (user) => user.blockedUsers)
+  @ManyToMany(() => UserEntity, (user) => user.blockedUsers, { lazy: true })
   @JoinTable({
     name: "blocked_users",
     joinColumn: {
@@ -49,8 +49,8 @@ export class UserEntity {
       referencedColumnName: "id",
     },
   })
-  blockedBy: UserEntity[];
+  blockedBy?: Promise<UserEntity[]>;
 
   @ManyToMany(() => UserEntity, (user) => user.blockedBy)
-  blockedUsers: UserEntity[];
+  blockedUsers?: Promise<UserEntity[]>;
 }
