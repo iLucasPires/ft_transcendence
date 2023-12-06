@@ -39,7 +39,7 @@ export class UsersController {
   })
   @UseGuards(IsAuthenticatedGuard)
   findAll(@Query() listUsersDto: ListUsersDto): Promise<UserEntity[]> {
-    return this.usersService.findAll(listUsersDto?.offset, listUsersDto?.limit);
+    return this.usersService.findAll(listUsersDto);
   }
 
   @Get(":username")
@@ -62,6 +62,6 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(IsAuthenticatedGuard)
   async block(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.block(req.user as User, username);
+    await this.usersService.block(req.user as UserEntity, username);
   }
 }

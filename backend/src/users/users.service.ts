@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
 import { Repository, Not } from "typeorm";
-import { FindOrCreateUserDto, UpdateUserDto } from "./dto";
+import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
 import { FilesService } from "src/files/files.service";
 
 @Injectable()
@@ -31,8 +31,16 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  findAll(offset: number = 0, limit: number = 10): Promise<UserEntity[]> {
-    return this.userRepository.find({ skip: offset, take: limit });
+  findAll({
+    blocked = false,
+    offset = 0,
+    limit = 10,
+  }: ListUsersDto): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      relations: { blockedUsers: blocked },
+      skip: offset,
+      take: limit,
+    });
   }
 
   async findOneById(id: string): Promise<UserEntity> {
@@ -114,7 +122,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  async block(blocker: User, username: string): Promise<User> {
+  async block(blocker: UserEntity, username: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ username });
 
     if (!user) {
@@ -134,7 +142,7 @@ export class UsersService {
 
     return this.userRepository
       .createQueryBuilder()
-      .relation(User, "blockedUsers")
+      .relation(UserEntity, "blockedUsers")
       .of(blocker)
       .add(user)
       .then(() => user);
