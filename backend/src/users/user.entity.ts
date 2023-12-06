@@ -1,6 +1,6 @@
 import { Entity, Index, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
 
-@Entity()
+@Entity({ name: "users" })
 @Unique("intra_unique_constraint", ["intraId", "email"])
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -13,12 +13,12 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true })
+  @Column({ name: "intra_id", unique: true })
   intraId: number;
 
-  @Column({ nullable: true })
+  @Column({ name: "avatar_url", nullable: true })
   avatarUrl?: string;
 
-  @Column({ default: false })
+  @Column({ name: "registration_complete", default: false })
   registrationComplete: boolean;
 }
