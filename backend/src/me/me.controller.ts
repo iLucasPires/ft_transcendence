@@ -38,6 +38,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
+    type: User,
   })
   getMe(@Req() req: Request): User {
     return req.user as User;
@@ -48,6 +49,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User updated successfully",
+    type: User,
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
@@ -75,6 +77,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Avatar updated successfully",
+    type: User,
   })
   @UseInterceptors(
     FileInterceptor("file", {

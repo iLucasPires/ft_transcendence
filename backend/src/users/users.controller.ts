@@ -31,6 +31,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of users.",
+    type: [User],
   })
   @UseGuards(IsAuthenticatedGuard)
   findAll(@Query() listUsersDto: ListUsersDto): Promise<User[]> {
@@ -42,6 +43,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
+    type: User,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,

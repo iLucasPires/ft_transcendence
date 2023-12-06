@@ -9,6 +9,7 @@ import {
 import { ApiCookieAuth, ApiResponse } from "@nestjs/swagger";
 import { Response } from "express";
 import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
+import { FileEntity } from "./file.entity";
 
 @Controller("files")
 export class FilesController {
@@ -17,6 +18,7 @@ export class FilesController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "File retrieved successfully",
+    type: FileEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
