@@ -38,6 +38,18 @@ export class UsersService {
     });
   }
 
+  async findBlockedUsers(user: UserEntity): Promise<UserEntity[]> {
+    const result = await this.userRepository.query(
+      `
+      SELECT u.* FROM "users" u
+      LEFT JOIN "blocked_users" block ON block."blocked_id" = u.id
+      WHERE block."blocker_id" = $1;
+    `,
+      [user.id],
+    );
+    return result as UserEntity[];
+  }
+
   async findOneById(id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
 

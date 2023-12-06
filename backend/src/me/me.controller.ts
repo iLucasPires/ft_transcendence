@@ -55,7 +55,10 @@ export class MeController {
     status: HttpStatus.CONFLICT,
     description: "Username already exists",
   })
-  updateMe(@Req() req: Request, @Body() body: UpdateUserDto): Promise<UserEntity> {
+  updateMe(
+    @Req() req: Request,
+    @Body() body: UpdateUserDto,
+  ): Promise<UserEntity> {
     return this.usersService.update(req.user as UserEntity, body);
   }
 
@@ -109,5 +112,16 @@ export class MeController {
   )
   updateAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
     return this.usersService.updateAvatar(req.user as UserEntity, file);
+  }
+
+  @Get("blocked")
+  @ApiCookieAuth("connect.sid")
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "A list of blocked users.",
+    type: [UserEntity],
+  })
+  findBlockedUsers(@Req() req: Request): Promise<UserEntity[]> {
+    return this.usersService.findBlockedUsers(req.user as UserEntity);
   }
 }
