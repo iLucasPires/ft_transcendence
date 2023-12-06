@@ -1,16 +1,6 @@
-import {
-  IsBoolean,
-  IsNumberString,
-  IsOptional,
-  Max,
-  Min,
-} from "class-validator";
+import { IsNumberString, IsOptional, Max, Min } from "class-validator";
 
 export class ListUsersDto {
-  @IsOptional()
-  @IsBoolean()
-  blocked: boolean;
-
   @IsOptional()
   @IsNumberString()
   @Min(1)

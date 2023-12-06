@@ -31,13 +31,8 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  findAll({
-    blocked = false,
-    offset = 0,
-    limit = 10,
-  }: ListUsersDto): Promise<UserEntity[]> {
+  findAll({ offset = 0, limit = 10 }: ListUsersDto): Promise<UserEntity[]> {
     return this.userRepository.find({
-      relations: { blockedUsers: blocked },
       skip: offset,
       take: limit,
     });
