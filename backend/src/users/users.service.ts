@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./user.entity";
+import { UserEntity } from "./user.entity";
 import { Repository, Not } from "typeorm";
 import { FindOrCreateUserDto, UpdateUserDto } from "./dto";
 import { FilesService } from "src/files/files.service";
@@ -12,12 +12,12 @@ import { FilesService } from "src/files/files.service";
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private readonly filesService: FilesService,
   ) {}
 
-  async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<User> {
+  async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<UserEntity> {
     const result = await this.userRepository.query(
       `
       WITH insert AS (
@@ -39,14 +39,14 @@ export class UsersService {
       ],
     );
 
-    return result[0] as User;
+    return result[0] as UserEntity;
   }
 
-  findAll(offset: number = 0, limit: number = 10): Promise<User[]> {
+  findAll(offset: number = 0, limit: number = 10): Promise<UserEntity[]> {
     return this.userRepository.find({ skip: offset, take: limit });
   }
 
-  async findOneById(id: string): Promise<User> {
+  async findOneById(id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
@@ -56,7 +56,7 @@ export class UsersService {
     return user;
   }
 
-  async findOneByUsername(username: string): Promise<User> {
+  async findOneByUsername(username: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ username });
 
     if (!user) {
@@ -66,7 +66,7 @@ export class UsersService {
     return user;
   }
 
-  async update(user: User, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const isUsernameTaken = await this.userRepository.exist({
       where: {
         id: Not(user.id),
@@ -87,26 +87,26 @@ export class UsersService {
 
     return this.userRepository
       .createQueryBuilder()
-      .update(User)
+      .update(UserEntity)
       .set(data)
       .whereEntity(user)
       .returning("*")
       .execute()
-      .then((result) => result.generatedMaps[0] as User);
+      .then((result) => result.generatedMaps[0] as UserEntity);
   }
 
-  async updateAvatar(user: User, avatar: Express.Multer.File): Promise<User> {
+  async updateAvatar(user: UserEntity, avatar: Express.Multer.File): Promise<UserEntity> {
     const oldAvatarUrl = user.avatarUrl;
     const newAvatar = await this.filesService.uploadFile(avatar);
 
     const updatedUser = await this.userRepository
       .createQueryBuilder()
-      .update(User)
+      .update(UserEntity)
       .set({ avatarUrl: newAvatar.path })
       .whereEntity(user)
       .returning("*")
       .execute()
-      .then((result) => result.generatedMaps[0] as User);
+      .then((result) => result.generatedMaps[0] as UserEntity);
 
     if (!!oldAvatarUrl) {
       const oldAvatar = await this.filesService.findFile(oldAvatarUrl);

@@ -22,7 +22,7 @@ import {
 import { Request } from "express";
 import { IsAuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { UpdateUserDto } from "../users/dto";
-import { User } from "../users/user.entity";
+import { UserEntity } from "../users/user.entity";
 import { UsersService } from "../users/users.service";
 import { diskStorage } from "multer";
 import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
@@ -38,10 +38,10 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
-    type: User,
+    type: UserEntity,
   })
-  getMe(@Req() req: Request): User {
-    return req.user as User;
+  getMe(@Req() req: Request): UserEntity {
+    return req.user as UserEntity;
   }
 
   @Patch()
@@ -49,14 +49,14 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User updated successfully",
-    type: User,
+    type: UserEntity,
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description: "Username already exists",
   })
-  updateMe(@Req() req: Request, @Body() body: UpdateUserDto): Promise<User> {
-    return this.usersService.update(req.user as User, body);
+  updateMe(@Req() req: Request, @Body() body: UpdateUserDto): Promise<UserEntity> {
+    return this.usersService.update(req.user as UserEntity, body);
   }
 
   @Post("avatar")
@@ -77,7 +77,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Avatar updated successfully",
-    type: User,
+    type: UserEntity,
   })
   @UseInterceptors(
     FileInterceptor("file", {
@@ -108,6 +108,6 @@ export class MeController {
     }),
   )
   updateAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
-    return this.usersService.updateAvatar(req.user as User, file);
+    return this.usersService.updateAvatar(req.user as UserEntity, file);
   }
 }

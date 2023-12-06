@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
 import { ListUsersDto } from "./dto";
-import { User } from "./user.entity";
+import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
 import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
 
@@ -31,10 +31,10 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of users.",
-    type: [User],
+    type: [UserEntity],
   })
   @UseGuards(IsAuthenticatedGuard)
-  findAll(@Query() listUsersDto: ListUsersDto): Promise<User[]> {
+  findAll(@Query() listUsersDto: ListUsersDto): Promise<UserEntity[]> {
     return this.usersService.findAll(listUsersDto?.offset, listUsersDto?.limit);
   }
 
@@ -43,14 +43,14 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
-    type: User,
+    type: UserEntity,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
   @UseGuards(IsAuthenticatedGuard)
-  findOne(@Param("username") username: string): Promise<User> {
+  findOne(@Param("username") username: string): Promise<UserEntity> {
     return this.usersService.findOneByUsername(username);
   }
 }

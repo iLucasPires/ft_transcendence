@@ -3,7 +3,7 @@ import { Entity, Index, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity({ name: "users" })
 @Unique("intra_unique_constraint", ["intraId", "email"])
-export class User {
+export class UserEntity {
   @ApiResponseProperty({ type: String, format: "uuid" })
   @PrimaryGeneratedColumn("uuid")
   id: string;
