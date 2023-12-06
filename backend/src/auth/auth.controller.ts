@@ -13,8 +13,10 @@ import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
 import { IsAuthenticatedGuard } from "./guards/authenticated.guard";
 import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
+import { ApiExcludeController } from "@nestjs/swagger";
 
 @Controller("auth")
+@ApiExcludeController()
 export class AuthController {
   constructor(private readonly configService: ConfigService) {}
 
