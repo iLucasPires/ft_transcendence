@@ -34,6 +34,7 @@ export class MeController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
@@ -43,6 +44,7 @@ export class MeController {
   }
 
   @Patch()
+  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User updated successfully",
@@ -57,6 +59,7 @@ export class MeController {
 
   @Post("avatar")
   @HttpCode(HttpStatus.OK)
+  @ApiCookieAuth("connect.sid")
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
