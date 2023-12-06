@@ -1,9 +1,12 @@
 import {
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
+  Post,
   Query,
+  Req,
   UseGuards,
 } from "@nestjs/common";
 import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
@@ -11,6 +14,7 @@ import { ListUsersDto } from "./dto";
 import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
 import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { Request } from "express";
 
 @Controller("users")
 export class UsersController {
@@ -52,5 +56,12 @@ export class UsersController {
   @UseGuards(IsAuthenticatedGuard)
   findOne(@Param("username") username: string): Promise<UserEntity> {
     return this.usersService.findOneByUsername(username);
+  }
+
+  @Post(":username/block")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(IsAuthenticatedGuard)
+  async block(@Req() req: Request, @Param("username") username: string) {
+    await this.usersService.block(req.user as User, username);
   }
 }

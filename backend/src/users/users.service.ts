@@ -114,6 +114,32 @@ export class UsersService {
     return updatedUser;
   }
 
+  async block(blocker: User, username: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ username });
+
+    if (!user) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    const isAlreadyBlocked = await this.userRepository.exist({
+      where: {
+        id: blocker.id,
+        blockedUsers: user,
+      },
+    });
+
+    if (isAlreadyBlocked) {
+      throw new ConflictException(`User already blocked: ${username}`);
+    }
+
+    return this.userRepository
+      .createQueryBuilder()
+      .relation(User, "blockedUsers")
+      .of(blocker)
+      .add(user)
+      .then(() => user);
+  }
+
   async remove(username: string): Promise<void> {
     await this.userRepository.delete({
       username,
