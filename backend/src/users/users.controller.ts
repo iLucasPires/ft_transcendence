@@ -68,6 +68,14 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: "User not found.",
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "User cannot block itself.",
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: "User already blocked.",
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(IsAuthenticatedGuard)
   async block(@Req() req: Request, @Param("username") username: string) {

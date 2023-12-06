@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -134,6 +135,10 @@ export class UsersService {
 
     if (!user) {
       throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    if (user.id === blocker.id) {
+      throw new BadRequestException("You cannot block yourself");
     }
 
     const isAlreadyBlocked = await this.userRepository.exist({
