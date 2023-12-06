@@ -41,11 +41,11 @@ export class UserEntity {
   @JoinTable({
     name: "blocked_users",
     joinColumn: {
-      name: "blocker_id",
+      name: "blocked_id",
       referencedColumnName: "id",
     },
     inverseJoinColumn: {
-      name: "blocked_id",
+      name: "blocker_id",
       referencedColumnName: "id",
     },
   })
