@@ -130,7 +130,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  async block(blocker: UserEntity, username: string): Promise<UserEntity> {
+  async block(blocker: UserEntity, username: string): Promise<void> {
     const user = await this.userRepository.findOneBy({ username });
 
     if (!user) {
@@ -157,7 +157,7 @@ export class UsersService {
       throw new ConflictException(`User already blocked: ${username}`);
     }
 
-    return this.userRepository
+    await this.userRepository
       .createQueryBuilder()
       .relation(UserEntity, "blockedUsers")
       .of(blocker)
