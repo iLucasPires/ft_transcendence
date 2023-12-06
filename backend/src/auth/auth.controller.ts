@@ -9,11 +9,10 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
+import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
 import { IsAuthenticatedGuard } from "./guards/authenticated.guard";
-import { ConfigService } from "@nestjs/config";
-import { User } from "src/users/user.entity";
+import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -26,9 +25,7 @@ export class AuthController {
   @Get("/42/callback")
   @UseGuards(FortyTwoAuthGuard)
   @Redirect()
-  fortyTwoCallback(@Req() req: Request): HttpRedirectResponse {
-    const user = req.user as User;
-
+  fortyTwoCallback(): HttpRedirectResponse {
     return {
       statusCode: HttpStatus.FOUND,
       url: this.configService.get<string>("FRONTEND_URL"),
