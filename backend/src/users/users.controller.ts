@@ -59,6 +59,15 @@ export class UsersController {
   }
 
   @Post(":username/block")
+  @ApiCookieAuth("connect.sid")
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User blocked successfully.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found.",
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(IsAuthenticatedGuard)
   async block(@Req() req: Request, @Param("username") username: string) {
