@@ -43,7 +43,7 @@ export class UsersService {
     const result = await this.userRepository.query(
       `
       SELECT u.* FROM "users" u
-      LEFT JOIN "blocked_users" block ON block."blocked_id" = u.id
+      JOIN "blocked_users" block ON block."blocked_id" = u.id
       WHERE block."blocker_id" = $1;
     `,
       [user.id],
