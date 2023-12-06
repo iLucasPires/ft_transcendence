@@ -39,16 +39,12 @@ export class UsersService {
     });
   }
 
-  async findBlockedUsers(user: UserEntity): Promise<UserEntity[]> {
-    const result = await this.userRepository.query(
-      `
-      SELECT u.* FROM "users" u
-      JOIN "blocked_users" block ON block."blocked_id" = u.id
-      WHERE block."blocker_id" = $1;
-    `,
-      [user.id],
-    );
-    return result as UserEntity[];
+  findBlockedUsers(user: UserEntity): Promise<UserEntity[]> {
+    return this.userRepository
+      .createQueryBuilder("user")
+      .innerJoin("user.blockedBy", "blockedBy")
+      .where("blockedBy.id = :id", { id: user.id })
+      .getMany();
   }
 
   async findOneById(id: string): Promise<UserEntity> {
