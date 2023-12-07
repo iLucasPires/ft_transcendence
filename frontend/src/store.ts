@@ -102,6 +102,14 @@ export default defineStore("store", {
     closeModal() {
       this.modal?.close();
     },
+
+    logout() {
+      api.logout().then(() => {
+        localStorage.removeItem("user");
+        this.useData = JSON.parse("null");
+        window.location.href = "/";
+      });
+    },
   },
 
   getters: {

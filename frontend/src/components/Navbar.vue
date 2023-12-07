@@ -88,7 +88,7 @@ const menuList = [
       >
         {{ store.isThemeDark ? "Light Mode" : "Dark Mode" }}
       </ItemNavBar>
-      <ItemNavBar :menuOpen="menuOpen" icon="md-logout"> Logout </ItemNavBar>
+      <ItemNavBar @click="store.logout()" :menuOpen="menuOpen" icon="md-logout"> Logout </ItemNavBar>
     </menu>
   </aside>
 

@@ -94,4 +94,11 @@ export default {
 
     return null;
   },
+
+  async logout() {
+    await fetch(`${URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  },
 };
