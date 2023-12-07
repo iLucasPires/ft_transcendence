@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Picture from "../Picture.vue";
+import ProfileImage from "../ProfileImage.vue";
 import Typography from "../Typography.vue";
 
 const props = defineProps({
   name: { type: String, required: true },
-  picture: { type: String, required: false },
+  url: { type: String, required: false },
   wins: { type: Number, required: true },
   losses: { type: Number, required: true },
 });
@@ -26,7 +26,7 @@ const scores = [
 </script>
 
 <template>
-  <Picture :url="picture" :alt="name" />
+  <ProfileImage :url="url" :alt="name" />
   <div class="flex flex-col gap-2">
     <Typography size="2xl" weight="bold" :level="2">{{ name }}</Typography>
     <div class="flex gap-2">

@@ -29,7 +29,6 @@ export default defineStore("store", {
       const useData = await api.getMe();
       if (useData !== null) {
         this.useData = useData;
-        this.useData.avatarUrl = api.getAvatarMe(useData.avatarUrl);
         localStorage.setItem("user", JSON.stringify(this.useData));
       }
     },
@@ -57,7 +56,6 @@ export default defineStore("store", {
         }
       }
 
-      this.useData.avatarUrl = api.getAvatarMe(this.useData.avatarUrl);
       localStorage.setItem("user", JSON.stringify(this.useData));
     },
     async changeUsername(newUsername: string) {
@@ -72,7 +70,7 @@ export default defineStore("store", {
       const response = await api.updateAvatarMe(file);
       if (response !== null) {
         const useData = response;
-        this.useData.avatarUrl = api.getAvatarMe(useData.avatarUrl);
+        this.useData.avatarUrl = useData.avatarUrl;
         localStorage.setItem("user", JSON.stringify(this.useData));
       }
     },
@@ -116,7 +114,6 @@ export default defineStore("store", {
     hasUserData: (state) => state.useData !== null,
     isThemeDark: (state) => state.themeData === THEMES[0],
     isCompleteRegistration: (state) => {
-      console.log(state.useData);
       return (
         state.useData !== null && state.useData.registrationComplete === true
       );

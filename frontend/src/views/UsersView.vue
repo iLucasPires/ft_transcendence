@@ -33,11 +33,11 @@ function handleClickModalDetails(user: iUser) {
         <li
           v-for="user in users"
           :key="user.intraId"
-          class="flex flex-row w-full justify-between items-center gap-5 p-5 border-2 border-base-300 rounded"
+          class="flex flex-col md:flex-row w-full justify-between items-center gap-5 p-5 border-2 border-base-300 rounded"
         >
           <div class="flex flex-row items-center gap-5">
             <UserDetail
-              :picture="'http://localhost:3000' + user.avatarUrl ?? ''"
+              :url="user.avatarUrl ?? ''"
               :name="user.username"
               :wins="10"
               :losses="5000"

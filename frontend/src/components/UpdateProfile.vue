@@ -3,13 +3,13 @@ import { ref, onMounted } from "vue";
 import type { Ref } from "vue";
 
 import useStore from "@/store";
-import Picture from "./Picture.vue";
+import ProfileImage from "./ProfileImage.vue";
 import Typography from "./Typography.vue";
 
 const store = useStore();
 const message: Ref<string> = ref(store.useData?.username || "");
+const prevAvatar: Ref<string> = ref("");
 const selectedFile: Ref<File | null> = ref(null);
-const prevAvatar: Ref<string | null> = ref(null);
 
 async function handleSubmit() {
   store.changeMe(message.value, selectedFile.value);
@@ -24,7 +24,6 @@ function handleChangeAvatar(e: Event) {
 }
 
 onMounted(() => {
-  prevAvatar.value = store.useData?.avatarUrl;
   store.setModal();
 });
 </script>
@@ -43,7 +42,11 @@ onMounted(() => {
         </Typography>
 
         <div class="container-center-row gap-1 m-5">
-          <Picture :url="prevAvatar!" :alt="store.useData?.username" />
+          <ProfileImage
+            :url="prevAvatar || store.useData?.avatarUrl"
+            :alt="store.useData?.username"
+            :isInternal="prevAvatar !== null ? true : false"
+          />
           <Typography size="2xl" weight="bold" :level="2">
             {{ store.useData?.username }}
           </Typography>

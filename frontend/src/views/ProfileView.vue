@@ -20,7 +20,7 @@ function handleOpenModal() {
     </button>
     <div class="flex gap-5 p-5 w-full border-2 border-base-300 rounded">
       <UserDetail
-        :picture="store.useData?.avatarUrl ?? ''"
+        :url="store.useData?.avatarUrl ?? ''"
         :name="store.useData?.username"
         :wins="10"
         :losses="5"

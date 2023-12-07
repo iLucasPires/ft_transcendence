@@ -10,7 +10,7 @@ export type iUser = {
   intraId: number;
   displayName: string;
   registrationComplete: boolean;
-  avatarUrl: string | null;
+  avatarUrl: string;
 };
 
 export type iFriend = {
