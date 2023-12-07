@@ -17,29 +17,18 @@ export class UsersService {
     private readonly filesService: FilesService,
   ) {}
 
-  async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<UserEntity> {
-    const result = await this.userRepository.query(
-      `
-      WITH insert AS (
-        INSERT INTO "user" ("username", "email", "intraId")
-        VALUES ($1, $2, $3)
-        ON CONFLICT ("intraId", "email") DO NOTHING
-        RETURNING *
-      )
-      SELECT * FROM insert
-      UNION ALL
-      SELECT * FROM "user"
-      WHERE "intraId" = $3
-      LIMIT 1;
-    `,
-      [
-        findOrCreateUserDto.username,
-        findOrCreateUserDto.email,
-        findOrCreateUserDto.intraId,
-      ],
-    );
+  async findOrCreate(
+    findOrCreateUserDto: FindOrCreateUserDto,
+  ): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({
+      intraId: findOrCreateUserDto.intraId,
+    });
 
-    return result[0] as UserEntity;
+    if (!!user) {
+      return user;
+    }
+
+    return await this.userRepository.save(findOrCreateUserDto);
   }
 
   findAll(offset: number = 0, limit: number = 10): Promise<UserEntity[]> {
@@ -66,7 +55,10 @@ export class UsersService {
     return user;
   }
 
-  async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+  async update(
+    user: UserEntity,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
     const isUsernameTaken = await this.userRepository.exist({
       where: {
         id: Not(user.id),
@@ -95,7 +87,10 @@ export class UsersService {
       .then((result) => result.generatedMaps[0] as UserEntity);
   }
 
-  async updateAvatar(user: UserEntity, avatar: Express.Multer.File): Promise<UserEntity> {
+  async updateAvatar(
+    user: UserEntity,
+    avatar: Express.Multer.File,
+  ): Promise<UserEntity> {
     const oldAvatarUrl = user.avatarUrl;
     const newAvatar = await this.filesService.uploadFile(avatar);
 
