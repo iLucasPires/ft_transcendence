@@ -17,11 +17,12 @@ import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { Request } from "express";
 
 @Controller("users")
+@ApiCookieAuth("connect.sid")
+@UseGuards(IsAuthenticatedGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiCookieAuth("connect.sid")
   @ApiQuery({
     name: "limit",
     required: false,
@@ -37,13 +38,11 @@ export class UsersController {
     description: "A list of users.",
     type: [UserEntity],
   })
-  @UseGuards(IsAuthenticatedGuard)
   findAll(@Query() listUsersDto: ListUsersDto): Promise<UserEntity[]> {
     return this.usersService.findAll(listUsersDto);
   }
 
   @Get(":username")
-  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
@@ -53,13 +52,10 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
-  @UseGuards(IsAuthenticatedGuard)
   findOne(@Param("username") username: string): Promise<UserEntity> {
     return this.usersService.findOneByUsername(username);
   }
-
   @Post(":username/block")
-  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: "User blocked successfully.",
@@ -77,8 +73,29 @@ export class UsersController {
     description: "User already blocked.",
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(IsAuthenticatedGuard)
   async block(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.block(req.user as UserEntity, username);
+  }
+
+  @Post(":username/unblock")
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User unblocked successfully.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found.",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "User cannot unblock itself.",
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: "User already unblocked.",
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unblock(@Req() req: Request, @Param("username") username: string) {
+    await this.usersService.unblock(req.user as UserEntity, username);
   }
 }
