@@ -6,26 +6,28 @@ import {
   HttpStatus,
   Patch,
   Post,
+  Query,
   Req,
   UnprocessableEntityException,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from "@nestjs/common";
+import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBody,
   ApiConsumes,
   ApiCookieAuth,
+  ApiQuery,
   ApiResponse,
 } from "@nestjs/swagger";
 import { Request } from "express";
+import { diskStorage } from "multer";
 import { IsAuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { UpdateUserDto } from "../users/dto";
+import { ListUsersDto, UpdateUserDto } from "../users/dto";
 import { UserEntity } from "../users/user.entity";
 import { UsersService } from "../users/users.service";
-import { diskStorage } from "multer";
-import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
 
 @Controller("me")
 @ApiCookieAuth("connect.sid")
@@ -34,7 +36,6 @@ export class MeController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
@@ -45,7 +46,6 @@ export class MeController {
   }
 
   @Patch()
-  @ApiCookieAuth("connect.sid")
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User updated successfully",
@@ -64,7 +64,6 @@ export class MeController {
 
   @Post("avatar")
   @HttpCode(HttpStatus.OK)
-  @ApiCookieAuth("connect.sid")
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -115,13 +114,28 @@ export class MeController {
   }
 
   @Get("blocked")
-  @ApiCookieAuth("connect.sid")
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    description: "Limit of the list of users.",
+  })
+  @ApiQuery({
+    name: "offset",
+    required: false,
+    description: "Offset of the list of users.",
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of blocked users.",
     type: [UserEntity],
   })
-  findBlockedUsers(@Req() req: Request): Promise<UserEntity[]> {
-    return this.usersService.findBlockedUsers(req.user as UserEntity);
+  findBlockedUsers(
+    @Req() req: Request,
+    @Query() listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    return this.usersService.findBlockedUsers(
+      req.user as UserEntity,
+      listUsersDto,
+    );
   }
 }

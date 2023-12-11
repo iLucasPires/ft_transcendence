@@ -55,11 +55,18 @@ export class UsersService {
       .getMany();
   }
 
-  findBlockedUsers(user: UserEntity): Promise<UserEntity[]> {
+  findBlockedUsers(
+    user: UserEntity,
+    listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    const { offset = 0, limit = 10 } = listUsersDto;
+
     return this.userRepository
       .createQueryBuilder("user")
       .innerJoin("user.blockedBy", "blockedBy")
       .where("blockedBy.id = :id", { id: user.id })
+      .skip(offset)
+      .take(limit)
       .getMany();
   }
 
