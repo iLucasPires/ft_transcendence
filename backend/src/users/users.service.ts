@@ -32,11 +32,27 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  findAll({ offset = 0, limit = 10 }: ListUsersDto): Promise<UserEntity[]> {
-    return this.userRepository.find({
-      skip: offset,
-      take: limit,
-    });
+  findMany(
+    user: UserEntity,
+    listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    const { offset = 0, limit = 10 } = listUsersDto;
+
+    return this.userRepository
+      .createQueryBuilder("user")
+      .where(
+        `NOT EXISTS (
+          SELECT 1 FROM blocked_users block
+          WHERE
+            (user.id = block.blocked_id AND block.blocker_id = :id)
+          OR
+            (user.id = block.blocker_id AND block.blocked_id = :id)
+        )`,
+        { id: user.id },
+      )
+      .skip(offset)
+      .take(limit)
+      .getMany();
   }
 
   findBlockedUsers(user: UserEntity): Promise<UserEntity[]> {

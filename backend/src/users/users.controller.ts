@@ -38,8 +38,11 @@ export class UsersController {
     description: "A list of users.",
     type: [UserEntity],
   })
-  findAll(@Query() listUsersDto: ListUsersDto): Promise<UserEntity[]> {
-    return this.usersService.findAll(listUsersDto);
+  findMany(
+    @Req() req: Request,
+    @Query() listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    return this.usersService.findMany(req.user as UserEntity, listUsersDto);
   }
 
   @Get(":username")
