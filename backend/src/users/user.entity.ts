@@ -1,5 +1,13 @@
 import { ApiResponseProperty } from "@nestjs/swagger";
-import { Entity, Index, Column, PrimaryGeneratedColumn, Unique } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from "typeorm";
 
 @Entity({ name: "users" })
 @Unique("intra_unique_constraint", ["intraId", "email"])
@@ -28,4 +36,21 @@ export class UserEntity {
   @ApiResponseProperty({ type: Boolean, example: false })
   @Column({ name: "registration_complete", default: false })
   registrationComplete: boolean;
+
+  @ManyToMany(() => UserEntity, (user) => user.blockedUsers, { lazy: true })
+  @JoinTable({
+    name: "blocked_users",
+    joinColumn: {
+      name: "blocked_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "blocker_id",
+      referencedColumnName: "id",
+    },
+  })
+  blockedBy?: Promise<UserEntity[]>;
+
+  @ManyToMany(() => UserEntity, (user) => user.blockedBy)
+  blockedUsers?: Promise<UserEntity[]>;
 }
