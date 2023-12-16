@@ -1,19 +1,16 @@
-import App from "./App.vue";
-import { router } from "./routes/vueRouter";
+import "@/utils/design/icons";
 
+import { router } from "@/routes/vueRouter";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { OhVueIcon } from "oh-vue-icons";
 
-import "@/design/icons";
-import Typography from "./components/Typography.vue";
-
-const pinia = createPinia();
+import App from "@/App.vue";
 
 createApp(App)
   .provide("backendUrl", import.meta.env.VITE_BACKEND_URL)
-  .component("Typography", Typography)
+  .provide("frontendUrl", import.meta.env.FRONTEND_URL)
   .component("Icon", OhVueIcon)
-  .use(pinia)
+  .use(createPinia())
   .use(router)
   .mount("#app");
