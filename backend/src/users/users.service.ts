@@ -252,12 +252,20 @@ export class UsersService {
     }
 
     const isAlreadyFriend = await this.userRepository.exist({
-      where: {
-        id: user.id,
-        friends: {
-          id: friendUser.id,
+      where: [
+        {
+          id: user.id,
+          friends: {
+            id: friendUser.id,
+          },
         },
-      },
+        {
+          id: friendUser.id,
+          friends: {
+            id: user.id,
+          },
+        },
+      ],
       relations: {
         friends: true,
       },
