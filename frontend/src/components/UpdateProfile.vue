@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import type { Ref } from "vue";
 
-import useStore from "@/store";
+import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 import ProfileImage from "./ProfileImage.vue";
 import Typography from "./Typography.vue";
 
-const store = useStore();
-const message: Ref<string> = ref(store.useData?.username || "");
+const userStore = useUserStore();
+const appStore = useAppStore();
+
 const prevAvatar: Ref<string> = ref("");
 const selectedFile: Ref<File | null> = ref(null);
+const message: Ref<string> = ref(userStore.meData?.username);
 
 async function handleSubmit() {
-  store.changeMe(message.value, selectedFile.value);
-  store.closeModal();
+  userStore.changeMe(message.value, selectedFile.value);
+  appStore.closeModalUpdateProfile();
 }
 
 function handleChangeAvatar(e: Event) {
-  const file = (e.target as HTMLInputElement).files![0];
+  const target = e.target as HTMLInputElement;
+  const file = target.files![0];
 
   selectedFile.value = file;
   prevAvatar.value = URL.createObjectURL(file);
 }
-
-onMounted(() => {
-  store.setModal();
-});
 </script>
 
 <template>
@@ -43,12 +43,12 @@ onMounted(() => {
 
         <div class="container-center-row gap-1 m-5">
           <ProfileImage
-            :url="prevAvatar || store.useData?.avatarUrl"
-            :alt="store.useData?.username"
+            :url="prevAvatar || userStore.meData?.avatarUrl"
+            :alt="userStore.meData?.username"
             :isInternal="prevAvatar !== null ? true : false"
           />
           <Typography size="2xl" weight="bold" :level="2">
-            {{ store.useData?.username }}
+            {{ userStore.meData?.username }}
           </Typography>
         </div>
         <input

@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 
-import { router } from "@/router";
-import UseData from "@/store";
+import { router } from "@/routes/vueRouter";
+import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 import ItemNavBar from "@/components/ItemNavBar.vue";
 
-const store = UseData();
+const userStore = useUserStore();
+const appStore = useAppStore();
 const menuOpen: Ref<boolean> = ref(true);
 const modal: Ref<HTMLDialogElement | null> = ref(null);
 
 function handleClickNav(url: string) {
-  if (store.status.isGame) {
+  if (userStore.status.isGame) {
     modal.value?.showModal();
   } else {
     router.push(url);
@@ -18,8 +20,8 @@ function handleClickNav(url: string) {
 }
 
 function handleClickLeaveGame() {
-  store.status.isGame = false;
-  store.gameData?.remove();
+  userStore.status.isGame = false;
+  appStore.gameP5?.remove();
   modal.value?.close();
 }
 
@@ -75,20 +77,26 @@ const menuList = [
     <menu class="flex flex-col gap-2">
       <ItemNavBar
         @click="menuOpen = !menuOpen"
-        icon="md-keyboarddoublearrowleft"
         :invertIcon="!menuOpen"
+        icon="md-keyboarddoublearrowleft"
       >
         Resize Menu
       </ItemNavBar>
 
       <ItemNavBar
-        @click="store.changeTheme()"
+        @click="appStore.changeGlobalTheme()"
         :menuOpen="menuOpen"
-        :icon="store.isThemeDark ? 'md-lightmode' : 'md-nightlight'"
+        :icon="appStore.isDarkTheme ? 'md-sunny' : 'md-moon'"
       >
-        {{ store.isThemeDark ? "Light Mode" : "Dark Mode" }}
+        {{ appStore.isDarkTheme ? "Light Mode" : "Dark Mode" }}
       </ItemNavBar>
-      <ItemNavBar @click="store.logout()" :menuOpen="menuOpen" icon="md-logout"> Logout </ItemNavBar>
+      <ItemNavBar
+        @click="userStore.unsetMe()"
+        :menuOpen="menuOpen"
+        icon="md-logout"
+      >
+        Logout
+      </ItemNavBar>
     </menu>
   </aside>
 

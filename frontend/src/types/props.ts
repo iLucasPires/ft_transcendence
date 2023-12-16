@@ -12,19 +12,3 @@ export type iUser = {
   registrationComplete: boolean;
   avatarUrl: string;
 };
-
-export type iFriend = {
-  id: number;
-  name: {
-    first: string;
-    last: string;
-  };
-  picture: {
-    large: string;
-  };
-};
-
-export interface iAchievement {
-  name: string;
-  url: string;
-}
