@@ -217,6 +217,29 @@ export class UsersService {
       .remove(user);
   }
 
+  findFriends(
+    user: UserEntity,
+    listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    const { offset, limit } = listUsersDto;
+
+    return this.userRepository
+      .createQueryBuilder("user")
+      .where(
+        `user.id != :id AND EXISTS (
+          SELECT 1 FROM friendships friendship
+          WHERE
+            (friendship.friend_1_id = :id AND friendship.friend_2_id = user.id)
+          OR
+            (friendship.friend_2_id = :id AND friendship.friend_1_id = user.id)
+        )`,
+        { id: user.id },
+      )
+      .skip(offset)
+      .take(limit)
+      .getMany();
+  }
+
   async addFriend(user: UserEntity, username: string) {
     const friendUser = await this.userRepository.findOneBy({ username });
 

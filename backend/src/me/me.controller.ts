@@ -11,7 +11,7 @@ import {
   UnprocessableEntityException,
   UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from "@nestjs/common";
 import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -137,5 +137,28 @@ export class MeController {
       req.user as UserEntity,
       listUsersDto,
     );
+  }
+
+  @Get("friends")
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    description: "Limit of the list of users.",
+  })
+  @ApiQuery({
+    name: "offset",
+    required: false,
+    description: "Offset of the list of users.",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "A list of users friends.",
+    type: [UserEntity],
+  })
+  findFriends(
+    @Req() req: Request,
+    @Query() listUsersDto: ListUsersDto,
+  ): Promise<UserEntity[]> {
+    return this.usersService.findFriends(req.user as UserEntity, listUsersDto);
   }
 }
