@@ -6,17 +6,19 @@ import { Paddle } from "@/util/paddle";
 import { Ball } from "@/util/ball";
 import { Player } from "@/util/player";
 import { Player2 } from "@/util/player2";
-import useStore from "@/store";
+import { useAppStore } from "@/stores/appStore";
+import { useUserStore } from "@/stores/userStore";
 
-const store = useStore();
+const appStore = useAppStore();
+const userStore = useUserStore();
 const gameRef: Ref<HTMLElement | null> = ref(null);
 
 onUnmounted(function () {
-  store.gameData?.remove();
+  appStore.gameP5?.remove();
 });
 
 function startGame() {
-  store.gameData = new PFive(function (p5: PFive) {
+  appStore.gameP5 = new PFive(function (p5: PFive) {
     const sizeScreen: PFive.Vector = p5.createVector(
       gameRef.value?.clientWidth || 0,
       gameRef.value?.clientHeight || 0
@@ -80,7 +82,7 @@ function startGame() {
 
 function handleClickStartGame() {
   startGame();
-  store.changeStatusGame();
+  userStore.changeStatusGame();
 }
 </script>
 
@@ -94,7 +96,7 @@ function handleClickStartGame() {
         class="flex justify-center items-center bg-base-300 w-full h-[94%]"
       >
         <button
-          v-if="!store.status.isGame"
+          v-if="!userStore.status.isGame"
           class="btn btn-primary"
           @click="handleClickStartGame()"
         >

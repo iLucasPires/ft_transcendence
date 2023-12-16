@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { Ref } from "vue";
+import { ref, onMounted, type Ref } from "vue";
 import type { iUser } from "@/types/props";
 
 import Loading from "@/components/Loading.vue";
 import UserDetail from "@/components/profile/UserDetail.vue";
-import api from "@/api";
+import api from "@/routes/apiRouter";
 
 const loading: Ref<boolean> = ref(true);
-const users: Ref<Array<iUser>> = ref([]);
+const users: Ref<iUser[]> = ref([]);
 const userSelected: Ref<iUser | null> = ref(null);
 const modal: Ref<HTMLDialogElement | null> = ref(null);
 
 onMounted(async function () {
   users.value = await api.getAllUsers();
-
   loading.value = false;
 });
 
