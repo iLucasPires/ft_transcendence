@@ -26,7 +26,7 @@ const isDataEmpty: boolean = dataHistory?.length !== 0;
       </table>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full">
-      <p class="text-slate-200">No history yet</p>
+      <p class="text-current ">No history yet</p>
     </div>
   </div>
 </template>

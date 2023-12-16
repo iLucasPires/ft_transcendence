@@ -31,7 +31,7 @@ watch(
 <template>
   <div v-if="isVisible" class="absolute z-50 bottom-5 right-4">
     <p role="alert" :class="`alert ${classType}`">
-      <Icon name="md-infooutline" />
+      <Icon name="md-info-round" />
       <span>{{ appStore.logGlobal }}</span>
     </p>
   </div>

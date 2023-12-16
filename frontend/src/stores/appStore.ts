@@ -8,7 +8,7 @@ export const useAppStore = defineStore("store", {
     return {
       navBarExpand: true,
       loddingGlobal: false,
-      tabSelected: 0,
+      tabSelected: "all",
       logGlobal: "",
       gameP5: null as any,
       themeGlobal: themes[0],
@@ -44,7 +44,7 @@ export const useAppStore = defineStore("store", {
       this.logGlobal = erro;
     },
 
-    changeTabSelected(tab: number) {
+    changeTabSelected(tab: string) {
       this.tabSelected = tab;
     },
 
