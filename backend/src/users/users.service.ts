@@ -217,6 +217,40 @@ export class UsersService {
       .remove(user);
   }
 
+  async addFriend(user: UserEntity, username: string) {
+    const friendUser = await this.userRepository.findOneBy({ username });
+
+    if (!friendUser) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    if (user.id === friendUser.id) {
+      throw new BadRequestException("You cannot add yourself as a friend");
+    }
+
+    const isAlreadyFriend = await this.userRepository.exist({
+      where: {
+        id: user.id,
+        friends: {
+          id: friendUser.id,
+        },
+      },
+      relations: {
+        friends: true,
+      },
+    });
+
+    if (isAlreadyFriend) {
+      throw new ConflictException(`You are already friends with: ${username}`);
+    }
+
+    await this.userRepository
+      .createQueryBuilder()
+      .relation(UserEntity, "friends")
+      .of(user)
+      .add(friendUser);
+  }
+
   async remove(username: string): Promise<void> {
     await this.userRepository.delete({
       username,

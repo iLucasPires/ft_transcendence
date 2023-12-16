@@ -53,4 +53,18 @@ export class UserEntity {
 
   @ManyToMany(() => UserEntity, (user) => user.blockedBy)
   blockedUsers?: Promise<UserEntity[]>;
+
+  @ManyToMany(() => UserEntity, { lazy: true })
+  @JoinTable({
+    name: "friendships",
+    joinColumn: {
+      name: "friend_1_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "friend_2_id",
+      referencedColumnName: "id",
+    },
+  })
+  friends?: Promise<UserEntity[]>;
 }

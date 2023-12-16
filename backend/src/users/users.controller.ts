@@ -101,4 +101,26 @@ export class UsersController {
   async unblock(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.unblock(req.user as UserEntity, username);
   }
+
+  @Post(":username/friend")
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User added successfully as friend.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found.",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "User cannot add itself.",
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: "Friendship already exists.",
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async addFriend(@Req() req: Request, @Param("username") username: string) {
+    await this.usersService.addFriend(req.user as UserEntity, username);
+  }
 }
