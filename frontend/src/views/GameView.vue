@@ -3,7 +3,7 @@ import { onUnmounted, ref } from "vue";
 import type { Ref } from "vue";
 import { useAppStore } from "@/stores/appStore";
 import { useUserStore } from "@/stores/userStore";
-import { startGame } from "@/util/game";
+import { startGame } from "@/utils/game";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
