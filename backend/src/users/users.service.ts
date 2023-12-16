@@ -176,6 +176,21 @@ export class UsersService {
       throw new ConflictException(`User already blocked: ${username}`);
     }
 
+    // If user is friends with blocker, remove friendship
+    await this.userRepository
+      .createQueryBuilder()
+      .delete()
+      .from("friendships")
+      .where("friend_1_id = :id AND friend_2_id = :friendId", {
+        id: blocker.id,
+        friendId: user.id,
+      })
+      .orWhere("friend_1_id = :friendId AND friend_2_id = :id", {
+        id: user.id,
+        friendId: blocker.id,
+      })
+      .execute();
+
     await this.userRepository
       .createQueryBuilder()
       .relation(UserEntity, "blockedUsers")
