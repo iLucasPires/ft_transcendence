@@ -4,8 +4,7 @@ import type { Ref } from "vue";
 
 import { useUserStore } from "@/stores/userStore";
 import { useAppStore } from "@/stores/appStore";
-import ProfileImage from "./ProfileImage.vue";
-import Typography from "./Typography.vue";
+import ProfileImage from "../atoms/ProfileImage.vue";
 
 const userStore = useUserStore();
 const appStore = useAppStore();
@@ -31,26 +30,21 @@ function handleChangeAvatar(e: Event) {
 <template>
   <dialog class="modal" id="modalUpdate">
     <div class="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-      <form class="card-body" @submit.prevent="handleSubmit">
-        <Typography
-          size="2xl"
-          :level="2"
-          weight="bold"
-          extra-class="text-center"
-        >
-          Update Profile
-        </Typography>
+      <form
+        class="card-body mflex-col items-center"
+        @submit.prevent="handleSubmit"
+      >
+        <h2 class="text-2xl font-bold text-center mb-5">Update Profile</h2>
 
-        <div class="container-center-row gap-1 m-5">
-          <ProfileImage
-            :url="prevAvatar || userStore.meData?.avatarUrl"
-            :alt="userStore.meData?.username"
-            :isInternal="prevAvatar !== null ? true : false"
-          />
-          <Typography size="2xl" weight="bold" :level="2">
-            {{ userStore.meData?.username }}
-          </Typography>
-        </div>
+        <ProfileImage
+          :url="prevAvatar || userStore.meData?.avatarUrl"
+          :alt="userStore.meData?.username"
+          :isInternal="prevAvatar !== null ? true : false"
+        />
+        <h2 class="text-2xl text-center font-medium mb-5">
+          {{ userStore.meData?.username }}
+        </h2>
+
         <input
           type="text"
           v-model="message"
@@ -65,7 +59,7 @@ function handleChangeAvatar(e: Event) {
           class="file-input file-input-bordered file-input-primary w-full max-w-xs"
           @change="handleChangeAvatar"
         />
-        <button class="btn btn-primary">Finish</button>
+        <button class="btn btn-primary w-full">Finish</button>
       </form>
     </div>
   </dialog>

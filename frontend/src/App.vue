@@ -1,25 +1,30 @@
+<script setup lang="ts">
+import { onMounted } from "vue";
+import Alert from "./components/atoms/Alert.vue";
+import Loading from "./components/atoms/Loading.vue";
+import ModalUpdateProfile from "@/components/organisms/ModalUpdateProfile.vue";
+import ModalLeaveGame from "@/components/organisms/ModalLeaveGame.vue";
+
+import { useAppStore } from "@/stores/appStore";
+
+const appStore = useAppStore();
+
+onMounted(() => {
+  appStore.setModalUpdateProfile();
+  appStore.setThemeGlobal();
+  appStore.setModalLeaveGame();
+});
+</script>
+
 <template>
+  <Alert />
+  <Loading />
+  <ModalUpdateProfile />
+  <ModalLeaveGame />
   <RouterView />
 </template>
 
 <style>
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-
-*::-webkit-scrollbar {
-  width: 15px;
-  height: 10px;
-}
-
-*::-webkit-scrollbar-track {
-  background: var(--primary);
-  border-radius: 5px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: var(--secondary);
-  border-radius: 14px;
-  border: 3px solid var(--primary);
-}
+@import "@/utils/styles/global.css";
+@import "@/utils/styles/tailwind.css";
 </style>
