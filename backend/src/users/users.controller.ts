@@ -123,4 +123,26 @@ export class UsersController {
   async addFriend(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.addFriend(req.user as UserEntity, username);
   }
+
+  @Post(":username/unfriend")
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User removed successfully as friend.",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found.",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "User cannot unfriend itself.",
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: "The friendship doesn't exist.",
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeFriend(@Req() req: Request, @Param("username") username: string) {
+    await this.usersService.removeFriend(req.user as UserEntity, username);
+  }
 }
