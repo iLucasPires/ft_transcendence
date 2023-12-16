@@ -5,24 +5,35 @@ const domHtml = document.querySelector("html");
 
 export const useAppStore = defineStore("store", {
   state: () => {
-    const prefersDarkScheme = window?.matchMedia(
-      "(prefers-color-scheme: dark)"
-    );
-    const prefersTheme = prefersDarkScheme?.matches ? themes[1] : themes[0];
-
     return {
       navBarExpand: true,
+      loddingGlobal: false,
       tabSelected: 0,
       logGlobal: "",
       gameP5: null as any,
-      themeGlobal: localStorage.getItem("theme") || prefersTheme,
+      themeGlobal: themes[0],
+
       modalUpdateProfile: null as HTMLDialogElement | null,
+      modalLeaveGame: null as HTMLDialogElement | null,
     };
   },
 
   actions: {
     setModalUpdateProfile() {
       this.modalUpdateProfile = document.querySelector("#modalUpdate");
+    },
+
+    setModalLeaveGame() {
+      this.modalLeaveGame = document.querySelector("#modalLeaveGame");
+    },
+
+    setThemeGlobal() {
+      const localTheme = localStorage.getItem("theme");
+      const prefersDarkScheme = window?.matchMedia("(prefers-color-scheme: dark)");
+      const prefersTheme = prefersDarkScheme?.matches ? themes[1] : themes[0];
+
+      this.themeGlobal = localTheme ? localTheme : prefersTheme;
+      domHtml?.setAttribute("data-theme", this.themeGlobal);
     },
 
     toggleMenu() {
@@ -41,6 +52,7 @@ export const useAppStore = defineStore("store", {
       this.themeGlobal = this.themeGlobal === themes[0] ? themes[1] : themes[0];
       domHtml?.setAttribute("data-theme", this.themeGlobal);
       localStorage.setItem("theme", this.themeGlobal);
+      this.logGlobal = `Theme changed to ${this.themeGlobal}`;
     },
 
     openModalUpdateProfile() {
@@ -50,8 +62,16 @@ export const useAppStore = defineStore("store", {
     closeModalUpdateProfile() {
       this.modalUpdateProfile?.close();
     },
+
+    openModalLeaveGame() {
+      this.modalLeaveGame?.showModal();
+    },
+
+    closeModalLeaveGame() {
+      this.modalLeaveGame?.close();
+    },
   },
   getters: {
-    isDarkTheme: (state) => state.themeGlobal === themes[1],
+    isDarkTheme: (state) => state?.themeGlobal === themes[1],
   },
 });

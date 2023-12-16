@@ -5,17 +5,17 @@ const childrenLobby = [
   {
     path: "game",
     name: "game",
-    component: () => import("../views/GameView.vue"),
+    component: () => import("@/components/pages/GameView.vue"),
   },
   {
     path: "profile",
     name: "profile",
-    component: () => import("../views/ProfileView.vue"),
+    component: () => import("@/components/pages/ProfileView.vue"),
   },
   {
     path: "users",
     name: "users",
-    component: () => import("../views/UsersView.vue"),
+    component: () => import("@/components/pages/UsersView.vue"),
   },
 ];
 
@@ -23,17 +23,17 @@ const routes = [
   {
     path: "/:catchAll(.*)",
     name: "not-found",
-    component: () => import("../views/NotFoundView.vue"),
+    component: () => import("@/components/pages/NotFoundView.vue"),
   },
   {
     path: "/login",
     name: "login",
-    component: () => import("../views/LoginView.vue"),
+    component: () => import("@/components/pages/LoginView.vue"),
   },
   {
     path: "/",
     name: "lobby",
-    component: () => import("../views/LobbyView.vue"),
+    component: () => import("@/components/pages/LobbyView.vue"),
     redirect: { name: "profile" },
     children: childrenLobby,
   },

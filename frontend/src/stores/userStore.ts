@@ -16,7 +16,7 @@ export const useUserStore = defineStore("userStore", {
     async setMe() {
       const res = await api.getMeData();
 
-      if (res?.ok) this.meData = await api.handleSuccessGetUser(res);
+      if (res?.ok) this.meData = await api.handleResponseToJson(res);
       if (res?.status === 401 || res?.status === 403) {
         const uiStore = useAppStore();
 
@@ -41,7 +41,7 @@ export const useUserStore = defineStore("userStore", {
       if (username.match(/^[a-zA-Z0-9]+$/)) {
         const res = await api.updateUsernameMe(username);
 
-        if (res?.ok) this.meData = await api.handleSuccessGetUser(res);
+        if (res?.ok) this.meData = await api.handleResponseToJson(res);
         else
           uiStore.changeStatusErro(res.statusText || "Error update username");
       }
@@ -51,7 +51,7 @@ export const useUserStore = defineStore("userStore", {
         formData.append("file", file);
 
         const res = await api.updateAvatarMe(formData);
-        if (res?.ok) this.meData = await api.handleSuccessGetUser(res);
+        if (res?.ok) this.meData = await api.handleResponseToJson(res);
         else uiStore.changeStatusErro(res.statusText || "Error update avatar");
       }
     },

@@ -1,4 +1,4 @@
-import "@/utils/design/icons";
+import "@/utils/styles/icons";
 
 import { router } from "@/routes/vueRouter";
 import { createApp } from "vue";

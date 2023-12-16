@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
-import type { Ref } from "vue";
+import { onUnmounted, ref, type Ref } from "vue";
 import { useAppStore } from "@/stores/appStore";
 import { useUserStore } from "@/stores/userStore";
 import { startGame } from "@/utils/game";

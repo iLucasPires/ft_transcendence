@@ -18,7 +18,7 @@ export default {
 
   },
 
-  handleSuccessGetUser: async function (res: Response) {
+  handleResponseToJson: async function (res: Response) {
     const data = await res.json();
     localStorage.setItem("user", JSON.stringify(data));
 
