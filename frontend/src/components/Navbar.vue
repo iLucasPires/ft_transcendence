@@ -86,7 +86,7 @@ const menuList = [
       <ItemNavBar
         @click="appStore.changeGlobalTheme()"
         :menuOpen="menuOpen"
-        :icon="appStore.isDarkTheme ? 'md-sunny' : 'md-moon'"
+        :icon="appStore.isDarkTheme ? 'md-lightmode' : 'md-nightlight'"
       >
         {{ appStore.isDarkTheme ? "Light Mode" : "Dark Mode" }}
       </ItemNavBar>
