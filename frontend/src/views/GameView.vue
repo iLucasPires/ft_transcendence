@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import PFive from "p5";
 import { onUnmounted, ref } from "vue";
 import type { Ref } from "vue";
-import { Paddle } from "@/util/paddle";
-import { Ball } from "@/util/ball";
-import { Player } from "@/util/player";
-import { Player2 } from "@/util/player2";
 import { useAppStore } from "@/stores/appStore";
 import { useUserStore } from "@/stores/userStore";
+import { startGame } from "@/util/game";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -17,71 +13,11 @@ onUnmounted(function () {
   appStore.gameP5?.remove();
 });
 
-function startGame() {
-  appStore.gameP5 = new PFive(function (p5: PFive) {
-    const sizeScreen: PFive.Vector = p5.createVector(
-      gameRef.value?.clientWidth || 0,
-      gameRef.value?.clientHeight || 0
-    );
-
-    let player: Player;
-    let player2: Player2;
-    let ball: Ball;
-    p5.setup = function () {
-      p5.createCanvas(sizeScreen.x, sizeScreen.y).parent("game");
-      player = new Player(26, p5.height / 2, p5.height);
-      player2 = new Player2(p5.width - 48, p5.height / 2, p5.height);
-      ball = new Ball(p5.width, p5.height);
-    };
-
-    function displayPaddle(paddle: Paddle) {
-      p5.stroke(255);
-      p5.rect(paddle.x, paddle.y, paddle.width, paddle.height);
-    }
-
-    p5.keyPressed = () => {
-      if (p5.keyCode === p5.UP_ARROW) {
-        player.isUp = true;
-      } else if (p5.keyCode === p5.DOWN_ARROW) {
-        player.isDown = true;
-      }
-    };
-
-    p5.keyReleased = () => {
-      if (p5.keyCode === p5.UP_ARROW) {
-        player.isUp = false;
-      } else if (p5.keyCode === p5.DOWN_ARROW) {
-        player.isDown = false;
-      }
-    };
-
-    function displayBall(ball: Ball) {
-      p5.stroke(255);
-      p5.ellipse(ball.x, ball.y, ball.radius * 2, ball.radius * 2);
-    }
-
-    function handleColision(player: Paddle, player2: Paddle, ball: Ball) {
-      if (player.wasReachedBy(ball)) {
-        ball.changeDirection();
-      } else if (player2.wasReachedBy(ball)) {
-        ball.changeDirection();
-      }
-    }
-
-    p5.draw = function () {
-      p5.background(0);
-      displayPaddle(player);
-      displayPaddle(player2);
-      displayBall(ball);
-      player.update();
-      ball.update();
-      handleColision(player, player2, ball);
-    };
-  });
-}
-
 function handleClickStartGame() {
-  startGame();
+  appStore.gameP5 = startGame(
+    gameRef.value?.clientWidth ?? 0,
+    gameRef.value?.clientHeight ?? 0
+  );
   userStore.changeStatusGame();
 }
 </script>
