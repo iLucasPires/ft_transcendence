@@ -266,6 +266,38 @@ export class UsersService {
       throw new BadRequestException("You cannot add yourself as a friend");
     }
 
+    const isBlockedByFriend = await this.userRepository.exist({
+      where: {
+        id: user.id,
+        blockedBy: {
+          id: friendUser.id,
+        },
+      },
+      relations: {
+        blockedBy: true,
+      },
+    });
+
+    if (isBlockedByFriend) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+
+    const isBlockedByUser = await this.userRepository.exist({
+      where: {
+        id: friendUser.id,
+        blockedBy: {
+          id: user.id,
+        },
+      },
+      relations: {
+        blockedBy: true,
+      },
+    });
+
+    if (isBlockedByUser) {
+      throw new ConflictException(`You can't add a blocked user: ${username}`);
+    }
+
     const isAlreadyFriend = await this.userRepository.exist({
       where: [
         {
