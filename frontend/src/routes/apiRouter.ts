@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { router } from "./vueRouter";
 
-const URL = "http://localhost:3000";
+const URL = import.meta.env.VITE_BACKEND_URL;
 
 export default {
   handleNotAuth: function () {
