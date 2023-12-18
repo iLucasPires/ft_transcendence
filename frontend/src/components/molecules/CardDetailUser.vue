@@ -4,8 +4,8 @@ import ProfileImage from "@/components/atoms/ProfileImage.vue";
 const props = defineProps({
   name: { type: String, required: true },
   url: { type: String, required: false },
-  wins: { type: Number, required: true },
-  losses: { type: Number, required: true },
+  wins: { type: Number, default: 0 },
+  losses: { type: Number, default: 0 },
 });
 
 const scores = [

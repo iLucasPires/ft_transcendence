@@ -11,11 +11,10 @@ export default {
 
   handleInvalidCookie: function () {
     router.push({ name: "login" });
-    
+
     Cookies.remove("connect.sid");
     Cookies.remove("connect.flag");
     localStorage.removeItem("user");
-
   },
 
   handleResponseToJson: async function (res: Response) {
@@ -41,6 +40,13 @@ export default {
 
   getAllBlockedUsers: async function () {
     return await fetch(`${URL}/api/me/blocked`, {
+      method: "GET",
+      credentials: "include",
+    });
+  },
+
+  getAllFriends: async function () {
+    return await fetch(`${URL}/api/me/friends`, {
       method: "GET",
       credentials: "include",
     });
@@ -82,5 +88,20 @@ export default {
       method: "POST",
       credentials: "include",
     });
+  },
+
+  async addFriend(username: string) {
+    return await fetch(`${URL}/api/users/${username}/friend`, {
+      method: "POST",
+      credentials: "include",
+    });
+  },
+
+  async unfriend(username: string) {
+    return await fetch(`${URL}/api/users/${username}/unfriend`, {
+      method: "POST",
+      credentials: "include",
+    });
   }
+  
 };

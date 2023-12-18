@@ -1,4 +1,4 @@
-@layer components {
+@layer base {
   .mborder {
     @apply border-2 border-base-300 rounded;
   }
@@ -10,4 +10,8 @@
   .mflex-col {
     @apply flex flex-col;
   }
+  .mbtn-tab {
+    @apply flex-1 btn join-item;
+  }
 }
+

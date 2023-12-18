@@ -29,7 +29,9 @@ export const useAppStore = defineStore("store", {
 
     setThemeGlobal() {
       const localTheme = localStorage.getItem("theme");
-      const prefersDarkScheme = window?.matchMedia("(prefers-color-scheme: dark)");
+      const prefersDarkScheme = window?.matchMedia(
+        "(prefers-color-scheme: dark)"
+      );
       const prefersTheme = prefersDarkScheme?.matches ? themes[1] : themes[0];
 
       this.themeGlobal = localTheme ? localTheme : prefersTheme;
@@ -40,8 +42,12 @@ export const useAppStore = defineStore("store", {
       this.navBarExpand = !this.navBarExpand;
     },
 
-    changeStatusErro(erro: string) {
+    changeMessageLog(erro: string) {
       this.logGlobal = erro;
+    },
+
+    changeLoadingGlobal() {
+      this.loddingGlobal = !this.loddingGlobal;
     },
 
     changeTabSelected(tab: string) {

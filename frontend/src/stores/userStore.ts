@@ -22,7 +22,7 @@ export const useUserStore = defineStore("userStore", {
 
         await api.logout();
         api.handleInvalidCookie();
-        uiStore.changeStatusErro(res.statusText);
+        uiStore.changeMessageLog(res.statusText);
       }
     },
 
@@ -32,7 +32,7 @@ export const useUserStore = defineStore("userStore", {
       const res = await api.logout();
       api.handleInvalidCookie();
       this.meData = JSON.parse("null");
-      uiStore.changeStatusErro("Success logout user");
+      uiStore.changeMessageLog("Success logout user");
     },
 
     async changeMe(username: string, file: File | null) {
@@ -43,7 +43,7 @@ export const useUserStore = defineStore("userStore", {
 
         if (res?.ok) this.meData = await api.handleResponseToJson(res);
         else
-          uiStore.changeStatusErro(res.statusText || "Error update username");
+          uiStore.changeMessageLog(res.statusText || "Error update username");
       }
 
       if (file !== null) {
@@ -52,7 +52,7 @@ export const useUserStore = defineStore("userStore", {
 
         const res = await api.updateAvatarMe(formData);
         if (res?.ok) this.meData = await api.handleResponseToJson(res);
-        else uiStore.changeStatusErro(res.statusText || "Error update avatar");
+        else uiStore.changeMessageLog(res.statusText || "Error update avatar");
       }
     },
 
