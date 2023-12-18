@@ -3,10 +3,13 @@ import { ref, onMounted, computed } from "vue";
 
 import api from "@/routes/apiRouter";
 import { useAppStore } from "@/stores/appStore";
+import { useUserStore } from "@/stores/userStore";
 import type { iUser } from "@/types/props";
 import CardDetailUser from "@/components/molecules/CardDetailUser.vue";
+import { router } from "@/routes/vueRouter";
 
 const appStore = useAppStore();
+const userStore = useUserStore();
 
 const users = ref([] as iUser[]);
 const res = ref(null as Response | null);
@@ -17,7 +20,8 @@ const fetchUsers = async (tab: string) => {
   if (tab === "blocked") res.value = await api.getAllBlockedUsers();
   if (tab === "friends") res.value = await api.getAllFriends();
 
-  return await api.handleResponseToJson(res.value as Response);
+  const users = await api.handleResponseToJson(res.value as Response) as iUser[];
+  return users.sort((a, b) => a.username.localeCompare(b.username));
 };
 
 function removeUser(username: string) {
@@ -118,6 +122,14 @@ function getTextByRightButton(tab: string) {
               class="mbtn-tab btn-secondary"
             >
               {{ getTextByRightButton(selectedTab) }}
+            </button>
+          </div>
+          <div v-else class="join w-full rounded mborder">
+            <button
+              @click="() => router.push({ name: 'profile' })"
+              class="mbtn-tab btn-primary"
+            >
+             See your profile
             </button>
           </div>
         </li>
