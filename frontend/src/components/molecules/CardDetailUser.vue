@@ -25,14 +25,14 @@ const scores = [
 </script>
 
 <template>
-  <div class="flex flex-col items-center md:flex-row gap-5 mborder p-5">
+  <div class="flex flex-col w-full items-center md:flex-row gap-5 mborder p-5">
     <ProfileImage :url="url" :alt="name" />
     <div class="flex flex-col gap-2">
       <h2 class="text-2xl font-bold">{{ name }}</h2>
-      <div class="flex md:flex-row flex-col gap-2">
+      <div class="flex md:flex-row flex-wrap gap-2 flex-col w-full">
         <span
           v-for="score in scores"
-          class="tooltip flex gap-2 btn btn-sm no-animation"
+          class="tooltip flex flex-grow btn btn-sm no-animation"
         >
           <Icon name="ri-ping-pong-fill" :class="score.color" />
           <h2 class="badge">{{ score.name }} {{ score.value }}</h2>

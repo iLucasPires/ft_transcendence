@@ -15,11 +15,11 @@ const urlImage = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center w-20 h-20 mask mask-circle ">
     <img
       :alt="alt"
       :src="urlImage"
-      class="mask mask-circle w-20 h-20 bg-base-300 rounded-full object-cover"
+      class="h-full bg-base-300 object-cover"
     />
   </div>
 </template>

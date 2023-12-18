@@ -95,14 +95,17 @@ function getTextByRightButton(tab: string) {
         </button>
       </ul>
 
-      <ul class="overflow-y-auto flex flex-row gap-2">
+      <ul class="overflow-y-auto flex lg:flex-row flex-col gap-2">
         <li
           v-for="user in users"
           :key="user.intraId"
           class="flex flex-col gap-2 mborder p-5 items-center"
         >
           <CardDetailUser :url="user.avatarUrl" :name="user.username" />
-          <div class="join w-full rounded mborder">
+          <div
+            v-if="userStore.meData.username !== user.username"
+            class="join w-full rounded mborder"
+          >
             <button
               v-if="selectedTab !== 'blocked'"
               @click="handleAddFriend(user.username)"
