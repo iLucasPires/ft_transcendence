@@ -1,5 +1,8 @@
 import {
+  Body,
   Controller,
+  ForbiddenException,
+  HttpCode,
   HttpStatus,
   Post,
   Req,
@@ -10,11 +13,16 @@ import { TwoFactorAuthService } from "./2fa.service";
 import { IsAuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { UserRequest } from "../users/interfaces";
 import { Response } from "express";
-import { ApiProduces, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiProduces, ApiResponse } from "@nestjs/swagger";
+import { UsersService } from "src/users/users.service";
+import { VerifyCodeDto } from "./dto";
 
 @Controller("/auth/2fa")
 export class TwoFactorAuthController {
-  constructor(private readonly twoFactorAuthService: TwoFactorAuthService) {}
+  constructor(
+    private readonly twoFactorAuthService: TwoFactorAuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post("generate")
   @UseGuards(IsAuthenticatedGuard)
@@ -28,5 +36,23 @@ export class TwoFactorAuthController {
     const otpAuthUrl = await this.twoFactorAuthService.generate2faSecret(user);
 
     await this.twoFactorAuthService.pipeQrCodeToStream(res, otpAuthUrl);
+  }
+
+  @Post("turn-on")
+  @UseGuards(IsAuthenticatedGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBody({ type: VerifyCodeDto })
+  async turnOn2FA(@Req() req: UserRequest, @Body() { code }: VerifyCodeDto) {
+    const user = req.user;
+    const isCodeValid = await this.twoFactorAuthService.validate2faCode(
+      user,
+      code,
+    );
+
+    if (!isCodeValid) {
+      throw new ForbiddenException("Invalid 2FA code");
+    }
+
+    await this.usersService.turnOnTwoFactorAuth(user);
   }
 }

@@ -41,6 +41,8 @@ export class SessionSerializer extends PassportSerializer {
       );
     }
 
+    // NOTE: We spread session last, otherwise a user will lose access after
+    // turning on 2FA.
     done(null, { ...user, ...session });
   }
 }

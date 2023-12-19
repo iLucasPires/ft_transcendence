@@ -149,11 +149,24 @@ export class UsersService {
     return updatedUser;
   }
 
+  getTwoFactorAuthSecret(user: UserEntity): Promise<string> {
+    return this.userRepository
+      .createQueryBuilder("user")
+      .select("user.twoFactorAuthSecret", "secret")
+      .where("user.id = :id", { id: user.id })
+      .getRawOne()
+      .then((result) => result.secret);
+  }
+
   async setTwoFactorAuthSecret(
     user: UserEntity,
     secret: string,
   ): Promise<void> {
     await this.userRepository.update(user.id, { twoFactorAuthSecret: secret });
+  }
+
+  async turnOnTwoFactorAuth(user: UserEntity): Promise<void> {
+    await this.userRepository.update(user.id, { isTwoFactorAuthEnabled: true });
   }
 
   async block(blocker: UserEntity, username: string): Promise<void> {

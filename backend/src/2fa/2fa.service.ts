@@ -27,4 +27,9 @@ export class TwoFactorAuthService {
     stream.contentType("image/png");
     toFileStream(stream, otpAuthUrl);
   }
+
+  async validate2faCode(user: UserEntity, code: string): Promise<boolean> {
+    const secret = (await this.usersService.getTwoFactorAuthSecret(user)) ?? "";
+    return authenticator.verify({ secret, token: code });
+  }
 }
