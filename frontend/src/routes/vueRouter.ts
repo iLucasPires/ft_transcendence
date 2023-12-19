@@ -17,6 +17,11 @@ const childrenLobby = [
     name: "users",
     component: () => import("@/components/pages/UsersView.vue"),
   },
+  {
+    path: "chat",
+    name: "chat",
+    component: () => import("@/components/pages/ChatView.vue"),
+  },
 ];
 
 const routes = [
