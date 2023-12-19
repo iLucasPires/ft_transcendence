@@ -22,12 +22,13 @@ import {
   ApiQuery,
   ApiResponse,
 } from "@nestjs/swagger";
-import { Request } from "express";
 import { diskStorage } from "multer";
 import { IsAuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { ListUsersDto, UpdateUserDto } from "../users/dto";
 import { UserEntity } from "../users/user.entity";
 import { UsersService } from "../users/users.service";
+import { UserRequest } from "../users/interfaces";
+import { UserSessionDto } from "./dto/user-session.dto";
 
 @Controller("me")
 @ApiCookieAuth("connect.sid")
@@ -39,10 +40,10 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
-    type: UserEntity,
+    type: UserSessionDto,
   })
-  getMe(@Req() req: Request): UserEntity {
-    return req.user as UserEntity;
+  getMe(@Req() req: UserRequest): UserSessionDto {
+    return req.user;
   }
 
   @Patch()
@@ -56,10 +57,10 @@ export class MeController {
     description: "Username already exists",
   })
   updateMe(
-    @Req() req: Request,
+    @Req() req: UserRequest,
     @Body() body: UpdateUserDto,
   ): Promise<UserEntity> {
-    return this.usersService.update(req.user as UserEntity, body);
+    return this.usersService.update(req.user, body);
   }
 
   @Post("avatar")
@@ -109,8 +110,11 @@ export class MeController {
       },
     }),
   )
-  updateAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
-    return this.usersService.updateAvatar(req.user as UserEntity, file);
+  updateAvatar(
+    @Req() req: UserRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.updateAvatar(req.user, file);
   }
 
   @Get("blocked")
@@ -130,13 +134,10 @@ export class MeController {
     type: [UserEntity],
   })
   findBlockedUsers(
-    @Req() req: Request,
+    @Req() req: UserRequest,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
-    return this.usersService.findBlockedUsers(
-      req.user as UserEntity,
-      listUsersDto,
-    );
+    return this.usersService.findBlockedUsers(req.user, listUsersDto);
   }
 
   @Get("friends")
@@ -156,9 +157,9 @@ export class MeController {
     type: [UserEntity],
   })
   findFriends(
-    @Req() req: Request,
+    @Req() req: UserRequest,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
-    return this.usersService.findFriends(req.user as UserEntity, listUsersDto);
+    return this.usersService.findFriends(req.user, listUsersDto);
   }
 }
