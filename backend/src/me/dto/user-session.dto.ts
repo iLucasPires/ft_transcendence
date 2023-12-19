@@ -15,4 +15,10 @@ export class UserSessionDto {
 
   @ApiResponseProperty({ type: Boolean, example: false })
   registrationComplete: boolean;
+
+  @ApiResponseProperty({ type: Boolean, example: true })
+  isTwoFactorAuthEnabled: boolean;
+
+  @ApiResponseProperty({ type: Boolean, example: false })
+  isTwoFactorAuthApproved?: boolean;
 }

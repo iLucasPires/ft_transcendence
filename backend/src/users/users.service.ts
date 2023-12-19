@@ -149,6 +149,13 @@ export class UsersService {
     return updatedUser;
   }
 
+  async setTwoFactorAuthSecret(
+    user: UserEntity,
+    secret: string,
+  ): Promise<void> {
+    await this.userRepository.update(user.id, { twoFactorAuthSecret: secret });
+  }
+
   async block(blocker: UserEntity, username: string): Promise<void> {
     const user = await this.userRepository.findOneBy({ username });
 

@@ -1,4 +1,5 @@
 import { ApiResponseProperty } from "@nestjs/swagger";
+import { Exclude } from "class-transformer";
 import {
   Column,
   Entity,
@@ -36,6 +37,19 @@ export class UserEntity {
   @ApiResponseProperty({ type: Boolean, example: false })
   @Column({ name: "registration_complete", default: false })
   registrationComplete: boolean;
+
+  @Column({ name: "is_two_factor_auth_enabled", type: Boolean, default: false })
+  @Exclude()
+  isTwoFactorAuthEnabled: boolean;
+
+  @Column({
+    name: "two_factor_auth_secret",
+    type: String,
+    nullable: true,
+    select: false,
+  })
+  @Exclude()
+  twoFactorAuthSecret?: string;
 
   @ManyToMany(() => UserEntity, (user) => user.blockedUsers, { lazy: true })
   @JoinTable({
