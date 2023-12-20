@@ -11,12 +11,18 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBody, ApiProduces, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiCookieAuth,
+  ApiProduces,
+  ApiResponse,
+} from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { TwoFactorAuthService } from "./2fa.service";
 import { VerifyCodeDto } from "./dto";
 
 @Controller("/auth/2fa")
+@ApiCookieAuth("connect.sid")
 export class TwoFactorAuthController {
   constructor(
     private readonly twoFactorAuthService: TwoFactorAuthService,
