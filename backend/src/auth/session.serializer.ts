@@ -1,12 +1,11 @@
+import { UserWithSession } from "@/users/interfaces";
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
+import { SessionData } from "express-session";
 
-type SessionData = { userId: string } & (
-  | { isTwoFactorAuthEnabled: false }
-  | { isTwoFactorAuthEnabled: true; isTwoFactorAuthApproved: boolean }
-);
+type PassportSession = SessionData["passport"]["user"];
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -15,33 +14,35 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: UserEntity, done: Function): void {
-    const { id: userId, isTwoFactorAuthEnabled } = user;
-    const userSession = { userId, isTwoFactorAuthEnabled };
+    const { id, isTwoFactorAuthEnabled } = user;
+    const userSession: PassportSession = { id, isTwoFactorAuthEnabled };
 
-    if (!!isTwoFactorAuthEnabled) {
-      done(null, {
-        ...userSession,
-        isTwoFactorAuthApproved: false,
-      });
-    } else {
-      done(null, userSession);
+    if (isTwoFactorAuthEnabled) {
+      userSession.isTwoFactorAuthApproved = false;
     }
+
+    done(null, userSession);
   }
 
   async deserializeUser(
-    { userId, ...session }: SessionData,
+    { id, ...session }: PassportSession,
     done: Function,
   ): Promise<void> {
-    const user = await this.usersService.findOneById(userId);
+    const user = await this.usersService.findOneById(id);
+
     if (!user) {
       return done(
-        `Could not deserialize user: user with ${userId} could not be found`,
+        `Could not deserialize user: user with ${id} could not be found`,
         null,
       );
     }
 
-    // NOTE: We spread session last, otherwise a user will lose access after
-    // turning on 2FA.
-    done(null, { ...user, ...session });
+    const userWithSession: UserWithSession = { ...user };
+
+    if (user.isTwoFactorAuthEnabled) {
+      userWithSession.isTwoFactorAuthApproved = session.isTwoFactorAuthApproved;
+    }
+
+    done(null, userWithSession);
   }
 }

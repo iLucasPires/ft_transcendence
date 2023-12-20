@@ -52,6 +52,8 @@ export class TwoFactorAuthController {
       throw new ForbiddenException("Invalid 2FA code");
     }
 
-    await this.usersService.turnOnTwoFactorAuth(user);
+    this.usersService.turnOnTwoFactorAuth(user).then(() => {
+      req.session.passport.user.isTwoFactorAuthApproved = true;
+    });
   }
 }
