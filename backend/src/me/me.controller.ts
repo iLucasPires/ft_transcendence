@@ -22,12 +22,12 @@ import {
   ApiQuery,
   ApiResponse,
 } from "@nestjs/swagger";
+import { Request } from "express";
 import { diskStorage } from "multer";
-import { IsAuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { ListUsersDto, UpdateUserDto } from "../users/dto";
-import { UserEntity } from "../users/user.entity";
-import { UsersService } from "../users/users.service";
-import { UserRequest } from "../users/interfaces";
+import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
+import { ListUsersDto, UpdateUserDto } from "@/users/dto";
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { UserSessionDto } from "./dto/user-session.dto";
 
 @Controller("me")
@@ -42,7 +42,7 @@ export class MeController {
     description: "User retrieved successfully",
     type: UserSessionDto,
   })
-  getMe(@Req() req: UserRequest): UserSessionDto {
+  getMe(@Req() req: Request): UserSessionDto {
     return req.user;
   }
 
@@ -57,7 +57,7 @@ export class MeController {
     description: "Username already exists",
   })
   updateMe(
-    @Req() req: UserRequest,
+    @Req() req: Request,
     @Body() body: UpdateUserDto,
   ): Promise<UserEntity> {
     return this.usersService.update(req.user, body);
@@ -110,10 +110,7 @@ export class MeController {
       },
     }),
   )
-  updateAvatar(
-    @Req() req: UserRequest,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  updateAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
     return this.usersService.updateAvatar(req.user, file);
   }
 
@@ -134,7 +131,7 @@ export class MeController {
     type: [UserEntity],
   })
   findBlockedUsers(
-    @Req() req: UserRequest,
+    @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
     return this.usersService.findBlockedUsers(req.user, listUsersDto);
@@ -157,7 +154,7 @@ export class MeController {
     type: [UserEntity],
   })
   findFriends(
-    @Req() req: UserRequest,
+    @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
     return this.usersService.findFriends(req.user, listUsersDto);

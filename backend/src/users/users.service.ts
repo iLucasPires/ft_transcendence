@@ -1,3 +1,4 @@
+import { FilesService } from "@/files/files.service";
 import {
   BadRequestException,
   ConflictException,
@@ -5,10 +6,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "./user.entity";
-import { Repository, Not } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
-import { FilesService } from "src/files/files.service";
+import { UserEntity } from "./user.entity";
 
 @Injectable()
 export class UsersService {

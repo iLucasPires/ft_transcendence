@@ -1,9 +1,9 @@
-import { Strategy, VerifyCallback } from "passport-oauth2";
-import { PassportStrategy } from "@nestjs/passport";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AuthService } from "./auth.service";
+import { PassportStrategy } from "@nestjs/passport";
 import { Profile } from "passport";
+import { Strategy, VerifyCallback } from "passport-oauth2";
+import { AuthService } from "./auth.service";
 
 Strategy.prototype.userProfile = function (accessToken, done) {
   this._oauth2.get(

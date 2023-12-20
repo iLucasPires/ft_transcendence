@@ -26,9 +26,9 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @ApiResponseProperty({ type: Number, example: 10 })
-  @Column({ name: "intra_id", unique: true })
-  intraId: number;
+  @Exclude()
+  @Column({ name: "intra_id", unique: true, select: false })
+  intraId?: number;
 
   @ApiResponseProperty({ type: String })
   @Column({ name: "avatar_url", nullable: true })

@@ -1,9 +1,9 @@
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "../users/user.entity";
-import { UsersService } from "../users/users.service";
-import { authenticator } from "otplib";
 import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
+import { authenticator } from "otplib";
 import { toFileStream } from "qrcode";
 
 @Injectable()

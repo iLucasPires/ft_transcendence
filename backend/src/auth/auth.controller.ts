@@ -10,10 +10,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { ApiExcludeController } from "@nestjs/swagger";
 import { Request } from "express";
 import { IsAuthenticatedGuard } from "./guards/authenticated.guard";
 import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
-import { ApiExcludeController } from "@nestjs/swagger";
 
 @Controller("auth")
 @ApiExcludeController()
@@ -36,7 +36,6 @@ export class AuthController {
 
   @Post("logout")
   @UseGuards(IsAuthenticatedGuard)
-  @Redirect("/login")
   async logout(@Req() request: Request) {
     const logoutError = await new Promise((resolve) =>
       request.logOut({ keepSessionInfo: false }, (error) => resolve(error)),

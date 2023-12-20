@@ -1,7 +1,7 @@
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { Profile } from "passport";
-import { UserEntity } from "../users/user.entity";
-import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class AuthService {

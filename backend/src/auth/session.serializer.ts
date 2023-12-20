@@ -1,7 +1,7 @@
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
-import { UsersService } from "../users/users.service";
-import { UserEntity } from "../users/user.entity";
 
 type SessionData = { userId: string } & (
   | { isTwoFactorAuthEnabled: false }
@@ -33,7 +33,6 @@ export class SessionSerializer extends PassportSerializer {
     done: Function,
   ): Promise<void> {
     const user = await this.usersService.findOneById(userId);
-
     if (!user) {
       return done(
         `Could not deserialize user: user with ${userId} could not be found`,

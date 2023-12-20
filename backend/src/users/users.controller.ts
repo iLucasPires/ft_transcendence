@@ -1,3 +1,4 @@
+import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
 import {
   Controller,
   Get,
@@ -9,12 +10,11 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
+import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { Request } from "express";
 import { ListUsersDto } from "./dto";
 import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
-import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { UserRequest } from "./interfaces";
 
 @Controller("users")
 @ApiCookieAuth("connect.sid")
@@ -39,7 +39,7 @@ export class UsersController {
     type: [UserEntity],
   })
   findMany(
-    @Req() req: UserRequest,
+    @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
     return this.usersService.findMany(req.user, listUsersDto);
@@ -76,7 +76,7 @@ export class UsersController {
     description: "User already blocked.",
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async block(@Req() req: UserRequest, @Param("username") username: string) {
+  async block(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.block(req.user, username);
   }
 
@@ -98,7 +98,7 @@ export class UsersController {
     description: "User already unblocked.",
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async unblock(@Req() req: UserRequest, @Param("username") username: string) {
+  async unblock(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.unblock(req.user, username);
   }
 
@@ -120,10 +120,7 @@ export class UsersController {
     description: "Friendship already exists.",
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async addFriend(
-    @Req() req: UserRequest,
-    @Param("username") username: string,
-  ) {
+  async addFriend(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.addFriend(req.user, username);
   }
 
@@ -145,10 +142,7 @@ export class UsersController {
     description: "The friendship doesn't exist.",
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeFriend(
-    @Req() req: UserRequest,
-    @Param("username") username: string,
-  ) {
+  async removeFriend(@Req() req: Request, @Param("username") username: string) {
     await this.usersService.removeFriend(req.user, username);
   }
 }

@@ -1,1 +1,1 @@
-export { UserRequest } from "./user-request";
+export { UserWithSession } from "./user-with-session";

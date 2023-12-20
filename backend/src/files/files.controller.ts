@@ -1,3 +1,4 @@
+import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
 import {
   Controller,
   Get,
@@ -8,7 +9,6 @@ import {
 } from "@nestjs/common";
 import { ApiCookieAuth, ApiProduces, ApiResponse } from "@nestjs/swagger";
 import { Response } from "express";
-import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
 
 @Controller("files")
 export class FilesController {
