@@ -1,4 +1,4 @@
-import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
+import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import {
   Controller,
   Get,
@@ -18,7 +18,7 @@ import { UsersService } from "./users.service";
 
 @Controller("users")
 @ApiCookieAuth("connect.sid")
-@UseGuards(IsAuthenticatedGuard)
+@UseGuards(TwoFactorAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -6,8 +6,8 @@ import * as expressSession from "express-session";
 import * as passport from "passport";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { FortyTwoStrategy } from "./forty-two.strategy";
 import { SessionSerializer } from "./session.serializer";
+import { FortyTwoStrategy } from "./forty-two.strategy";
 
 @Module({
   imports: [

@@ -1,3 +1,8 @@
+import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
+import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
+import { ListUsersDto, UpdateUserDto } from "@/users/dto";
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import {
   Body,
   Controller,
@@ -24,19 +29,15 @@ import {
 } from "@nestjs/swagger";
 import { Request } from "express";
 import { diskStorage } from "multer";
-import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
-import { ListUsersDto, UpdateUserDto } from "@/users/dto";
-import { UserEntity } from "@/users/user.entity";
-import { UsersService } from "@/users/users.service";
 import { UserSessionDto } from "./dto/user-session.dto";
 
 @Controller("me")
 @ApiCookieAuth("connect.sid")
-@UseGuards(IsAuthenticatedGuard)
 export class MeController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseGuards(IsAuthenticatedGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User retrieved successfully",
@@ -47,6 +48,7 @@ export class MeController {
   }
 
   @Patch()
+  @UseGuards(TwoFactorAuthGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: "User updated successfully",
@@ -65,23 +67,7 @@ export class MeController {
 
   @Post("avatar")
   @HttpCode(HttpStatus.OK)
-  @ApiConsumes("multipart/form-data")
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        file: {
-          type: "string",
-          format: "binary",
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Avatar updated successfully",
-    type: UserEntity,
-  })
+  @UseGuards(TwoFactorAuthGuard)
   @UseInterceptors(
     FileInterceptor("file", {
       storage: diskStorage({
@@ -110,11 +96,24 @@ export class MeController {
       },
     }),
   )
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: { file: { type: "string", format: "binary" } },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Avatar updated successfully",
+    type: UserEntity,
+  })
   updateAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
     return this.usersService.updateAvatar(req.user, file);
   }
 
   @Get("blocked")
+  @UseGuards(TwoFactorAuthGuard)
   @ApiQuery({
     name: "limit",
     required: false,
@@ -138,6 +137,7 @@ export class MeController {
   }
 
   @Get("friends")
+  @UseGuards(TwoFactorAuthGuard)
   @ApiQuery({
     name: "limit",
     required: false,

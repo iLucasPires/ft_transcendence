@@ -1,12 +1,4 @@
-import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Res,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, HttpStatus, Param, Res } from "@nestjs/common";
 import { ApiCookieAuth, ApiProduces, ApiResponse } from "@nestjs/swagger";
 import { Response } from "express";
 
@@ -24,7 +16,6 @@ export class FilesController {
     status: HttpStatus.NOT_FOUND,
     description: "File not found",
   })
-  @UseGuards(IsAuthenticatedGuard)
   downloadFile(@Param("filename") filename: string, @Res() res: Response) {
     return res.sendFile(filename, { root: "./uploads" });
   }
