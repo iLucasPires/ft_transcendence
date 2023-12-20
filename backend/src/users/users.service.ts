@@ -169,6 +169,12 @@ export class UsersService {
     await this.userRepository.update(user.id, { isTwoFactorAuthEnabled: true });
   }
 
+  async turnOffTwoFactorAuth(user: UserEntity): Promise<void> {
+    await this.userRepository.update(user.id, {
+      isTwoFactorAuthEnabled: false,
+    });
+  }
+
   async block(blocker: UserEntity, username: string): Promise<void> {
     const user = await this.userRepository.findOneBy({ username });
 

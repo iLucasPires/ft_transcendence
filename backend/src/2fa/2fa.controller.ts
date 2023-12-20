@@ -56,4 +56,24 @@ export class TwoFactorAuthController {
       req.session.passport.user.isTwoFactorAuthApproved = true;
     });
   }
+
+  @Post("turn-off")
+  @UseGuards(IsAuthenticatedGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBody({ type: VerifyCodeDto })
+  async turnOff2FA(@Req() req: Request, @Body() { code }: VerifyCodeDto) {
+    const user = req.user;
+    const isCodeValid = await this.twoFactorAuthService.validate2faCode(
+      user,
+      code,
+    );
+
+    if (!isCodeValid) {
+      throw new ForbiddenException("Invalid 2FA code");
+    }
+
+    this.usersService.turnOffTwoFactorAuth(user).then(() => {
+      delete req.session.passport.user.isTwoFactorAuthApproved;
+    });
+  }
 }
