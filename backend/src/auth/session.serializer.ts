@@ -40,7 +40,7 @@ export class SessionSerializer extends PassportSerializer {
     const userWithSession: UserWithSession = { ...user };
 
     if (user.isTwoFactorAuthEnabled) {
-      userWithSession.isTwoFactorAuthApproved = session.isTwoFactorAuthApproved;
+      userWithSession.isTwoFactorAuthApproved = session.isTwoFactorAuthApproved ?? false;
     }
 
     done(null, userWithSession);
