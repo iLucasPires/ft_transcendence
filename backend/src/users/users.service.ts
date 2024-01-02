@@ -172,6 +172,7 @@ export class UsersService {
   async turnOffTwoFactorAuth(user: UserEntity): Promise<void> {
     await this.userRepository.update(user.id, {
       isTwoFactorAuthEnabled: false,
+      twoFactorAuthSecret: null,
     });
   }
 
