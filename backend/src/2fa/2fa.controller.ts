@@ -58,9 +58,8 @@ export class TwoFactorAuthController {
       throw new ForbiddenException("Invalid 2FA code");
     }
 
-    this.usersService.turnOnTwoFactorAuth(user).then(() => {
-      req.session.passport.user.isTwoFactorAuthApproved = true;
-    });
+    await this.usersService.turnOnTwoFactorAuth(user);
+    req.session.passport.user.isTwoFactorAuthApproved = true;
   }
 
   @Post("turn-off")
@@ -78,9 +77,8 @@ export class TwoFactorAuthController {
       throw new ForbiddenException("Invalid 2FA code");
     }
 
-    this.usersService.turnOffTwoFactorAuth(user).then(() => {
-      delete req.session.passport.user.isTwoFactorAuthApproved;
-    });
+    await this.usersService.turnOffTwoFactorAuth(user);
+    delete req.session.passport.user.isTwoFactorAuthApproved;
   }
 
   @Post("verify")
@@ -97,5 +95,7 @@ export class TwoFactorAuthController {
     if (!isCodeValid) {
       throw new ForbiddenException("Invalid 2FA code");
     }
+
+    req.session.passport.user.isTwoFactorAuthApproved = true;
   }
 }
