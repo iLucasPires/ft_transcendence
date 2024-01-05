@@ -3,28 +3,8 @@ import { router } from "./vueRouter";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
-export default {
-  handleNotAuth: function () {
-    router.push({ name: "login" });
-    localStorage.removeItem("user");
-  },
-
-  handleInvalidCookie: function () {
-    router.push({ name: "login" });
-
-    Cookies.remove("connect.sid");
-    Cookies.remove("connect.flag");
-    localStorage.removeItem("user");
-  },
-
-  handleResponseToJson: async function (res: Response) {
-    const data = await res.json();
-    localStorage.setItem("user", JSON.stringify(data));
-
-    return data;
-  },
-
-  getMeData: async function (): Promise<Response | null> {
+export const api = {
+  getMeData: async function () {
     return fetch(`${URL}/api/me`, {
       method: "GET",
       credentials: "include",
@@ -102,6 +82,39 @@ export default {
       method: "POST",
       credentials: "include",
     });
-  }
-  
+  },
+
+  async enable2fa(code: string) {
+    return await fetch(`${URL}/api/auth/2fa/turn-on`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+  },
+
+  async disable2fa(code: string) {
+    return await fetch(`${URL}/api/auth/2fa/turn-off`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+  },
+
+  async generate2fa() {
+    return await fetch(`${URL}/api/auth/2fa/generate`, {
+      method: "POST",
+      credentials: "include",
+    });
+  },
+
+  async verify2fa(code: string) {
+    return await fetch(`${URL}/api/auth/2fa/verify`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+  },
 };

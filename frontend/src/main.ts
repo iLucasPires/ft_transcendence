@@ -1,10 +1,10 @@
-import "@/utils/styles/icons";
+import "@/icons";
+import "@/style.css";
 
-import { router } from "@/routes/vueRouter";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { OhVueIcon } from "oh-vue-icons";
-
+import { router } from "@/routes/vueRouter";
 import App from "@/App.vue";
 
 createApp(App)

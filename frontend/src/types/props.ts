@@ -11,4 +11,7 @@ export type iUser = {
   displayName: string;
   registrationComplete: boolean;
   avatarUrl: string;
+  isTwoFactorAuthEnabled: boolean;
+  isTwoFactorAuthApproved: boolean;
 };
+

@@ -1,72 +1,55 @@
 import { defineStore } from "pinia";
 
-const themes = ["light", "dark"];
-const domHtml = document.querySelector("html");
+function getPreferredTheme() {
+  return window?.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "light"
+    : "dark";
+}
 
 export const useAppStore = defineStore("store", {
   state: () => {
     return {
-      navBarExpand: true,
       loddingGlobal: false,
-      tabSelected: "all",
-      logGlobal: "",
-      gameP5: null as any,
-      themeGlobal: themes[0],
 
-      modalUpdateProfile: null as HTMLDialogElement | null,
+      logGlobal: "",
+      tab: "all",
+      themeGlobal: "dark",
+
+      gameP5: null as any | null,
       modalLeaveGame: null as HTMLDialogElement | null,
+
+      domHtml: document.querySelector("html"),
     };
   },
 
   actions: {
-    setModalUpdateProfile() {
-      this.modalUpdateProfile = document.querySelector("#modalUpdate");
-    },
-
     setModalLeaveGame() {
       this.modalLeaveGame = document.querySelector("#modalLeaveGame");
     },
 
     setThemeGlobal() {
-      const localTheme = localStorage.getItem("theme");
-      const prefersDarkScheme = window?.matchMedia(
-        "(prefers-color-scheme: dark)"
-      );
-      const prefersTheme = prefersDarkScheme?.matches ? themes[1] : themes[0];
-
-      this.themeGlobal = localTheme ? localTheme : prefersTheme;
-      domHtml?.setAttribute("data-theme", this.themeGlobal);
+      this.themeGlobal = localStorage.getItem("theme") || getPreferredTheme();
+      this.domHtml?.setAttribute("data-theme", this.themeGlobal);
     },
 
-    toggleMenu() {
-      this.navBarExpand = !this.navBarExpand;
-    },
-
-    changeMessageLog(erro: string) {
-      this.logGlobal = erro;
+    changeMessageLog(log: string) {
+      this.logGlobal = log;
     },
 
     changeLoadingGlobal() {
       this.loddingGlobal = !this.loddingGlobal;
     },
 
-    changeTabSelected(tab: string) {
-      this.tabSelected = tab;
+    changetab(tab: string) {
+      this.tab = tab;
     },
 
     changeGlobalTheme() {
-      this.themeGlobal = this.themeGlobal === themes[0] ? themes[1] : themes[0];
-      domHtml?.setAttribute("data-theme", this.themeGlobal);
+      this.themeGlobal = this.themeGlobal === "dark" ? "light" : "dark";
+      this.domHtml?.setAttribute("data-theme", this.themeGlobal);
+      this.changeMessageLog(`Theme changed to ${this.themeGlobal}`);
+
       localStorage.setItem("theme", this.themeGlobal);
-      this.logGlobal = `Theme changed to ${this.themeGlobal}`;
-    },
-
-    openModalUpdateProfile() {
-      this.modalUpdateProfile?.showModal();
-    },
-
-    closeModalUpdateProfile() {
-      this.modalUpdateProfile?.close();
     },
 
     openModalLeaveGame() {
@@ -78,6 +61,7 @@ export const useAppStore = defineStore("store", {
     },
   },
   getters: {
-    isDarkTheme: (state) => state?.themeGlobal === themes[1],
+    isLodding: (state) => state?.loddingGlobal,
+    isDarkTheme: (state) => state?.themeGlobal === "dark",
   },
 });

@@ -14,7 +14,10 @@ import {
   Si42,
   MdBlock,
   MdModeedit,
-  MdInfoRound
+  MdInfoRound,
+  MdSupervisoraccount,
+  MdModeeditTwotone,
+  GiBananaBunch,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -31,5 +34,8 @@ addIcons(
   Si42,
   MdBlock,
   MdModeedit,
-  MdInfoRound
+  MdInfoRound,
+  MdSupervisoraccount,
+  MdModeeditTwotone,
+  GiBananaBunch
 );

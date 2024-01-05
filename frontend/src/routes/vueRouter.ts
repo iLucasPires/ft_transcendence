@@ -5,17 +5,22 @@ const childrenLobby = [
   {
     path: "game",
     name: "game",
-    component: () => import("@/components/pages/GameView.vue"),
+    component: () => import("@/pages/GameView.vue"),
   },
   {
     path: "profile",
     name: "profile",
-    component: () => import("@/components/pages/ProfileView.vue"),
+    component: () => import("@/pages/ProfileView.vue"),
   },
   {
     path: "users",
     name: "users",
-    component: () => import("@/components/pages/UsersView.vue"),
+    component: () => import("@/pages/UsersView.vue"),
+  },
+  {
+    path: "/profile/edit",
+    name: "edit-profile",
+    component: () => import("@/pages/EditProfileView.vue"),
   },
 ];
 
@@ -23,19 +28,24 @@ const routes = [
   {
     path: "/:catchAll(.*)",
     name: "not-found",
-    component: () => import("@/components/pages/NotFoundView.vue"),
+    component: () => import("@/pages/NotFoundView.vue"),
   },
   {
     path: "/login",
     name: "login",
-    component: () => import("@/components/pages/LoginView.vue"),
+    component: () => import("@/pages/LoginView.vue"),
   },
   {
     path: "/",
     name: "lobby",
-    component: () => import("@/components/pages/LobbyView.vue"),
+    component: () => import("@/pages/LobbyView.vue"),
     redirect: { name: "profile" },
     children: childrenLobby,
+  },
+  {
+    path: "/2fa",
+    name: "2fa",
+    component: () => import("@/pages/TwoFAView.vue"),
   },
 ];
 
@@ -48,12 +58,41 @@ router.beforeEach(async (to, from, next) => {
   const useStore = useUserStore();
   const hasCookie = document.cookie.includes("connect.flag");
 
-  hasCookie && (await useStore.setMe());
+  if (hasCookie) {
+    await useStore.setMe();
+  }
 
-  if (to.name !== "login" && !useStore.isAuthenticated) next({ name: "login" });
-  if (to.name === "login" && useStore.isAuthenticated && hasCookie)
-    next({ name: "lobby" });
-  else next();
+  if (!useStore.isAuthenticated) {
+    if (to.name !== "login") {
+      return next({ name: "login" });
+    }
+    return next();
+  }
+  if (!hasCookie) {
+    await useStore.unsetMe();
+    return next({ name: "login" });
+  }
+
+  // NOTE: From here the user is authenticated. - ok
+  if (to.name === "login") {
+    return next({ name: "lobby" });
+  }
+
+  const { meData } = useStore;
+
+  if (
+    meData.isTwoFactorAuthEnabled &&
+    !meData.isTwoFactorAuthApproved &&
+    to.name !== "2fa"
+  ) {
+    return next({ name: "2fa" });
+  }
+
+  if (to.name === "2fa" && !!meData.isTwoFactorAuthApproved) {
+    return next({ name: "lobby" });
+  }
+
+  return next();
 });
 
 export { router, routes };

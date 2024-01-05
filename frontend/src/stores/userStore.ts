@@ -1,8 +1,28 @@
 import { defineStore } from "pinia";
+import Cookies from "js-cookie";
+
+import { router } from "@/routes/vueRouter";
+import { api } from "@/routes/apiRouter";
 import type { iUser } from "@/types/props.js";
 
-import api from "@/routes/apiRouter";
-import { useAppStore } from "./appStore";
+function handleInvalidCookie() {
+  Cookies.remove("connect.sid");
+  Cookies.remove("connect.flag");
+  localStorage.removeItem("user");
+  router.push({ name: "login" });
+}
+
+async function handleResSaveStorage(res: Response, key: string = "user") {
+  const data = await res.json();
+  localStorage.setItem(key, JSON.stringify(data));
+  return data;
+}
+
+function newFormData(file: File | null) {
+  const formData = new FormData();
+  if (file) formData.append("file", file);
+  return formData;
+}
 
 export const useUserStore = defineStore("userStore", {
   state: () => {
@@ -16,44 +36,38 @@ export const useUserStore = defineStore("userStore", {
     async setMe() {
       const res = await api.getMeData();
 
-      if (res?.ok) this.meData = await api.handleResponseToJson(res);
-      if (res?.status === 401 || res?.status === 403) {
-        const uiStore = useAppStore();
-
+      if (res.ok) this.meData = await handleResSaveStorage(res);
+      else if (res.status === 401 || res.status === 403) {
         await api.logout();
-        api.handleInvalidCookie();
-        uiStore.changeMessageLog(res.statusText);
+        handleInvalidCookie();
       }
     },
 
     async unsetMe() {
-      const uiStore = useAppStore();
-
-      const res = await api.logout();
-      api.handleInvalidCookie();
       this.meData = JSON.parse("null");
-      uiStore.changeMessageLog("Success logout user");
+      handleInvalidCookie();
+    },
+
+    async changeUsername(nickname: string) {
+      const res = await api.updateUsernameMe(nickname);
+      if (res.ok) this.meData = await handleResSaveStorage(res);
+    },
+
+    async changeAvatar(file: File | null) {
+      if (file) {
+        const res = await api.updateAvatarMe(newFormData(file));
+        if (res.ok) this.meData = await handleResSaveStorage(res);
+      }
     },
 
     async changeMe(username: string, file: File | null) {
-      const uiStore = useAppStore();
+      await this.changeUsername(username);
+      await this.changeAvatar(file);
+    },
 
-      if (username.match(/^[a-zA-Z0-9]+$/)) {
-        const res = await api.updateUsernameMe(username);
-
-        if (res?.ok) this.meData = await api.handleResponseToJson(res);
-        else
-          uiStore.changeMessageLog(res.statusText || "Error update username");
-      }
-
-      if (file !== null) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await api.updateAvatarMe(formData);
-        if (res?.ok) this.meData = await api.handleResponseToJson(res);
-        else uiStore.changeMessageLog(res.statusText || "Error update avatar");
-      }
+    async change2FA(totp: string, type: boolean) {
+      const res = type ? await api.enable2fa(totp) : await api.disable2fa(totp);
+      if (res.ok) this.meData.isTwoFactorAuthEnabled = type;
     },
 
     changeStatusGame() {
@@ -66,5 +80,6 @@ export const useUserStore = defineStore("userStore", {
   },
   getters: {
     isAuthenticated: (state) => state.meData !== null,
+    is2FA: (state) => state.meData.isTwoFactorAuthEnabled,
   },
 });

@@ -8,32 +8,31 @@ import { useAppStore } from "@/stores/appStore";
 import ItemNavBar from "@/components/molecules/ItemNavBar.vue";
 
 const userStore = useUserStore();
-const appStore = useAppStore();
+const { isDarkTheme, openModalLeaveGame, changeGlobalTheme } = useAppStore();
 const menuOpen: Ref<boolean> = ref(true);
-
-function handleClickNav(url: string) {
-  if (userStore.status.isGame) appStore.openModalLeaveGame();
-  else router.push(url);
-}
 
 const menuList = [
   { url: "/game", icon: "io-game-controller", text: "Game" },
-  { url: "/users", icon: "md-person", text: "Users" },
+  { url: "/users", icon: "md-supervisoraccount", text: "Users" },
   { url: "/chat", icon: "io-chatbubbles-sharp", text: "Chat" },
-  { url: "/history", icon: "md-workhistory-round", text: "History" },
 ];
+
+function handleClickNav(url: string) {
+  if (userStore.status.isGame) openModalLeaveGame();
+  else router.push(url);
+}
 </script>
 
 <template>
   <aside
-    :class="{ 'w-64': menuOpen, 'w-24': !menuOpen }"
-    class="p-5 flex flex-col bg-base-300 transition-all duration-300"
+    class="hover:w-64 w-24 h-screen p-5 flex-col bg-base-300 transition-all duration-300 hidden md:flex"
   >
     <a
       @click="handleClickNav('/')"
-      class="text-2xl font-bold text-primary text-center cursor-pointer"
+      :class="'/profile' === $route.path && 'text-primary'"
+      class="text-center cursor-pointer font-bold"
     >
-      Pong
+      <Icon name="gi-banana-bunch" scale="2" />
     </a>
 
     <nav class="flex flex-col flex-1 justify-between mt-10">
@@ -44,6 +43,7 @@ const menuList = [
           :key="item.url"
           :icon="item.icon"
           :menuOpen="menuOpen"
+          :class="item.url === $route.path && 'btn-primary'"
           @click="handleClickNav(item.url)"
         >
           {{ item.text }}
@@ -53,27 +53,11 @@ const menuList = [
 
     <menu class="flex flex-col gap-2">
       <ItemNavBar
-        @click="appStore.openModalUpdateProfile()"
+        @click="changeGlobalTheme()"
         :menuOpen="menuOpen"
-        icon="md-settings"
+        :icon="isDarkTheme ? 'md-nightlight' : 'md-lightmode'"
       >
-        Edit Profile
-      </ItemNavBar>
-
-      <ItemNavBar
-        @click="menuOpen = !menuOpen"
-        :invertIcon="!menuOpen"
-        icon="md-keyboarddoublearrowleft"
-      >
-        Resize Menu
-      </ItemNavBar>
-
-      <ItemNavBar
-        @click="appStore.changeGlobalTheme()"
-        :menuOpen="menuOpen"
-        :icon="appStore.isDarkTheme ? 'md-nightlight' : 'md-lightmode'"
-      >
-        {{ appStore.isDarkTheme ? "Light Mode" : "Dark Mode" }}
+        {{ isDarkTheme ? "Light" : "Dark" }}
       </ItemNavBar>
       <ItemNavBar
         @click="userStore.unsetMe()"

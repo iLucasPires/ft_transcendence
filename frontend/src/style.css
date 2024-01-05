@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .mborder {
+    @apply border-2 border-base-300 rounded;
+  }
+
+  .mfull {
+    @apply w-full h-full;
+  }
+
+  .mflex-col {
+    @apply flex flex-col;
+  }
+  .mbtn-tab {
+    @apply flex-1 btn join-item text-primary-content;
+  }
+}
+
 *::-webkit-scrollbar {
   width: 15px;
   height: 10px;
