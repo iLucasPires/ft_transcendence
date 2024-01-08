@@ -6,12 +6,10 @@ function getPreferredTheme() {
     : "dark";
 }
 
-export const useAppStore = defineStore("store", {
-  state: () => {
+export const useAppStore = defineStore("appStore", {
+  state: function () {
     return {
-      loddingGlobal: false,
-
-      logGlobal: "",
+      log: "",
       tab: "all",
       themeGlobal: "dark",
 
@@ -33,18 +31,15 @@ export const useAppStore = defineStore("store", {
     },
 
     changeMessageLog(log: string) {
-      this.logGlobal = log;
-    },
-
-    changeLoadingGlobal() {
-      this.loddingGlobal = !this.loddingGlobal;
+      this.log = log;
+      setTimeout(() => (this.log = ""), 5000);
     },
 
     changetab(tab: string) {
       this.tab = tab;
     },
 
-    changeGlobalTheme() {
+    changeTheme() {
       this.themeGlobal = this.themeGlobal === "dark" ? "light" : "dark";
       this.domHtml?.setAttribute("data-theme", this.themeGlobal);
       this.changeMessageLog(`Theme changed to ${this.themeGlobal}`);
@@ -61,7 +56,7 @@ export const useAppStore = defineStore("store", {
     },
   },
   getters: {
-    isLodding: (state) => state?.loddingGlobal,
-    isDarkTheme: (state) => state?.themeGlobal === "dark",
+    isDarkTheme: (state) =>
+      state?.themeGlobal === "dark" ? "md-modenight" : "md-sunny",
   },
 });

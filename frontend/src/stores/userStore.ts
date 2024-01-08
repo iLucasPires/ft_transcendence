@@ -1,15 +1,15 @@
-import { defineStore } from "pinia";
 import Cookies from "js-cookie";
+import { defineStore } from "pinia";
 
-import { router } from "@/routes/vueRouter";
 import { api } from "@/routes/apiRouter";
+import { router } from "@/routes/vueRouter";
 import type { iUser } from "@/types/props.js";
 
 function handleInvalidCookie() {
+  router.push({ name: "login" });
   Cookies.remove("connect.sid");
   Cookies.remove("connect.flag");
   localStorage.removeItem("user");
-  router.push({ name: "login" });
 }
 
 async function handleResSaveStorage(res: Response, key: string = "user") {
@@ -18,17 +18,19 @@ async function handleResSaveStorage(res: Response, key: string = "user") {
   return data;
 }
 
-function newFormData(file: File | null) {
+function newFormData(file: File | null, key: string = "file") {
   const formData = new FormData();
-  if (file) formData.append("file", file);
+  if (file) formData.append(key, file);
   return formData;
 }
 
 export const useUserStore = defineStore("userStore", {
-  state: () => {
+  state: function () {
+    const localUser = localStorage.getItem("user");
+
     return {
       status: { isGame: false, isOnline: false },
-      meData: JSON.parse(localStorage.getItem("user") || "null") as iUser,
+      meData: localUser ? (JSON.parse(localUser) as iUser) : null,
     };
   },
 
@@ -44,7 +46,7 @@ export const useUserStore = defineStore("userStore", {
     },
 
     async unsetMe() {
-      this.meData = JSON.parse("null");
+      this.meData = null;
       handleInvalidCookie();
     },
 
@@ -65,9 +67,13 @@ export const useUserStore = defineStore("userStore", {
       await this.changeAvatar(file);
     },
 
-    async change2FA(totp: string, type: boolean) {
-      const res = type ? await api.enable2fa(totp) : await api.disable2fa(totp);
-      if (res.ok) this.meData.isTwoFactorAuthEnabled = type;
+    async change2FA(totp: string, type2fa: boolean) {
+      const res = type2fa
+        ? await api.enable2fa(totp)
+        : await api.disable2fa(totp);
+
+      if (res.ok && this.meData !== null)
+        this.meData.isTwoFactorAuthEnabled = type2fa;
     },
 
     changeStatusGame() {
@@ -77,9 +83,14 @@ export const useUserStore = defineStore("userStore", {
     changeStatusOnline() {
       this.status.isOnline = !this.status.isOnline;
     },
+
+    async verify2FA(totp: string) {
+      const res = await api.verify2fa(totp);
+      if (res.ok) router.push({ name: "lobby" });
+    },
   },
   getters: {
     isAuthenticated: (state) => state.meData !== null,
-    is2FA: (state) => state.meData.isTwoFactorAuthEnabled,
+    is2FA: (state) => state.meData?.isTwoFactorAuthEnabled,
   },
 });

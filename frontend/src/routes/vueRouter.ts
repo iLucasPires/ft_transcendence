@@ -22,6 +22,11 @@ const childrenLobby = [
     name: "edit-profile",
     component: () => import("@/pages/EditProfileView.vue"),
   },
+  {
+    path: "/chat",
+    name: "chat",
+    component: () => import("@/pages/ChatView.vue"),
+  },
 ];
 
 const routes = [
@@ -81,6 +86,7 @@ router.beforeEach(async (to, from, next) => {
   const { meData } = useStore;
 
   if (
+    meData &&
     meData.isTwoFactorAuthEnabled &&
     !meData.isTwoFactorAuthApproved &&
     to.name !== "2fa"
@@ -88,7 +94,7 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: "2fa" });
   }
 
-  if (to.name === "2fa" && !!meData.isTwoFactorAuthApproved) {
+  if (to.name === "2fa" && meData && !!meData.isTwoFactorAuthApproved) {
     return next({ name: "lobby" });
   }
 

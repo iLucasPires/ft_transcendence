@@ -7,7 +7,7 @@ export type iHistory = {
 export type iUser = {
   username: string;
   email: string;
-  intraId: number;
+  id: string;
   displayName: string;
   registrationComplete: boolean;
   avatarUrl: string;

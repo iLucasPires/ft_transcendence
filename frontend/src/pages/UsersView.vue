@@ -4,26 +4,27 @@ import { ref, onMounted } from "vue";
 import { api } from "@/routes/apiRouter";
 import { useAppStore } from "@/stores/appStore";
 import { useUserStore } from "@/stores/userStore";
-import CardDetailUser from "@/components/molecules/CardDetailUser.vue";
 import type { iUser } from "@/types/props";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
 
 const users = ref([] as iUser[]);
+const tabs = ["all", "friends", "blocked"];
 
 async function fetchUsers(tab: string) {
-  let res: Response | null = null;
+  const apiMethod = {
+    all: api.getAllUsers,
+    blocked: api.getAllBlockedUsers,
+    friends: api.getAllFriends,
+  }[tab];
 
-  if (tab === "all") res = await api.getAllUsers();
-  if (tab === "blocked") res = await api.getAllBlockedUsers();
-  if (tab === "friends") res = await api.getAllFriends();
-
-  const users = (await res?.json()) as iUser[];
-  return users.sort((a, b) => a.username.localeCompare(b.username));
+  const res = apiMethod ? await apiMethod() : await api.getAllUsers();
+  const users = (await res.json()) as iUser[];
+  return users.sort((a, b) => a.email.localeCompare(b.email));
 }
 
-async function handleBlock(username: string) {
+async function handleClickBlock(username: string) {
   const res =
     appStore.tab === "blocked"
       ? await api.unblockUser(username)
@@ -37,7 +38,7 @@ async function handleBlock(username: string) {
   } else appStore.changeMessageLog(`Failed to ${message} ${username}`);
 }
 
-async function handleAddFriend(username: string) {
+async function handleClickAddFriend(username: string) {
   const message = appStore.tab === "friends" ? "Unfriended" : "Added";
 
   const res =
@@ -63,56 +64,60 @@ async function handleChangeTab(tab: string) {
 }
 
 onMounted(async () => {
-  users.value = await fetchUsers(appStore.tab);
+  await handleChangeTab("all");
 });
 </script>
 
 <template>
-  <div class="mfull p-10">
-    <div class="mborder h-full p-5 mflex-col gap-5">
-      <h1 class="text-2xl font-bold">Users</h1>
-      <ul class="flex gap-1">
+  <div class="full card-padding">
+    <div class="md:border-card column h-full separate">
+      <div class="flex gap-1" data-tabs="tabs" role="tablist">
         <button
-          v-for="tab in ['all', 'friends', 'blocked']"
-          :class="`btn btn-sm ${appStore.tab === tab && 'btn-primary'}`"
-          @click="handleChangeTab(tab)"
-        >
-          {{ tab }}
-        </button>
-      </ul>
+          value="tab"
+          class="btn-tab"
+          v-for="tab in tabs"
+          v-bind:aria-selected="appStore.tab === tab"
+          v-on:click="handleChangeTab(tab)"
+          v-text="tab"
+        />
+      </div>
       <ul class="overflow-y-auto grid gap-2 md:grid-cols-1 lg:grid-cols-3">
         <li
+          class="column separate items-center border-card"
           v-for="user in users"
-          :key="user.intraId"
-          class="flex flex-col gap-2 mborder p-5 items-center"
+          v-bind:key="user.id"
         >
-          <CardDetailUser :url="user.avatarUrl" :name="user.username" />
-          <div
-            v-if="userStore.meData.username !== user.username"
-            class="join w-full"
-          >
+          <img
+            class="img-avatar"
+            v-bind:src="
+              user.avatarUrl || `https://robohash.org/${user.username}.png`
+            "
+            v-bind:alt="user.username"
+          />
+          <h2 class="title" v-text="user.username" />
+
+          <ul class="flex w-full mt-4 gap-2">
             <button
-              v-if="appStore.tab !== 'blocked'"
-              class="mbtn-tab btn-primary"
-              @click="handleAddFriend(user.username)"
-            >
-              {{ appStore.tab === "friends" ? "Unfriend" : "Add friend" }}
-            </button>
-            <button
-              class="mbtn-tab btn-secondary"
-              @click="handleBlock(user.username)"
-            >
-              {{ appStore.tab === "blocked" ? "Unblock" : "Block" }}
-            </button>
-          </div>
-          <div v-else class="join w-full">
-            <button
-              class="mbtn-tab btn-primary"
-              @click="$router.push({ name: 'profile' })"
-            >
-              See your profile
-            </button>
-          </div>
+              class="btn-full btn-primary"
+              v-on:click="$router.push('/profile')"
+              v-if="userStore.meData?.username === user.username"
+              v-text="'See your profile'"
+            />
+
+            <template v-else>
+              <button
+                class="btn-full btn-primary"
+                v-if="appStore.tab !== 'blocked'"
+                v-on:click="handleClickAddFriend(user.username)"
+                v-text="appStore.tab === 'friends' ? 'Unfriend' : 'Add friend'"
+              />
+              <button
+                class="btn-full btn-secondary"
+                v-on:click="handleClickBlock(user.username)"
+                v-text="appStore.tab === 'blocked' ? 'Unblock' : 'Block'"
+              />
+            </template>
+          </ul>
         </li>
       </ul>
     </div>

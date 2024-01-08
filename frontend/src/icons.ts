@@ -8,8 +8,8 @@ import {
   MdWorkhistoryRound,
   MdLogout,
   MdPerson,
-  MdLightmode,
-  MdNightlight,
+  MdSunny,
+  MdModenight,
   MdSettings,
   Si42,
   MdBlock,
@@ -18,6 +18,10 @@ import {
   MdSupervisoraccount,
   MdModeeditTwotone,
   GiBananaBunch,
+  MdEmail,
+  FaHamburger,
+  GiPingPongBat,
+  MdCrisisalert,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -29,13 +33,17 @@ addIcons(
   RiPingPongFill,
   MdWorkhistoryRound,
   MdKeyboarddoublearrowleft,
-  MdNightlight,
-  MdLightmode,
+  MdModenight,
+  MdSunny,
   Si42,
   MdBlock,
   MdModeedit,
   MdInfoRound,
   MdSupervisoraccount,
   MdModeeditTwotone,
-  GiBananaBunch
+  GiBananaBunch,
+  MdEmail,
+  FaHamburger,
+  GiPingPongBat,
+  MdCrisisalert
 );
