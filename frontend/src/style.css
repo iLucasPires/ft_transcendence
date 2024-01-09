@@ -48,7 +48,7 @@
   }
 
   .btn-full {
-    @apply btn w-full flex-1 text-primary-content;
+    @apply btn btn-sm md:btn-md w-full flex-1 text-primary-content;
   }
 
   .btn-nav {

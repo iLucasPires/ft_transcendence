@@ -23,11 +23,17 @@ onMounted(() => {
 </script>
 <template>
   <!-- Notification -->
-  <div v-if="appStore.log" class="absolute bottom-4 right-4 z-50">
-    <div role="alert" class="alert alert-info shadow-lg">
-      <Icon name="md-crisisalert" />
-      <span v-text="appStore.log" />
-    </div>
+  <div v-if="appStore.log.length > 0">
+    <ul class="column absolute bottom-4 right-4 z-50 gap-2">
+      <li
+        role="alert"
+        class="alert shadow-lg border border-primary"
+        v-for="item in appStore.log"
+      >
+        <Icon name="md-crisisalert" />
+        <span v-text="item" />
+      </li>
+    </ul>
   </div>
 
   <!-- modal Leave Game  -->
@@ -38,21 +44,14 @@ onMounted(() => {
       <div class="flex w-full gap-2">
         <button
           class="btn-full btn-primary"
-          v-bind:class="item.color"
-          v-on:click="item.onClick"
-          v-text="item.text"
-          v-for="item in [
-            {
-              text: 'Back to game',
-              color: 'btn-primary',
-              onClick: handleClickBackToGame,
-            },
-            {
-              text: 'Leave game',
-              color: 'btn-secondary',
-              onClick: handleClickLeaveGame,
-            },
-          ]"
+          v-on:click="handleClickBackToGame"
+          v-text="'Back to game'"
+        />
+        
+        <button
+          class="btn-full btn-secondary"
+          v-on:click="handleClickLeaveGame"
+          v-text="'Leave game'"
         />
       </div>
     </div>

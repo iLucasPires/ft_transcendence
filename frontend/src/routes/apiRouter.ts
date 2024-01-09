@@ -2,119 +2,150 @@ import Cookies from "js-cookie";
 import { router } from "./vueRouter";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
+const JSON_HEADER = { "Content-Type": "application/json" };
+
+export const utils = {
+  handleInvalidCookie: function (res: Response) {
+    if (res.status === 401 || res.status === 403) {
+      Cookies.remove("connect.sid");
+      Cookies.remove("connect.flag");
+      localStorage.removeItem("user");
+      router.push({ name: "login" });
+    }
+  },
+
+  handleResSaveStorage: async function (res: Response, key: string = "user") {
+    const dataJson = await res.json();
+
+    localStorage.setItem(key, JSON.stringify(dataJson));
+    return dataJson;
+  },
+
+  handleMessage: async function (res: Response) {
+    const { message } = await res.json();
+    return message;
+  },
+
+  newFormData: function (file: File | null, key: string = "file") {
+    const formData = new FormData();
+    if (file) formData.append(key, file);
+    return formData;
+  },
+
+  safeFetch: async function (
+    url: string,
+    method: string = "GET",
+    body: BodyInit | null = null,
+    headers: HeadersInit | undefined = undefined,
+    removeCookie: boolean = true
+  ) {
+    const res = await fetch(`${URL}/api/${url}`, {
+      method: method,
+      credentials: "include",
+      headers: headers,
+      body: body,
+    });
+    removeCookie && utils.handleInvalidCookie(res);
+    return res;
+  },
+};
 
 export const api = {
   getMeData: async function () {
-    return fetch(`${URL}/api/me`, {
-      method: "GET",
-      credentials: "include",
-    });
-  },
-
-  getAllUsers: async function () {
-    return await fetch(`${URL}/api/users`, {
-      method: "GET",
-      credentials: "include",
-    });
-  },
-
-  getAllBlockedUsers: async function () {
-    return await fetch(`${URL}/api/me/blocked`, {
-      method: "GET",
-      credentials: "include",
-    });
-  },
-
-  getAllFriends: async function () {
-    return await fetch(`${URL}/api/me/friends`, {
-      method: "GET",
-      credentials: "include",
-    });
-  },
-
-  updateUsernameMe: async function (newUsername: string) {
-    return await fetch(`${URL}/api/me`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: newUsername }),
-    });
-  },
-
-  async updateAvatarMe(formData: FormData) {
-    return await fetch(`${URL}/api/me/avatar`, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    const res = await utils.safeFetch("me");
+    return res;
   },
 
   async logout() {
-    return await fetch(`${URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
+    const res = await utils.safeFetch("auth/logout", "POST");
+    if (res.ok) {
+      localStorage.removeItem("user");
+      router.push({ name: "login" });
+    }
+  },
+
+  getAllUsers: async function () {
+    const res = await utils.safeFetch("users");
+    return res;
+  },
+
+  getAllBlockedUsers: async function () {
+    const res = await utils.safeFetch("me/blocked");
+    return res;
+  },
+
+  getAllFriends: async function () {
+    const res = await utils.safeFetch("me/friends");
+    return res;
+  },
+
+  updateUsernameMe: async function (newUsername: string) {
+    const data = JSON.stringify({ username: newUsername });
+    const res = await utils.safeFetch("me", "PATCH", data, {
+      "Content-Type": "application/json",
     });
+    return res;
+  },
+
+  async updateAvatarMe(file: File) {
+    const formData = utils.newFormData(file);
+    const res = await utils.safeFetch("me/avatar", "POST", formData, undefined);
+    return res;
   },
 
   async blockUser(username: string) {
-    return await fetch(`${URL}/api/users/${username}/block`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await utils.safeFetch(`users/${username}/block`, "POST");
+    return res;
   },
 
   async unblockUser(username: string) {
-    return await fetch(`${URL}/api/users/${username}/unblock`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await utils.safeFetch(`users/${username}/unblock`, "POST");
+    return res;
   },
 
   async addFriend(username: string) {
-    return await fetch(`${URL}/api/users/${username}/friend`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await utils.safeFetch(`users/${username}/friend`, "POST");
+    return res;
   },
 
   async unfriend(username: string) {
-    return await fetch(`${URL}/api/users/${username}/unfriend`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await utils.safeFetch(`users/${username}/unfriend`, "POST");
+    return res;
   },
 
   async enable2fa(code: string) {
-    return await fetch(`${URL}/api/auth/2fa/turn-on`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
-    });
+    const res = await utils.safeFetch(
+      "auth/2fa/turn-on",
+      "POST",
+      JSON.stringify({ code }),
+      JSON_HEADER,
+      false
+    );
+    return res;
   },
 
   async disable2fa(code: string) {
-    return await fetch(`${URL}/api/auth/2fa/turn-off`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
-    });
+    const res = await utils.safeFetch(
+      "auth/2fa/turn-off",
+      "POST",
+      JSON.stringify({ code }),
+      JSON_HEADER,
+      false
+    );
+    return res;
   },
 
   async generate2fa() {
-    return await fetch(`${URL}/api/auth/2fa/generate`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await utils.safeFetch("auth/2fa/generate", "POST");
+    return res;
   },
 
   async verify2fa(code: string) {
-    return await fetch(`${URL}/api/auth/2fa/verify`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
-    });
+    const res = await utils.safeFetch(
+      "auth/2fa/verify",
+      "POST",
+      JSON.stringify({ code })
+    );
+    return res;
   },
 };

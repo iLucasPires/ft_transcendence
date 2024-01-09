@@ -64,7 +64,7 @@ router.beforeEach(async (to, from, next) => {
   const hasCookie = document.cookie.includes("connect.flag");
 
   if (hasCookie) {
-    await useStore.setMe();
+    useStore.meData || (await useStore.setMe());
   }
 
   if (!useStore.isAuthenticated) {
@@ -83,18 +83,20 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: "lobby" });
   }
 
-  const { meData } = useStore;
-
   if (
-    meData &&
-    meData.isTwoFactorAuthEnabled &&
-    !meData.isTwoFactorAuthApproved &&
+    useStore.meData &&
+    useStore.meData.isTwoFactorAuthEnabled &&
+    !useStore.meData.isTwoFactorAuthApproved &&
     to.name !== "2fa"
   ) {
     return next({ name: "2fa" });
   }
 
-  if (to.name === "2fa" && meData && !!meData.isTwoFactorAuthApproved) {
+  if (
+    to.name === "2fa" &&
+    useStore.meData &&
+    !!useStore.meData.isTwoFactorAuthApproved
+  ) {
     return next({ name: "lobby" });
   }
 

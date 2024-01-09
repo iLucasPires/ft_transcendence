@@ -70,7 +70,7 @@ onMounted(async () => {
 
 <template>
   <div class="full card-padding">
-    <div class="md:border-card column h-full separate">
+    <div class="full column separate md:border-card">
       <div class="flex gap-1" data-tabs="tabs" role="tablist">
         <button
           value="tab"
@@ -87,6 +87,7 @@ onMounted(async () => {
           v-for="user in users"
           v-bind:key="user.id"
         >
+          <!-- user avatar, username, wins, losses -->
           <img
             class="img-avatar"
             v-bind:src="
@@ -95,14 +96,28 @@ onMounted(async () => {
             v-bind:alt="user.username"
           />
           <h2 class="title" v-text="user.username" />
-
-          <ul class="flex w-full mt-4 gap-2">
+          <ul class="wrap gap-2">
             <button
-              class="btn-full btn-primary"
-              v-on:click="$router.push('/profile')"
-              v-if="userStore.meData?.username === user.username"
-              v-text="'See your profile'"
-            />
+              className="btn btn-sm"
+              v-for="item in [
+                { name: 'Wins', value: 10 },
+                { name: 'Losses', value: 10 },
+              ]"
+            >
+              <span v-text="item.name" />
+              <div className="badge badge-primary" v-text="item.value" />
+            </button>
+          </ul>
+
+          <!-- buttons handle add friend, block, unblock -->
+          <ul class="flex w-full mt-4 gap-2">
+            <template v-if="userStore.meData?.username === user.username">
+              <button
+                class="btn-full btn-primary"
+                v-on:click="$router.push('/profile')"
+                v-text="'See your profile'"
+              />
+            </template>
 
             <template v-else>
               <button

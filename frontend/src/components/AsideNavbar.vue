@@ -40,7 +40,7 @@ function handleClickNav(url: string) {
       <menu class="column gap-2">
         <li>
           <button class="btn-nav" v-on:click="appStore.changeTheme()">
-            <Icon v-bind:name="appStore.isDarkTheme" />
+            <Icon v-bind:name="appStore.getIconByTheme" />
             <span
               class="hidden md:block whitespace-pre"
               v-text="'Change theme'"

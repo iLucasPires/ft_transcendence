@@ -3,29 +3,39 @@ import { ref, type Ref } from "vue";
 
 import { useUserStore } from "@/stores/userStore";
 import { api } from "@/routes/apiRouter";
-
 import OtpInput from "@/components/OtpInput.vue";
 
 const useStore = useUserStore();
-
 const totp: Ref<string> = ref("");
 const selectedFile: Ref<File | null> = ref(null);
 const modal: Ref<HTMLDialogElement | null> = ref(null);
 
-const prevUsername: Ref<string> = ref(useStore.meData?.username ?? "");
+const prevUsername: Ref<string> = ref("");
 const prevAvatar: Ref<string> = ref("");
 const qrCode: Ref<string> = ref("");
 
-async function handleSubmit() {
-  useStore.changeMe(prevUsername.value, selectedFile.value);
-}
+async function handleSubmit2fa() {
+  const is2FA = useStore.is2FA;
+  const success = await useStore.change2FA(totp.value, !is2FA);
 
-function handleSubmit2fa() {
-  if (!useStore.is2FA) useStore.change2FA(totp.value, true);
-  else useStore.change2FA(totp.value, false);
+  if (!success) return;
 
   qrCode.value = "";
   modal.value?.close();
+}
+
+function handleSubmit() {
+  useStore.changeUsername(prevUsername.value);
+  useStore.changeAvatar(selectedFile.value);
+
+  prevUsername.value = "";
+  selectedFile.value = null;
+}
+
+function handleReset() {
+  prevUsername.value = "";
+  selectedFile.value = null;
+  prevAvatar.value = "";
 }
 
 function showModal() {
@@ -54,6 +64,7 @@ function handleChangeAvatar(e: Event) {
       <form
         class="gap-4 full center flex-col max-w-md"
         v-on:submit.prevent="handleSubmit"
+        v-on:reset="handleReset"
       >
         <h1 class="title" v-text="'Edit Profile'" />
         <img
@@ -68,35 +79,44 @@ function handleChangeAvatar(e: Event) {
         <input
           type="text"
           placeholder="Nickname"
-          class="input input-bordered input-primary w-full"
+          class="input input-sm md:input-md input-bordered input-primary w-full"
           v-model="prevUsername"
         />
-
         <input
           type="file"
           accept="image/*"
           pattern="image/*"
-          class="file-input file-input-bordered file-input-primary w-full"
+          class="file-input file-input-sm md:file-input-md file-input-bordered file-input-primary w-full"
           v-on:change="handleChangeAvatar"
         />
-        <button
-          type="submit"
-          class="btn w-full btn-primary"
-          v-text="'Finish'"
-        />
+        <div class="flex w-full gap-2">
+          <button
+            type="submit"
+            class="btn-full btn-primary"
+            v-text="'Confirm'"
+          />
+
+          <button
+            type="reset"
+            class="btn-full btn-secondary"
+            v-text="'Cancel'"
+          />
+        </div>
         <span className="divider divider-primary" v-text="'2FA'" />
-        <button
-          type="button"
-          class="btn w-full btn-primary"
-          v-on:click="showModal"
-          v-text="useStore.is2FA ? 'Disable' : 'Enable'"
-        />
+        <div class="w-full">
+          <button
+            type="button"
+            class="btn-full btn-primary"
+            v-on:click="showModal"
+            v-text="useStore.is2FA ? 'Disable' : 'Enable'"
+          />
+        </div>
       </form>
     </div>
 
     <!--  Modal 2FA  -->
     <dialog class="modal" ref="modal">
-      <div class="modal-box column items-center w-full gap-4">
+      <div class="modal-box column items-center gap-4">
         <h2
           class="title"
           v-text="useStore.is2FA ? 'Disable 2FA' : 'Enable 2FA'"
@@ -109,7 +129,6 @@ function handleChangeAvatar(e: Event) {
               : 'Please scan the QR code below to enable 2FA'
           "
         />
-
         <img
           alt="loading"
           class="border border-primary rounded-lg h-full"

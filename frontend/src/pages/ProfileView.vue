@@ -47,8 +47,8 @@ const infos = computed(() => {
             v-bind:key="item.name"
             className="btn btn-sm"
           >
-            {{ item.name }}
-            <div className="badge badge-primary">{{ item.value }}</div>
+            <span v-text="item.name" />
+            <div className="badge badge-primary" v-text="item.value" />
           </button>
         </ul>
       </div>

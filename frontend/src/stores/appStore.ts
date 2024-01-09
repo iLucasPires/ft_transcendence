@@ -1,15 +1,10 @@
 import { defineStore } from "pinia";
 
-function getPreferredTheme() {
-  return window?.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "light"
-    : "dark";
-}
-
 export const useAppStore = defineStore("appStore", {
   state: function () {
     return {
-      log: "",
+      log: [] as string[],
+
       tab: "all",
       themeGlobal: "dark",
 
@@ -26,13 +21,29 @@ export const useAppStore = defineStore("appStore", {
     },
 
     setThemeGlobal() {
-      this.themeGlobal = localStorage.getItem("theme") || getPreferredTheme();
+      this.themeGlobal =
+        localStorage?.getItem("theme") ||
+        window?.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "light"
+          : "dark";
+
       this.domHtml?.setAttribute("data-theme", this.themeGlobal);
     },
 
-    changeMessageLog(log: string) {
-      this.log = log;
-      setTimeout(() => (this.log = ""), 5000);
+    changeMessageLog(messagesLog: string | string[]) {
+      const messagesLogIsArray = Array.isArray(messagesLog);
+
+      messagesLogIsArray
+        ? this.log.push(...messagesLog)
+        : this.log.push(messagesLog);
+
+      setTimeout(
+        () =>
+          messagesLogIsArray
+            ? this.log.splice(0, messagesLog.length)
+            : this.log.shift(),
+        3000
+      );
     },
 
     changetab(tab: string) {
@@ -50,13 +61,12 @@ export const useAppStore = defineStore("appStore", {
     openModalLeaveGame() {
       this.modalLeaveGame?.showModal();
     },
-
     closeModalLeaveGame() {
       this.modalLeaveGame?.close();
     },
   },
   getters: {
-    isDarkTheme: (state) =>
+    getIconByTheme: (state) =>
       state?.themeGlobal === "dark" ? "md-modenight" : "md-sunny",
   },
 });
