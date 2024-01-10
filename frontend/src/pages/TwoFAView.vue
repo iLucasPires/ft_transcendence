@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import { router } from "@/routes/vueRouter";
 import { useUserStore } from "@/stores/userStore";
 import OtpInput from "@/components/OtpInput.vue";
 
 const totp = ref("");
 const userStore = useUserStore();
+
+const verify2faAndRedirect = async (totp: string) => {
+  if (await userStore.verify2FA(totp)) {
+    router.push("/profile");
+  }
+}
 </script>
 
 <template>
@@ -18,7 +25,7 @@ const userStore = useUserStore();
       />
       <OtpInput
         v-model:modelValue="totp"
-        v-on:submit.prevent="userStore.verify2FA(totp)"
+        v-on:submit.prevent="verify2faAndRedirect(totp)"
       />
     </div>
   </main>
