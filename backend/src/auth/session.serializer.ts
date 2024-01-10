@@ -1,7 +1,11 @@
+import { UserWithSession } from "@/users/interfaces";
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
-import { UserEntity } from "../users/user.entity";
-import { UsersService } from "../users/users.service";
+import { SessionData } from "express-session";
+
+type PassportSession = SessionData["passport"]["user"];
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -10,10 +14,20 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: UserEntity, done: Function): void {
-    done(null, user.id);
+    const { id, isTwoFactorAuthEnabled } = user;
+    const userSession: PassportSession = { id, isTwoFactorAuthEnabled };
+
+    if (isTwoFactorAuthEnabled) {
+      userSession.isTwoFactorAuthApproved = false;
+    }
+
+    done(null, userSession);
   }
 
-  async deserializeUser(id: string, done: Function): Promise<void> {
+  async deserializeUser(
+    { id, ...session }: PassportSession,
+    done: Function,
+  ): Promise<void> {
     const user = await this.usersService.findOneById(id);
 
     if (!user) {
@@ -23,6 +37,12 @@ export class SessionSerializer extends PassportSerializer {
       );
     }
 
-    done(null, user);
+    const userWithSession: UserWithSession = { ...user };
+
+    if (user.isTwoFactorAuthEnabled) {
+      userWithSession.isTwoFactorAuthApproved = session.isTwoFactorAuthApproved ?? false;
+    }
+
+    done(null, userWithSession);
   }
 }

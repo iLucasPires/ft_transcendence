@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UsersModule } from "./users/users.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TwoFactorAuthModule } from "./2fa/2fa.module";
+import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
-import { FilesModule } from './files/files.module';
-import { MeController } from './me/me.controller';
-import { MeModule } from './me/me.module';
+import { FilesModule } from "./files/files.module";
+import { MeController } from "./me/me.controller";
+import { MeModule } from "./me/me.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MeModule } from './me/me.module';
     AuthModule,
     FilesModule,
     MeModule,
+    TwoFactorAuthModule,
   ],
   controllers: [AppController, MeController],
 })

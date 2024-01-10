@@ -1,59 +1,91 @@
 import { defineStore } from "pinia";
+import { api, utils } from "@/routes/apiRouter";
+import { useAppStore } from "./appStore";
 import type { iUser } from "@/types/props.js";
 
-import api from "@/routes/apiRouter";
-import { useAppStore } from "./appStore";
-
 export const useUserStore = defineStore("userStore", {
-  state: () => {
+  state: function () {
     return {
       status: { isGame: false, isOnline: false },
-      meData: JSON.parse(localStorage.getItem("user") || "null") as iUser,
+      meData: null as iUser | null,
     };
   },
 
   actions: {
     async setMe() {
+      const appStore = useAppStore();
       const res = await api.getMeData();
 
-      if (res?.ok) this.meData = await api.handleResponseToJson(res);
-      if (res?.status === 401 || res?.status === 403) {
-        const uiStore = useAppStore();
-
-        await api.logout();
-        api.handleInvalidCookie();
-        uiStore.changeMessageLog(res.statusText);
+      if (res.ok) {
+        this.meData = await utils.handleResSaveStorage(res);
+        appStore.changeMessageLog("Login success!");
+        return true;
       }
+
+      appStore.changeMessageLog("Login failed!");
+      return false;
     },
 
     async unsetMe() {
-      const uiStore = useAppStore();
+      const appStore = useAppStore();
 
-      const res = await api.logout();
-      api.handleInvalidCookie();
-      this.meData = JSON.parse("null");
-      uiStore.changeMessageLog("Success logout user");
+      await api.logout();
+      this.meData = null;
+      appStore.changeMessageLog("Logout success!");
+      return true;
     },
 
-    async changeMe(username: string, file: File | null) {
-      const uiStore = useAppStore();
+    async changeUsername(nickname: string) {
+      const appStore = useAppStore();
 
-      if (username.match(/^[a-zA-Z0-9]+$/)) {
-        const res = await api.updateUsernameMe(username);
-
-        if (res?.ok) this.meData = await api.handleResponseToJson(res);
-        else
-          uiStore.changeMessageLog(res.statusText || "Error update username");
+      if (!nickname) return false;
+      if (nickname === this.meData?.username) {
+        appStore.changeMessageLog("nickname is empty or equal");
+        return false;
       }
 
-      if (file !== null) {
-        const formData = new FormData();
-        formData.append("file", file);
+      const res = await api.updateUsernameMe(nickname);
 
-        const res = await api.updateAvatarMe(formData);
-        if (res?.ok) this.meData = await api.handleResponseToJson(res);
-        else uiStore.changeMessageLog(res.statusText || "Error update avatar");
+      if (res.ok && this.meData) {
+        this.meData.username = nickname;
+        appStore.changeMessageLog("Username changed!");
+        return true;
       }
+
+      appStore.changeMessageLog(await utils.handleMessage(res));
+      return false;
+    },
+
+    async changeAvatar(file: File | null) {
+      if (!file) return false;
+
+      const appStore = useAppStore();
+      const res = await api.updateAvatarMe(file);
+
+      if (res.ok && this.meData) {
+        const { avatarUrl } = await res.json();
+        this.meData.avatarUrl = avatarUrl;
+        appStore.changeMessageLog("Avatar changed!");
+        return true;
+      }
+
+      appStore.changeMessageLog(await utils.handleMessage(res));
+      return false;
+    },
+
+    async change2FA(totp: string, type2fa: boolean) {
+      const appStore = useAppStore();
+      const res = type2fa
+        ? await api.enable2fa(totp)
+        : await api.disable2fa(totp);
+
+      if (res.ok && this.meData) {
+        this.meData.isTwoFactorAuthEnabled = type2fa;
+        return true;
+      }
+
+      appStore.changeMessageLog(await utils.handleMessage(res));
+      return false;
     },
 
     changeStatusGame() {
@@ -63,8 +95,23 @@ export const useUserStore = defineStore("userStore", {
     changeStatusOnline() {
       this.status.isOnline = !this.status.isOnline;
     },
+
+    async verify2FA(totp: string) {
+      const res = await api.verify2fa(totp);
+      const appStore = useAppStore();
+
+      if (res.ok && this.meData) {
+        appStore.changeMessageLog("2FA verified!");
+        this.meData.isTwoFactorAuthApproved = true;
+        return true;
+      } else {
+        appStore.changeMessageLog(await utils.handleMessage(res));
+        return false;
+      }
+    },
   },
   getters: {
     isAuthenticated: (state) => state.meData !== null,
+    is2FA: (state) => state.meData?.isTwoFactorAuthEnabled,
   },
 });

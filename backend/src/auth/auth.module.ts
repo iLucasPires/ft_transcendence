@@ -1,13 +1,13 @@
+import { UsersModule } from "@/users/users.module";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { UsersModule } from "src/users/users.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PassportModule } from "@nestjs/passport";
-import { FortyTwoStrategy } from "./forty-two.strategy";
-import * as passport from "passport";
 import * as expressSession from "express-session";
+import * as passport from "passport";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
 import { SessionSerializer } from "./session.serializer";
+import { FortyTwoStrategy } from "./forty-two.strategy";
 
 @Module({
   imports: [

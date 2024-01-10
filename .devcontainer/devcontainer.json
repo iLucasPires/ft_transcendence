@@ -10,6 +10,7 @@
   ],
   "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
   "remoteEnv": {
+    "APP_NAME": "Pong",
     "VITE_BACKEND_URL": "http://localhost:3000",
     "FRONTEND_URL": "http://localhost:5173",
     "DB_HOST": "db",

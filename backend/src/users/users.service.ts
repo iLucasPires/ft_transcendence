@@ -1,3 +1,4 @@
+import { FilesService } from "@/files/files.service";
 import {
   BadRequestException,
   ConflictException,
@@ -5,10 +6,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "./user.entity";
-import { Repository, Not } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
-import { FilesService } from "src/files/files.service";
+import { UserEntity } from "./user.entity";
 
 @Injectable()
 export class UsersService {
@@ -147,6 +147,33 @@ export class UsersService {
     }
 
     return updatedUser;
+  }
+
+  getTwoFactorAuthSecret(user: UserEntity): Promise<string> {
+    return this.userRepository
+      .createQueryBuilder("user")
+      .select("user.twoFactorAuthSecret", "secret")
+      .where("user.id = :id", { id: user.id })
+      .getRawOne()
+      .then((result) => result.secret);
+  }
+
+  async setTwoFactorAuthSecret(
+    user: UserEntity,
+    secret: string,
+  ): Promise<void> {
+    await this.userRepository.update(user.id, { twoFactorAuthSecret: secret });
+  }
+
+  async turnOnTwoFactorAuth(user: UserEntity): Promise<void> {
+    await this.userRepository.update(user.id, { isTwoFactorAuthEnabled: true });
+  }
+
+  async turnOffTwoFactorAuth(user: UserEntity): Promise<void> {
+    await this.userRepository.update(user.id, {
+      isTwoFactorAuthEnabled: false,
+      twoFactorAuthSecret: null,
+    });
   }
 
   async block(blocker: UserEntity, username: string): Promise<void> {

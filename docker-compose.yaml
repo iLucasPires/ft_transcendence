@@ -24,6 +24,7 @@ services:
     volumes:
       - files:/app/uploads
     environment:
+      - APP_NAME
       - BASE_URL=${BACKEND_URL}
       - FRONTEND_URL
       - DB_HOST=db

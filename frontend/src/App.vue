@@ -1,30 +1,62 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import Alert from "./components/atoms/Alert.vue";
-import Loading from "./components/atoms/Loading.vue";
-import ModalUpdateProfile from "@/components/organisms/ModalUpdateProfile.vue";
-import ModalLeaveGame from "@/components/organisms/ModalLeaveGame.vue";
-
+import { onMounted, computed } from "vue";
 import { useAppStore } from "@/stores/appStore";
+import { useUserStore } from "./stores/userStore";
 
+const userStore = useUserStore();
 const appStore = useAppStore();
 
+function handleClickLeaveGame() {
+  userStore.status.isGame = false;
+  appStore.gameP5?.remove();
+  appStore.closeModalLeaveGame();
+}
+
+function handleClickBackToGame() {
+  appStore.closeModalLeaveGame();
+}
+
 onMounted(() => {
-  appStore.setModalUpdateProfile();
   appStore.setThemeGlobal();
   appStore.setModalLeaveGame();
 });
 </script>
-
 <template>
-  <Alert />
-  <Loading />
-  <ModalUpdateProfile />
-  <ModalLeaveGame />
+  <!-- Notification -->
+  <div v-if="appStore.log.length > 0">
+    <ul class="column absolute bottom-4 right-4 z-50 gap-2">
+      <li
+        role="alert"
+        class="alert shadow-lg border border-primary"
+        v-for="item in appStore.log"
+      >
+        <Icon name="md-crisisalert" />
+        <span v-text="item" />
+      </li>
+    </ul>
+  </div>
+
+  <!-- modal Leave Game  -->
+  <dialog id="modalLeaveGame" class="modal">
+    <div class="modal-box">
+      <h3 class="title" v-text="'Leave Game'" />
+      <p class="py-4" v-text="'Are you sure you want to leave the game?'" />
+      <div class="flex w-full gap-2">
+        <button
+          class="btn-full btn-primary"
+          v-on:click="handleClickBackToGame"
+          v-text="'Back to game'"
+        />
+        
+        <button
+          class="btn-full btn-secondary"
+          v-on:click="handleClickLeaveGame"
+          v-text="'Leave game'"
+        />
+      </div>
+    </div>
+  </dialog>
+
+  <!-- router view  -->
   <RouterView />
 </template>
-
-<style>
-@import "@/utils/styles/global.css";
-@import "@/utils/styles/tailwind.css";
-</style>

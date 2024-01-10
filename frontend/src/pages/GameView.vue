@@ -22,21 +22,23 @@ function handleClickStartGame() {
 </script>
 
 <template>
-  <div class="w-full h-full p-10">
-    <div class="border-2 border-base-300 rounded h-full w-full p-5">
-      <h1 class="text-2xl font-bold mb-5">Game</h1>
+  <div class="full card-padding">
+    <div class="md:border-card full column separate justify-center">
       <div
         id="game"
         ref="gameRef"
-        class="flex justify-center items-center bg-base-300 w-full h-[94%]"
+        class="center bg-base-300 w-full h-[94%] rounded"
       >
         <button
           v-if="!userStore.status.isGame"
-          class="btn btn-primary"
+          class="btn btn-primary hidden md:block"
           @click="handleClickStartGame()"
         >
           Start Game
         </button>
+        <h2 class="md:hidden text-primary text-center">
+          this game not support mobile
+        </h2>
       </div>
     </div>
   </div>

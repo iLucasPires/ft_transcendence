@@ -1,3 +1,4 @@
+import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import {
   Controller,
   Get,
@@ -9,16 +10,15 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { IsAuthenticatedGuard } from "src/auth/guards/authenticated.guard";
+import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { Request } from "express";
 import { ListUsersDto } from "./dto";
 import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
-import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { Request } from "express";
 
 @Controller("users")
 @ApiCookieAuth("connect.sid")
-@UseGuards(IsAuthenticatedGuard)
+@UseGuards(TwoFactorAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -42,7 +42,7 @@ export class UsersController {
     @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
   ): Promise<UserEntity[]> {
-    return this.usersService.findMany(req.user as UserEntity, listUsersDto);
+    return this.usersService.findMany(req.user, listUsersDto);
   }
 
   @Get(":username")
@@ -77,7 +77,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async block(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.block(req.user as UserEntity, username);
+    await this.usersService.block(req.user, username);
   }
 
   @Post(":username/unblock")
@@ -99,7 +99,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async unblock(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.unblock(req.user as UserEntity, username);
+    await this.usersService.unblock(req.user, username);
   }
 
   @Post(":username/friend")
@@ -121,7 +121,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async addFriend(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.addFriend(req.user as UserEntity, username);
+    await this.usersService.addFriend(req.user, username);
   }
 
   @Post(":username/unfriend")
@@ -143,6 +143,6 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeFriend(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.removeFriend(req.user as UserEntity, username);
+    await this.usersService.removeFriend(req.user, username);
   }
 }

@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app {
+  @apply w-full h-screen;
+}
+
+@layer components {
+  .full {
+    @apply w-full h-full;
+  }
+
+  .column {
+    @apply flex flex-col;
+  }
+
+  .row {
+    @apply flex flex-row;
+  }
+
+  .center {
+    @apply flex items-center justify-center;
+  }
+
+  .wrap {
+    @apply flex flex-wrap;
+  }
+
+  .separate {
+    @apply gap-4 p-2 md:p-5;
+  }
+
+  .title {
+    @apply text-2xl font-bold;
+  }
+
+  .card-padding {
+    @apply p-4 md:p-10;
+  }
+
+  .img-avatar {
+    @apply w-20 h-20 rounded-full;
+  }
+
+  .btn-tab {
+    @apply btn btn-sm aria-selected:btn-primary ;
+  }
+
+  .btn-full {
+    @apply btn btn-sm md:btn-md w-full flex-1 text-primary-content;
+  }
+
+  .btn-nav {
+    @apply btn md:btn-md btn-sm flex-nowrap justify-start  gap-6 overflow-hidden w-full;
+    @apply focus:focus:btn-primary hover:btn-primary;
+  }
+
+  .smooth {
+    @apply transition-all duration-300;
+  }
+
+  .border-card {
+    @apply border-2 border-base-300 rounded;
+  }
+}
