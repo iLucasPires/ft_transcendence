@@ -63,7 +63,8 @@ export const useUserStore = defineStore("userStore", {
       const res = await api.updateAvatarMe(file);
 
       if (res.ok && this.meData) {
-        this.meData = await utils.handleResSaveStorage(res);
+        const { avatarUrl } = await res.json();
+        this.meData.avatarUrl = avatarUrl;
         appStore.changeMessageLog("Avatar changed!");
         return true;
       }
