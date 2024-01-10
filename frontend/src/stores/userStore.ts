@@ -5,11 +5,9 @@ import type { iUser } from "@/types/props.js";
 
 export const useUserStore = defineStore("userStore", {
   state: function () {
-    const localUser = localStorage.getItem("user");
-
     return {
       status: { isGame: false, isOnline: false },
-      meData: localUser ? (JSON.parse(localUser) as iUser) : null,
+      meData: null as iUser | null,
     };
   },
 
@@ -80,7 +78,7 @@ export const useUserStore = defineStore("userStore", {
         ? await api.enable2fa(totp)
         : await api.disable2fa(totp);
 
-      if (res.ok && this.meData !== null) {
+      if (res.ok && this.meData) {
         this.meData.isTwoFactorAuthEnabled = type2fa;
         return true;
       }
@@ -99,6 +97,16 @@ export const useUserStore = defineStore("userStore", {
 
     async verify2FA(totp: string) {
       const res = await api.verify2fa(totp);
+      const appStore = useAppStore();
+
+      if (res.ok && this.meData) {
+        appStore.changeMessageLog("2FA verified!");
+        this.meData.isTwoFactorAuthApproved = true;
+        return true;
+      } else {
+        appStore.changeMessageLog(await utils.handleMessage(res));
+        return false;
+      }
     },
   },
   getters: {

@@ -21,12 +21,7 @@ export const useAppStore = defineStore("appStore", {
     },
 
     setThemeGlobal() {
-      this.themeGlobal =
-        localStorage?.getItem("theme") ||
-        window?.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "light"
-          : "dark";
-
+      this.themeGlobal = localStorage.getItem("theme") || "dark";
       this.domHtml?.setAttribute("data-theme", this.themeGlobal);
     },
 

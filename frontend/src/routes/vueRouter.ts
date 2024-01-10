@@ -64,7 +64,9 @@ router.beforeEach(async (to, from, next) => {
   const hasCookie = document.cookie.includes("connect.flag");
 
   if (hasCookie) {
-    useStore.meData || (await useStore.setMe());
+    if (!useStore.meData) {
+      await useStore.setMe();
+    }
   }
 
   if (!useStore.isAuthenticated) {

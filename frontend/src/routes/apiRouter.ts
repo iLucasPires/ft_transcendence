@@ -9,7 +9,6 @@ export const utils = {
     if (res.status === 401 || res.status === 403) {
       Cookies.remove("connect.sid");
       Cookies.remove("connect.flag");
-      localStorage.removeItem("user");
       router.push({ name: "login" });
     }
   },
@@ -144,7 +143,9 @@ export const api = {
     const res = await utils.safeFetch(
       "auth/2fa/verify",
       "POST",
-      JSON.stringify({ code })
+      JSON.stringify({ code }),
+      JSON_HEADER,
+      false
     );
     return res;
   },
