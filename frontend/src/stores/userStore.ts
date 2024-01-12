@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { api, utils } from "@/routes/apiRouter";
 import { useAppStore } from "./appStore";
-import { router } from "@/routes/vueRouter";
 import type { iUser } from "@/types/props.js";
 
 export const useUserStore = defineStore("userStore", {
@@ -20,12 +19,10 @@ export const useUserStore = defineStore("userStore", {
       if (res.ok) {
         this.meData = await utils.handleResSaveStorage(res);
         appStore.changeMessageLog("Login success!");
-        router.push({ name: "lobby" });
         return true;
       }
 
       appStore.changeMessageLog("Login failed!");
-      router.push({ name: "login" });
       return false;
     },
 
@@ -36,14 +33,12 @@ export const useUserStore = defineStore("userStore", {
       if (res.ok) {
         this.meData = null;
         appStore.changeMessageLog("Logout success!");
-        router.push({ name: "login" });
         return true;
       }
 
       appStore.changeMessageLog("Forced logout!");
       utils.handleInvalidCookie(res);
-      router.push({ name: "login" });
-      return false;
+      return true;
     },
 
     async changeCompleteRegistration() {
@@ -89,7 +84,7 @@ export const useUserStore = defineStore("userStore", {
       const res = await api.updateAvatarMe(file);
 
       if (res.ok && this.meData) {
-        this.meData.avatarUrl = ((await res.json()) as iUser).avatarUrl;
+        this.meData = await res.json();
         appStore.changeMessageLog("Avatar changed!");
         return true;
       }
@@ -128,7 +123,6 @@ export const useUserStore = defineStore("userStore", {
       if (res.ok && this.meData) {
         appStore.changeMessageLog("Code verified!");
         this.meData.isTwoFactorAuthApproved = true;
-        router.push({ name: "lobby" });
         return true;
       }
 

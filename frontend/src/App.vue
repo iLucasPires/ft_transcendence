@@ -35,7 +35,7 @@ onMounted(() => {
   <dialog
     id="modalLeaveGame"
     class="modal modal-open"
-    v-if="appStore.modalLeaveGame"
+    v-if="appStore && appStore.modalLeaveGame"
   >
     <div class="modal-box">
       <h3 class="title" v-text="'Leave Game'" />

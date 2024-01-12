@@ -14,8 +14,11 @@ const menuList = [
 ];
 
 function handleClickNav(url: string) {
-  if (userStore.status.isGame) appStore.changeModalLeaveGame();
-  else router.push(url);
+  userStore.status.isGame ? appStore.changeModalLeaveGame() : router.push(url);
+}
+
+async function handleLeaveGame() {
+  (await userStore.unsetMe()) && router.push({ name: "login" });
 }
 </script>
 
@@ -49,7 +52,7 @@ function handleClickNav(url: string) {
         </li>
 
         <li>
-          <button class="btn-nav" v-on:click="userStore.unsetMe()">
+          <button class="btn-nav" v-on:click="handleLeaveGame">
             <Icon v-bind:name="'md-logout'" />
             <span class="hidden md:block whitespace-pre" v-text="'Logout'" />
           </button>

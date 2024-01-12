@@ -5,27 +5,27 @@ const childrenLobby = [
   {
     path: "game",
     name: "game",
-    component: () => import("@/pages/GameView.vue"),
+    component: () => import("@/pages/Lobby/GameView.vue"),
   },
   {
     path: "profile",
     name: "profile",
-    component: () => import("@/pages/ProfileView.vue"),
+    component: () => import("@/pages/Lobby/ProfileView.vue"),
   },
   {
     path: "users",
     name: "users",
-    component: () => import("@/pages/UsersView.vue"),
+    component: () => import("@/pages/Lobby/UsersView.vue"),
   },
   {
     path: "/profile/edit",
     name: "edit-profile",
-    component: () => import("@/pages/EditProfileView.vue"),
+    component: () => import("@/pages/Lobby/EditView.vue"),
   },
   {
     path: "/chat",
     name: "chat",
-    component: () => import("@/pages/ChatView.vue"),
+    component: () => import("@/pages/Lobby/ChatView.vue"),
   },
 ];
 
@@ -43,7 +43,7 @@ const routes = [
   {
     path: "/",
     name: "lobby",
-    component: () => import("@/pages/LobbyView.vue"),
+    component: () => import("@/pages/Lobby/LobbyView.vue"),
     redirect: { name: "profile" },
     children: childrenLobby,
   },
@@ -65,7 +65,9 @@ router.beforeEach(async (to, from, next) => {
 
   if (hasCookie) {
     if (!useStore.meData) {
-      await useStore.setMe();
+      return (await useStore.setMe())
+        ? next({ name: "lobby" })
+        : next({ name: "login" });
     }
   }
 

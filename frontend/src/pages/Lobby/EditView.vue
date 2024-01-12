@@ -68,7 +68,7 @@ function handleChangeAvatar(e: Event) {
       >
         <h1 class="title" v-text="'Edit Profile'" />
         <div className="avatar">
-          <div className="w-32 rounded-full">
+          <div className="w-32 rounded-full bg-base-300">
             <img
               v-bind:src="
                 prevAvatar ||
@@ -76,7 +76,6 @@ function handleChangeAvatar(e: Event) {
                 `https://robohash.org/${userStore.meData?.username}.png`
               "
               v-bind:alt="`avatar of ${userStore.meData?.username}`"
-              v-if="prevAvatar || userStore.meData?.avatarUrl"
             />
           </div>
         </div>

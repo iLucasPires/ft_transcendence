@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onUnmounted, ref, type Ref } from "vue";
+import { onUnmounted, ref } from "vue";
 import { useAppStore } from "@/stores/appStore";
 import { useUserStore } from "@/stores/userStore";
 import { startGame } from "@/utils/game";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
-const gameRef: Ref<HTMLElement | null> = ref(null);
+const gameRef = ref<HTMLElement | null>(null);
 
 onUnmounted(function () {
   appStore.gameP5Instance?.remove();

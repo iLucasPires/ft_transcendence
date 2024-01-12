@@ -75,10 +75,10 @@ onMounted(async () => {
         <button
           value="tab"
           class="btn-tab"
-          v-for="tab in tabs"
           v-bind:aria-selected="appStore.tab === tab"
           v-on:click="handlechangeTab(tab)"
           v-text="tab"
+          v-for="tab in tabs"
         />
       </div>
       <ul class="overflow-y-auto grid gap-2 md:grid-cols-1 lg:grid-cols-3">
@@ -87,10 +87,8 @@ onMounted(async () => {
           v-for="user in users"
           v-bind:key="user.id"
         >
-          <!-- user avatar, username, wins, losses -->
-
           <div className="avatar">
-            <div className="w-24 rounded-full">
+            <div className="w-24 rounded-full bg-base-300">
               <img
                 v-bind:src="
                   user.avatarUrl || `https://robohash.org/${user.username}.png`
@@ -113,8 +111,6 @@ onMounted(async () => {
               <div className="badge badge-primary" v-text="item.value" />
             </button>
           </ul>
-
-          <!-- buttons handle add friend, block, unblock -->
           <ul class="flex w-full mt-4 gap-2">
             <template v-if="userStore.meData?.username === user.username">
               <button

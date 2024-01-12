@@ -9,10 +9,7 @@ const infos = computed(() => {
     { name: "Wins", value: 10 },
     { name: "Losses", value: 10 },
     { name: "Status", value: "Online" },
-    {
-      name: "2FA",
-      value: userStore.meData?.isTwoFactorAuthEnabled ? "Enabled" : "Disabled",
-    },
+    { name: "2FA", value: userStore.is2FA ? "Enabled" : "Disabled" },
   ];
 });
 </script>
@@ -30,7 +27,7 @@ const infos = computed(() => {
         </button>
         <div class="flex items-end gap-4">
           <div className="avatar">
-            <div className="w-24 rounded-full">
+            <div className="w-24 rounded-full bg-base-300">
               <img
                 v-bind:src="
                   userStore.meData?.avatarUrl ||

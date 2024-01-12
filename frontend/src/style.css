@@ -39,10 +39,6 @@
     @apply p-4 md:p-10;
   }
 
-  .img-avatar {
-    @apply w-20 h-20 rounded-full;
-  }
-
   .btn-tab {
     @apply btn btn-sm aria-selected:btn-primary ;
   }

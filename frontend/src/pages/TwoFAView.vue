@@ -6,10 +6,6 @@ import OtpInput from "@/components/OtpInput.vue";
 const totp = ref("");
 const userStore = useUserStore();
 
-const verify2faAndRedirect = async (totp: string) => {
-  await userStore.verify2FA(totp);
-};
-
 </script>
 
 <template>
@@ -22,7 +18,12 @@ const verify2faAndRedirect = async (totp: string) => {
       />
       <OtpInput
         v-model:modelValue="totp"
-        v-on:submit.prevent="verify2faAndRedirect(totp)"
+        v-on:submit.prevent="
+          async () => {
+            await userStore.verify2FA(totp) 
+            && $router.push({ name: 'home' });
+          }
+        "
       />
     </div>
   </main>
