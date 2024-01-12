@@ -88,13 +88,18 @@ onMounted(async () => {
           v-bind:key="user.id"
         >
           <!-- user avatar, username, wins, losses -->
-          <img
-            class="img-avatar"
-            v-bind:src="
-              user.avatarUrl || `https://robohash.org/${user.username}.png`
-            "
-            v-bind:alt="user.username"
-          />
+
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img
+                v-bind:src="
+                  user.avatarUrl || `https://robohash.org/${user.username}.png`
+                "
+                v-bind:alt="`avatar of ${user.username}`"
+              />
+            </div>
+          </div>
+
           <h2 class="title" v-text="user.username" />
           <ul class="wrap gap-2">
             <button

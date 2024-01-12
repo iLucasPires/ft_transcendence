@@ -3,12 +3,6 @@ import { computed } from "vue";
 import { useUserStore } from "@/stores/userStore";
 
 const userStore = useUserStore();
-const photoProfile = computed(() => {
-  return (
-    userStore.meData?.avatarUrl ||
-    `https://robohash.org/${userStore.meData?.username}.png`
-  );
-});
 
 const infos = computed(() => {
   return [
@@ -34,13 +28,20 @@ const infos = computed(() => {
           <span class="hidden md:inline-block">Edit profile</span>
           <Icon name="md-modeedit" />
         </button>
-        <div class="flex items-end gap-2">
-          <img
-            class="img-avatar"
-            v-bind:alt="'profile picture'"
-            v-bind:src="photoProfile"
-          />
-          <h2 class="title" v-text="userStore.meData?.username" />
+        <div class="flex items-end gap-4">
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img
+                v-bind:src="
+                  userStore.meData?.avatarUrl ||
+                  `https://robohash.org/${userStore.meData?.username}.png`
+                "
+                v-bind:alt="'profile picture'"
+              />
+            </div>
+          </div>
+
+          <h2 class="text-3xl font-bold" v-text="userStore.meData?.username" />
         </div>
         <ul class="wrap gap-2">
           <button

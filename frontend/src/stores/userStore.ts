@@ -73,10 +73,11 @@ export const useUserStore = defineStore("userStore", {
 
       if (res.ok && this.meData) {
         this.meData.username = nickname;
+        this.meData.registrationComplete = true;
         appStore.changeMessageLog("Username changed!");
         return true;
       }
-      
+
       appStore.changeMessageLog(await utils.handleMessage(res));
       return false;
     },
@@ -88,7 +89,7 @@ export const useUserStore = defineStore("userStore", {
       const res = await api.updateAvatarMe(file);
 
       if (res.ok && this.meData) {
-        this.meData.avatarUrl = await res.json();
+        this.meData.avatarUrl = ((await res.json()) as iUser).avatarUrl;
         appStore.changeMessageLog("Avatar changed!");
         return true;
       }
