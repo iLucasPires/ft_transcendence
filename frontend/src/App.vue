@@ -8,17 +8,12 @@ const appStore = useAppStore();
 
 function handleClickLeaveGame() {
   userStore.status.isGame = false;
-  appStore.gameP5?.remove();
-  appStore.closeModalLeaveGame();
-}
-
-function handleClickBackToGame() {
-  appStore.closeModalLeaveGame();
+  appStore.gameP5Instance?.remove();
+  appStore.changeModalLeaveGame();
 }
 
 onMounted(() => {
-  appStore.setThemeGlobal();
-  appStore.setModalLeaveGame();
+  appStore.setTheme();
 });
 </script>
 <template>
@@ -37,17 +32,20 @@ onMounted(() => {
   </div>
 
   <!-- modal Leave Game  -->
-  <dialog id="modalLeaveGame" class="modal">
+  <dialog
+    id="modalLeaveGame"
+    class="modal modal-open"
+    v-if="appStore.modalLeaveGame"
+  >
     <div class="modal-box">
       <h3 class="title" v-text="'Leave Game'" />
       <p class="py-4" v-text="'Are you sure you want to leave the game?'" />
       <div class="flex w-full gap-2">
         <button
           class="btn-full btn-primary"
-          v-on:click="handleClickBackToGame"
+          v-on:click="appStore.changeModalLeaveGame"
           v-text="'Back to game'"
         />
-        
         <button
           class="btn-full btn-secondary"
           v-on:click="handleClickLeaveGame"

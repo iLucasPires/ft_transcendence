@@ -14,7 +14,7 @@ const menuList = [
 ];
 
 function handleClickNav(url: string) {
-  if (userStore.status.isGame) appStore.openModalLeaveGame();
+  if (userStore.status.isGame) appStore.changeModalLeaveGame();
   else router.push(url);
 }
 </script>

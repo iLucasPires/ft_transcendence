@@ -4,25 +4,21 @@ export const useAppStore = defineStore("appStore", {
   state: function () {
     return {
       log: [] as string[],
-
       tab: "all",
-      themeGlobal: "dark",
-
-      gameP5: null as any | null,
-      modalLeaveGame: null as HTMLDialogElement | null,
-
-      domHtml: document.querySelector("html"),
+      theme: "dark",
+      gameP5Instance: null as any,
+      modalLeaveGame: false,
     };
   },
 
   actions: {
-    setModalLeaveGame() {
-      this.modalLeaveGame = document.querySelector("#modalLeaveGame");
+    setTheme() {
+      this.theme = localStorage.getItem("theme") || "dark";
+      document.documentElement?.setAttribute("data-theme", this.theme);
     },
 
-    setThemeGlobal() {
-      this.themeGlobal = localStorage.getItem("theme") || "dark";
-      this.domHtml?.setAttribute("data-theme", this.themeGlobal);
+    changeModalLeaveGame() {
+      this.modalLeaveGame = !this.modalLeaveGame;
     },
 
     changeMessageLog(messagesLog: string | string[]) {
@@ -41,27 +37,20 @@ export const useAppStore = defineStore("appStore", {
       );
     },
 
-    changetab(tab: string) {
+    changeTab(tab: string) {
       this.tab = tab;
     },
 
     changeTheme() {
-      this.themeGlobal = this.themeGlobal === "dark" ? "light" : "dark";
-      this.domHtml?.setAttribute("data-theme", this.themeGlobal);
-      this.changeMessageLog(`Theme changed to ${this.themeGlobal}`);
+      this.theme = this.theme === "dark" ? "light" : "dark";
+      document.documentElement?.setAttribute("data-theme", this.theme);
+      this.changeMessageLog(`Theme changed to ${this.theme}`);
 
-      localStorage.setItem("theme", this.themeGlobal);
-    },
-
-    openModalLeaveGame() {
-      this.modalLeaveGame?.showModal();
-    },
-    closeModalLeaveGame() {
-      this.modalLeaveGame?.close();
+      localStorage.setItem("theme", this.theme);
     },
   },
   getters: {
     getIconByTheme: (state) =>
-      state?.themeGlobal === "dark" ? "md-modenight" : "md-sunny",
+      state?.theme === "dark" ? "md-modenight" : "md-sunny",
   },
 });

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { api, utils } from "@/routes/apiRouter";
 import { useAppStore } from "./appStore";
+import { router } from "@/routes/vueRouter";
 import type { iUser } from "@/types/props.js";
 
 export const useUserStore = defineStore("userStore", {
@@ -19,20 +20,44 @@ export const useUserStore = defineStore("userStore", {
       if (res.ok) {
         this.meData = await utils.handleResSaveStorage(res);
         appStore.changeMessageLog("Login success!");
+        router.push({ name: "lobby" });
         return true;
       }
 
       appStore.changeMessageLog("Login failed!");
+      router.push({ name: "login" });
       return false;
     },
 
     async unsetMe() {
       const appStore = useAppStore();
+      const res = await api.logout();
 
-      await api.logout();
-      this.meData = null;
-      appStore.changeMessageLog("Logout success!");
-      return true;
+      if (res.ok) {
+        this.meData = null;
+        appStore.changeMessageLog("Logout success!");
+        router.push({ name: "login" });
+        return true;
+      }
+
+      appStore.changeMessageLog("Forced logout!");
+      utils.handleInvalidCookie(res);
+      router.push({ name: "login" });
+      return false;
+    },
+
+    async changeCompleteRegistration() {
+      const appStore = useAppStore();
+      const res = await api.updateUsernameMe(this.meData?.username as string);
+
+      if (res.ok && this.meData) {
+        this.meData.registrationComplete = true;
+        appStore.changeMessageLog("Registration complete!");
+        return true;
+      }
+
+      appStore.changeMessageLog("Registration failed!");
+      return false;
     },
 
     async changeUsername(nickname: string) {
@@ -51,7 +76,7 @@ export const useUserStore = defineStore("userStore", {
         appStore.changeMessageLog("Username changed!");
         return true;
       }
-
+      
       appStore.changeMessageLog(await utils.handleMessage(res));
       return false;
     },
@@ -63,8 +88,7 @@ export const useUserStore = defineStore("userStore", {
       const res = await api.updateAvatarMe(file);
 
       if (res.ok && this.meData) {
-        const { avatarUrl } = await res.json();
-        this.meData.avatarUrl = avatarUrl;
+        this.meData.avatarUrl = await res.json();
         appStore.changeMessageLog("Avatar changed!");
         return true;
       }
@@ -101,16 +125,18 @@ export const useUserStore = defineStore("userStore", {
       const appStore = useAppStore();
 
       if (res.ok && this.meData) {
-        appStore.changeMessageLog("2FA verified!");
+        appStore.changeMessageLog("Code verified!");
         this.meData.isTwoFactorAuthApproved = true;
+        router.push({ name: "lobby" });
         return true;
-      } else {
-        appStore.changeMessageLog(await utils.handleMessage(res));
-        return false;
       }
+
+      appStore.changeMessageLog(await utils.handleMessage(res));
+      return false;
     },
   },
   getters: {
+    isComplete: (state) => state.meData?.registrationComplete === true,
     isAuthenticated: (state) => state.meData !== null,
     is2FA: (state) => state.meData?.isTwoFactorAuthEnabled,
   },

@@ -58,13 +58,13 @@ async function handleClickAddFriend(username: string) {
   }
 }
 
-async function handleChangeTab(tab: string) {
+async function handlechangeTab(tab: string) {
   users.value = await fetchUsers(tab);
-  appStore.changetab(tab);
+  appStore.changeTab(tab);
 }
 
 onMounted(async () => {
-  await handleChangeTab("all");
+  await handlechangeTab("all");
 });
 </script>
 
@@ -77,7 +77,7 @@ onMounted(async () => {
           class="btn-tab"
           v-for="tab in tabs"
           v-bind:aria-selected="appStore.tab === tab"
-          v-on:click="handleChangeTab(tab)"
+          v-on:click="handlechangeTab(tab)"
           v-text="tab"
         />
       </div>

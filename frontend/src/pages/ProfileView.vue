@@ -31,6 +31,7 @@ const infos = computed(() => {
           class="btn btn-primary btn-sm absolute top-4 right-4"
           v-on:click="$router.push({ name: 'edit-profile' })"
         >
+          <span class="hidden md:inline-block">Edit profile</span>
           <Icon name="md-modeedit" />
         </button>
         <div class="flex items-end gap-2">

@@ -1,5 +1,4 @@
 import Cookies from "js-cookie";
-import { router } from "./vueRouter";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 const JSON_HEADER = { "Content-Type": "application/json" };
@@ -9,7 +8,6 @@ export const utils = {
     if (res.status === 401 || res.status === 403) {
       Cookies.remove("connect.sid");
       Cookies.remove("connect.flag");
-      router.push({ name: "login" });
     }
   },
 
@@ -57,10 +55,7 @@ export const api = {
 
   async logout() {
     const res = await utils.safeFetch("auth/logout", "POST");
-    if (res.ok) {
-      localStorage.removeItem("user");
-      router.push({ name: "login" });
-    }
+    return res;
   },
 
   getAllUsers: async function () {

@@ -9,11 +9,11 @@ const userStore = useUserStore();
 const gameRef: Ref<HTMLElement | null> = ref(null);
 
 onUnmounted(function () {
-  appStore.gameP5?.remove();
+  appStore.gameP5Instance?.remove();
 });
 
 function handleClickStartGame() {
-  appStore.gameP5 = startGame(
+  appStore.gameP5Instance = startGame(
     gameRef.value?.clientWidth ?? 0,
     gameRef.value?.clientHeight ?? 0
   );
