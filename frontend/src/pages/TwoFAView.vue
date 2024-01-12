@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
 import { useUserStore } from "@/stores/userStore";
 import OtpInput from "@/components/OtpInput.vue";
 
@@ -10,6 +9,7 @@ const userStore = useUserStore();
 const verify2faAndRedirect = async (totp: string) => {
   await userStore.verify2FA(totp);
 };
+
 </script>
 
 <template>
