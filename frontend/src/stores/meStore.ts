@@ -78,7 +78,7 @@ export const useMeStore = defineStore("meStore", {
         : await api.disable2fa(totp);
 
       if (res.ok && this.data) {
-        this.data.isTwoFactorAuthEnabled = type2fa;
+        this.data = await res.json();
         return `Success: ${(type2fa ? "Enable" : "Disable") + " 2FA Success!"}`;
       }
 
