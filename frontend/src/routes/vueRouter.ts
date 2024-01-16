@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
+import { useAppStore } from "@/stores/appStore";
 
 const childrenLobby = [
   {
@@ -60,51 +61,32 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const useStore = useUserStore();
-  const hasCookie = document.cookie.includes("connect.flag");
-
-  if (hasCookie) {
-    if (!useStore.meData) {
-      return (await useStore.setMe())
-        ? next({ name: "lobby" })
-        : next({ name: "login" });
-    }
-  }
-
-  if (!useStore.isAuthenticated) {
-    if (to.name !== "login") {
-      return next({ name: "login" });
-    }
-    return next();
-  }
-  if (!hasCookie) {
-    await useStore.unsetMe();
+  const meStore = useMeStore();
+  const appStore = useAppStore();
+  const session = document.cookie.includes("connect.flag");
+  
+  if (!session && to.name !== "login"){
+    appStore.changeMessageLog("Warning: You are not logged in!");
     return next({ name: "login" });
-  }
+  } 
 
-  // NOTE: From here the user is authenticated. - ok
-  if (to.name === "login") {
-    return next({ name: "lobby" });
-  }
+  
+  else if (session) {
+    if (!meStore.data) {
+      const message = await meStore.setMe();
+      appStore.changeMessageLog(message);
+    } 
+    if (!meStore.is2FA && to.name === "2fa") return next({ name: "lobby" });
 
-  if (
-    useStore.meData &&
-    useStore.meData.isTwoFactorAuthEnabled &&
-    !useStore.meData.isTwoFactorAuthApproved &&
-    to.name !== "2fa"
-  ) {
-    return next({ name: "2fa" });
+    if (meStore.is2FA) {
+      if (meStore.isApproved && to.name === "2fa") return next({ name: "lobby" });
+      if (!meStore.isApproved && to.name !== "2fa") return next({ name: "2fa" });
+    }
   }
+  
 
-  if (
-    to.name === "2fa" &&
-    useStore.meData &&
-    !!useStore.meData.isTwoFactorAuthApproved
-  ) {
-    return next({ name: "lobby" });
-  }
 
   return next();
 });
 
-export { router, routes };
+export default router;

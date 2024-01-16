@@ -3,11 +3,11 @@ import { ref, onMounted } from "vue";
 
 import { api } from "@/routes/apiRouter";
 import { useAppStore } from "@/stores/appStore";
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
 import type { iUser } from "@/types/props";
 
 const appStore = useAppStore();
-const userStore = useUserStore();
+const meStore = useMeStore();
 
 const users = ref([] as iUser[]);
 const tabs = ["all", "friends", "blocked"];
@@ -112,7 +112,7 @@ onMounted(async () => {
             </button>
           </ul>
           <ul class="flex w-full mt-4 gap-2">
-            <template v-if="userStore.meData?.username === user.username">
+            <template v-if="meStore.data?.username === user.username">
               <button
                 class="btn-full btn-primary"
                 v-on:click="$router.push('/profile')"

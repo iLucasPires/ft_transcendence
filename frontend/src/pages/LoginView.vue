@@ -23,10 +23,6 @@ function handleLogin() {
           Connect with
           <Icon scale="1.5" name="si-42" />
         </button>
-        <span
-          class="text-xs text-gray-500"
-          v-text="'powered by Lucas, Viny and Marcelo'"
-        />
       </div>
     </div>
   </div>

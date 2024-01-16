@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
+import { useAppStore } from "@/stores/appStore";
 
-const userStore = useUserStore();
+const appStore = useAppStore();
+const meStore = useMeStore();
 </script>
 
 <template>
   <dialog
     class="modal modal-open"
-    v-if="userStore && !userStore.isComplete && $route.name !== 'edit-profile'"
+    v-if="meStore.data && !meStore.isComplete && $route.name !== 'edit-profile'"
   >
     <div class="modal-box column items-center">
       <h3 class="font-bold text-lg">Welcome to Transcendence</h3>
@@ -25,7 +27,12 @@ const userStore = useUserStore();
         />
         <button
           class="btn-full btn-secondary"
-          v-on:click="userStore.changeCompleteRegistration"
+          v-on:click="
+            async () => {
+              const message = await meStore.changeCompleteRegistration();
+              appStore.changeMessageLog(message);
+            }
+          "
           v-text="'Use default'"
         />
       </div>

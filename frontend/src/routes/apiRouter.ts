@@ -4,20 +4,6 @@ const URL = import.meta.env.VITE_BACKEND_URL;
 const JSON_HEADER = { "Content-Type": "application/json" };
 
 export const utils = {
-  handleInvalidCookie: function (res: Response) {
-    if (res.status === 401 || res.status === 403) {
-      Cookies.remove("connect.sid");
-      Cookies.remove("connect.flag");
-    }
-  },
-
-  handleResSaveStorage: async function (res: Response, key: string = "user") {
-    const dataJson = await res.json();
-
-    localStorage.setItem(key, JSON.stringify(dataJson));
-    return dataJson;
-  },
-
   handleMessage: async function (res: Response) {
     const { message } = await res.json();
     return message;
@@ -29,12 +15,16 @@ export const utils = {
     return formData;
   },
 
+  clearCookies: function () {
+    Cookies.remove("connect.sid");
+    Cookies.remove("connect.flag");
+  },
+
   safeFetch: async function (
     url: string,
     method: string = "GET",
     body: BodyInit | null = null,
-    headers: HeadersInit | undefined = undefined,
-    removeCookie: boolean = true
+    headers: HeadersInit | undefined = undefined
   ) {
     const res = await fetch(`${URL}/api/${url}`, {
       method: method,
@@ -42,7 +32,11 @@ export const utils = {
       headers: headers,
       body: body,
     });
-    removeCookie && utils.handleInvalidCookie(res);
+
+    if (res.status === 401) {
+      utils.clearCookies();
+    }
+
     return res;
   },
 };
@@ -50,11 +44,6 @@ export const utils = {
 export const api = {
   getMeData: async function () {
     const res = await utils.safeFetch("me");
-    return res;
-  },
-
-  async logout() {
-    const res = await utils.safeFetch("auth/logout", "POST");
     return res;
   },
 
@@ -112,8 +101,7 @@ export const api = {
       "auth/2fa/turn-on",
       "POST",
       JSON.stringify({ code }),
-      JSON_HEADER,
-      false
+      JSON_HEADER
     );
     return res;
   },
@@ -123,8 +111,7 @@ export const api = {
       "auth/2fa/turn-off",
       "POST",
       JSON.stringify({ code }),
-      JSON_HEADER,
-      false
+      JSON_HEADER
     );
     return res;
   },
@@ -139,8 +126,7 @@ export const api = {
       "auth/2fa/verify",
       "POST",
       JSON.stringify({ code }),
-      JSON_HEADER,
-      false
+      JSON_HEADER
     );
     return res;
   },

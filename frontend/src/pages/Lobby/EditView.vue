@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
+import { useAppStore } from "@/stores/appStore";
 import { api } from "@/routes/apiRouter";
 import OtpInput from "@/components/OtpInput.vue";
 
-const userStore = useUserStore();
+const meStore = useMeStore();
+const appStore = useAppStore();
 const totp = ref<string>("");
 const selectedFile = ref<File | null>(null);
 const modal = ref<HTMLDialogElement | null>(null);
@@ -15,21 +17,30 @@ const prevAvatar = ref<string>("");
 const qrCode = ref<string>("");
 
 async function handleSubmit2fa() {
-  const is2FA = userStore.is2FA;
-  const success = await userStore.change2FA(totp.value, !is2FA);
+  const is2FA = meStore.is2FA;
+  const message = await meStore.change2FA(totp.value, !is2FA);
 
-  if (!success) return;
+  appStore.changeMessageLog(message);
+  if (message.includes("Error")) return;
 
   qrCode.value = "";
   modal.value?.close();
 }
 
-function handleSubmit() {
-  userStore.changeUsername(prevUsername.value);
-  userStore.changeAvatar(selectedFile.value);
+async function handleSubmit() {
+  let message = "";
 
-  prevUsername.value = "";
-  selectedFile.value = null;
+  if (prevUsername.value) {
+    message = await meStore.changeUsername(prevUsername.value);
+    appStore.changeMessageLog(message);
+    prevUsername.value = "";
+  }
+
+  if (selectedFile.value) {
+    message = await meStore.changeAvatar(selectedFile.value);
+    appStore.changeMessageLog(message);
+    selectedFile.value = null;
+  }
 }
 
 function handleReset() {
@@ -39,7 +50,7 @@ function handleReset() {
 }
 
 function showModal() {
-  if (!userStore.is2FA) generateQrCode();
+  if (!meStore.is2FA) generateQrCode();
   modal.value?.showModal();
 }
 
@@ -72,14 +83,14 @@ function handleChangeAvatar(e: Event) {
             <img
               v-bind:src="
                 prevAvatar ||
-                userStore.meData?.avatarUrl ||
-                `https://robohash.org/${userStore.meData?.username}.png`
+                meStore.data?.avatarUrl ||
+                `https://robohash.org/${meStore.data?.username}.png`
               "
-              v-bind:alt="`avatar of ${userStore.meData?.username}`"
+              v-bind:alt="`avatar of ${meStore.data?.username}`"
             />
           </div>
         </div>
-        <h2 class="title" v-text="userStore.meData?.username" />
+        <h2 class="title" v-text="meStore.data?.username" />
         <input
           type="text"
           placeholder="Nickname"
@@ -112,7 +123,7 @@ function handleChangeAvatar(e: Event) {
             type="button"
             class="btn-full btn-primary"
             v-on:click="showModal"
-            v-text="userStore.is2FA ? 'Disable' : 'Enable'"
+            v-text="meStore.is2FA ? 'Disable' : 'Enable'"
           />
         </div>
       </form>
@@ -123,12 +134,12 @@ function handleChangeAvatar(e: Event) {
       <div class="modal-box column items-center gap-4">
         <h2
           class="title"
-          v-text="userStore.is2FA ? 'Disable 2FA' : 'Enable 2FA'"
+          v-text="meStore.is2FA ? 'Disable 2FA' : 'Enable 2FA'"
         />
         <p
           class="text-center"
           v-text="
-            userStore.is2FA
+            meStore.is2FA
               ? 'Please enter your 2FA code to disable 2FA'
               : 'Please scan the QR code below to enable 2FA'
           "

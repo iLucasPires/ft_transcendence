@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
+import { useAppStore } from "@/stores/appStore";
 import OtpInput from "@/components/OtpInput.vue";
 
 const totp = ref("");
-const userStore = useUserStore();
-
+const meStore = useMeStore();
+const appStore = useAppStore();
 </script>
 
 <template>
@@ -20,8 +21,9 @@ const userStore = useUserStore();
         v-model:modelValue="totp"
         v-on:submit.prevent="
           async () => {
-            await userStore.verify2FA(totp) 
-            && $router.push({ name: 'home' });
+            const message = await meStore.verify2FA(totp);
+            appStore.changeMessageLog(message);
+            if (!message.includes('Error')) $router.push({ name: 'lobby' });
           }
         "
       />

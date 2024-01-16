@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useMeStore } from "@/stores/meStore";
 
-const userStore = useUserStore();
+const meStore = useMeStore();
 
 const infos = computed(() => {
   return [
     { name: "Wins", value: 10 },
     { name: "Losses", value: 10 },
     { name: "Status", value: "Online" },
-    { name: "2FA", value: userStore.is2FA ? "Enabled" : "Disabled" },
+    { name: "2FA", value: meStore.is2FA ? "Enabled" : "Disabled" },
   ];
 });
 </script>
@@ -30,15 +30,15 @@ const infos = computed(() => {
             <div className="w-24 rounded-full bg-base-300">
               <img
                 v-bind:src="
-                  userStore.meData?.avatarUrl ||
-                  `https://robohash.org/${userStore.meData?.username}.png`
+                  meStore.data?.avatarUrl ||
+                  `https://robohash.org/${meStore.data?.username}.png`
                 "
                 v-bind:alt="'profile picture'"
               />
             </div>
           </div>
 
-          <h2 class="text-3xl font-bold" v-text="userStore.meData?.username" />
+          <h2 class="text-3xl font-bold" v-text="meStore.data?.username" />
         </div>
         <ul class="wrap gap-2">
           <button
