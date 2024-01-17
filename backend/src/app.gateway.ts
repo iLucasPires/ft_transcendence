@@ -17,16 +17,19 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage("font")
-  handleMessage(client: any, payload: any): string {
-    return "Hello world!";
+  async handleConnection(client: Socket) {
+    const { user } = client.request;
+    console.log(`connected: ${user.username}`);
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
-    console.log("connected");
-  }
-
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect() {
     console.log("disconnected");
+  }
+
+  @SubscribeMessage("testMessage")
+  handleMessage(client: Socket, payload: string): string {
+    const { username } = client.request.user;
+    console.log(`${username}: ${payload}`);
+    return "Hello world!";
   }
 }

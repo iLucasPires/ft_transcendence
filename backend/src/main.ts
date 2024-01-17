@@ -3,10 +3,25 @@ import {
   HttpStatus,
   ValidationPipe,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory, Reflector } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as expressSession from "express-session";
+import * as passport from "passport";
 import { AppModule } from "./app.module";
+import { SessionAdapter } from "./auth/session.adapter";
+
+function addSwagger(app: NestExpressApplication) {
+  const config = new DocumentBuilder()
+    .setTitle("42 Transcedence")
+    .setDescription("The 42 Transcendence Pong API")
+    .setVersion("1.0")
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup("/api/docs", app, document);
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -14,6 +29,17 @@ async function bootstrap() {
       origin: [process.env.FRONTEND_URL],
       credentials: true,
       exposedHeaders: ["set-cookie"],
+    },
+  });
+  const configService = app.get(ConfigService);
+  const sessionMiddleware = expressSession({
+    secret: configService.get("SESSIONS_SECRET"),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "strict",
+      secure: configService.get("NODE_ENV") === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days,
     },
   });
 
@@ -29,16 +55,12 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.use(sessionMiddleware);
+  app.use(passport.session());
+  app.useWebSocketAdapter(new SessionAdapter(app, sessionMiddleware));
 
-  const config = new DocumentBuilder()
-    .setTitle("42 Transcedence")
-    .setDescription("The 42 Transcendence Pong API")
-    .setVersion("1.0")
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("/api/docs", app, document);
+  addSwagger(app);
 
-  app.enableShutdownHooks();
   await app.listen(3000);
 }
 bootstrap();
