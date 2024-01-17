@@ -9,6 +9,14 @@ export const utils = {
     return message;
   },
 
+  handleForbidden: async function (res: Response) {
+    if (res.status === 403 || res.status === 401) {
+      Cookies.remove("connect.sid");
+      Cookies.remove("connect.flag");
+      window.location.href = "/login";
+    }
+  },
+
   newFormData: function (file: File | null, key: string = "file") {
     const formData = new FormData();
     if (file) formData.append(key, file);
@@ -32,11 +40,6 @@ export const utils = {
       headers: headers,
       body: body,
     });
-
-    if (res.status === 401) {
-      utils.clearCookies();
-    }
-
     return res;
   },
 };
@@ -44,21 +47,25 @@ export const utils = {
 export const api = {
   getMeData: async function () {
     const res = await utils.safeFetch("me");
+    utils.handleForbidden(res);
     return res;
   },
 
   getAllUsers: async function () {
     const res = await utils.safeFetch("users");
+    utils.handleForbidden(res);
     return res;
   },
 
   getAllBlockedUsers: async function () {
     const res = await utils.safeFetch("me/blocked");
+    utils.handleForbidden(res);
     return res;
   },
 
   getAllFriends: async function () {
     const res = await utils.safeFetch("me/friends");
+    utils.handleForbidden(res);
     return res;
   },
 
@@ -67,32 +74,38 @@ export const api = {
     const res = await utils.safeFetch("me", "PATCH", data, {
       "Content-Type": "application/json",
     });
+    utils.handleForbidden(res);
     return res;
   },
 
   async updateAvatarMe(file: File) {
     const formData = utils.newFormData(file);
     const res = await utils.safeFetch("me/avatar", "POST", formData, undefined);
+    utils.handleForbidden(res);
     return res;
   },
 
   async blockUser(username: string) {
     const res = await utils.safeFetch(`users/${username}/block`, "POST");
+    utils.handleForbidden(res);
     return res;
   },
 
   async unblockUser(username: string) {
     const res = await utils.safeFetch(`users/${username}/unblock`, "POST");
+    utils.handleForbidden(res);
     return res;
   },
 
   async addFriend(username: string) {
     const res = await utils.safeFetch(`users/${username}/friend`, "POST");
+    utils.handleForbidden(res);
     return res;
   },
 
   async unfriend(username: string) {
     const res = await utils.safeFetch(`users/${username}/unfriend`, "POST");
+    utils.handleForbidden(res);
     return res;
   },
 
