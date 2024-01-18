@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io";
+import { UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,7 +7,9 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
+import { WsGuard } from "./auth/guards/ws.guard";
 
+@UseGuards(WsGuard)
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -19,7 +22,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     const { user } = client.request;
-    console.log(`connected: ${user.username}`);
+
+    if (!user) {
+      client.disconnect(true);
+    }
   }
 
   async handleDisconnect() {
