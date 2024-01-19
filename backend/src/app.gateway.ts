@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -17,6 +17,8 @@ import { WsGuard } from "./auth/guards/ws.guard";
   },
 })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  logger: Logger = new Logger("AppGateway");
+
   @WebSocketServer()
   server: Server;
 
@@ -25,11 +27,13 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (!req.isAuthenticated()) {
       client.disconnect(true);
+      this.logger.log("Disconnected unauthenticated client");
     }
+    this.logger.log(`Client connected: ${req.user.username}`);
   }
 
-  async handleDisconnect() {
-    console.log("disconnected");
+  async handleDisconnect(client: Socket) {
+    this.logger.log(`Client disconnected: ${client.request.user.username}`);
   }
 
   @SubscribeMessage("testMessage")
