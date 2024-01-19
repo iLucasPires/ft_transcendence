@@ -4,9 +4,6 @@ import { RequestHandler } from "express";
 import * as passport from "passport";
 import { Server } from "socket.io";
 
-const wrap = (middleware) => (socket, next) =>
-  middleware(socket.request, {}, next);
-
 export class SessionAdapter extends IoAdapter {
   constructor(
     private app: NestExpressApplication,
@@ -15,11 +12,10 @@ export class SessionAdapter extends IoAdapter {
     super(app);
   }
 
-  createIOServer(port: number, options?: any): any {
+  createIOServer(port: number, options?: any) {
     const server: Server = super.createIOServer(port, options);
-
-    server.use(wrap(this.sessionMiddleware));
-    server.use(wrap(passport.session()));
+    server.engine.use(this.sessionMiddleware);
+    server.engine.use(passport.session());
     return server;
   }
 }
