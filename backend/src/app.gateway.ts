@@ -21,9 +21,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(client: Socket) {
-    const { user } = client.request;
+    const req = client.request;
 
-    if (!user) {
+    if (!req.isAuthenticated()) {
       client.disconnect(true);
     }
   }
