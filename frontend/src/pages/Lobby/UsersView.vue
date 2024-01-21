@@ -87,8 +87,11 @@ onMounted(async () => {
           v-for="user in users"
           v-bind:key="user.id"
         >
-          <div className="avatar online">
-            <div className="w-24 rounded-full bg-base-300">
+          <div
+            class="avatar"
+            v-bind:class="user.isConnected ? 'online' : 'offline'"
+          >
+            <div class="w-24 rounded-full bg-base-200">
               <img
                 v-bind:src="
                   user.avatarUrl || `https://robohash.org/${user.username}.png`
@@ -101,14 +104,14 @@ onMounted(async () => {
           <h2 class="title" v-text="user.username" />
           <ul class="wrap gap-2">
             <button
-              className="btn btn-sm"
+              class="btn btn-sm"
               v-for="item in [
                 { name: 'Wins', value: 10 },
                 { name: 'Losses', value: 10 },
               ]"
             >
               <span v-text="item.name" />
-              <div className="badge badge-primary" v-text="item.value" />
+              <div class="badge badge-primary" v-text="item.value" />
             </button>
           </ul>
           <ul class="flex w-full mt-4 gap-2">

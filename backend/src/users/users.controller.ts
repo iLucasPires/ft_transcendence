@@ -15,6 +15,7 @@ import { Request } from "express";
 import { ListUsersDto } from "./dto";
 import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
+import { FindUserDto } from "./dto/find-user.dto";
 
 @Controller("users")
 @ApiCookieAuth("connect.sid")
@@ -41,7 +42,7 @@ export class UsersController {
   findMany(
     @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     return this.usersService.findMany(req.user, listUsersDto);
   }
 

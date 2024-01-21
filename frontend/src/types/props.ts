@@ -13,5 +13,6 @@ export type iUser = {
   avatarUrl: string;
   isTwoFactorAuthEnabled: boolean;
   isTwoFactorAuthApproved: boolean;
+  isConnected : boolean;
 };
 

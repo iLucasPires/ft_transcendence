@@ -12,7 +12,7 @@ export class ConnectionStatusService {
     this.connectedUsers = this.connectedUsers.filter((id) => id !== userId);
   }
 
-  getConnectedUsers() {
-    return this.connectedUsers;
+  isConnected(userId: string) {
+    return this.connectedUsers.includes(userId);
   }
 }

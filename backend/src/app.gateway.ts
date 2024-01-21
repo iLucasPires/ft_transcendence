@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { Logger, UseGuards } from "@nestjs/common";
+import { Logger, UseGuards, Inject } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,6 +8,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { WsGuard } from "./auth/guards/ws.guard";
+import { ConnectionStatusService } from "./connection-status/connection-status.service";
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -22,7 +23,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  connectedUsers: Array<string> = [];
+  @Inject()
+  connectionStatusService: ConnectionStatusService;
 
   async handleConnection(client: Socket) {
     const req = client.request;
@@ -31,21 +33,20 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.disconnect(true);
       this.logger.log("Disconnected unauthenticated client");
     }
-    this.connectedUsers.push(req.user.id);
+    this.connectionStatusService.addConnectedUser(req.user.id);
     this.logger.log(`Client connected: ${req.user.username}`);
   }
 
   async handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.request.user.username}`);
-    this.connectedUsers = this.connectedUsers.filter(
-      (id) => id !== client.request.user.id,
-    );
+    const { user } = client.request;
+    this.logger.log(`Client disconnected: ${user.username}`);
+    this.connectionStatusService.removeConnectedUser(user.id);
   }
 
   @SubscribeMessage("testMessage")
   handleMessage(client: Socket, payload: string): string {
     const { username } = client.request.user;
-    console.log(`${username}: ${payload}`);
+    this.logger.log(`${username}: ${payload}`);
     return "Hello world!";
   }
 }
