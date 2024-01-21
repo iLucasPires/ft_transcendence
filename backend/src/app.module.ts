@@ -9,6 +9,7 @@ import { MeController } from "./me/me.controller";
 import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
 import { AppGateway } from "./app.gateway";
+import { ConnectionStatusService } from './connection-status/connection-status.service';
 
 const OrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -38,6 +39,6 @@ const OrmModule = TypeOrmModule.forRootAsync({
     TwoFactorAuthModule,
   ],
   controllers: [AppController, MeController],
-  providers: [AppGateway],
+  providers: [AppGateway, ConnectionStatusService],
 })
 export class AppModule {}

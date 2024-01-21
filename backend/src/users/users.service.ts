@@ -9,6 +9,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
 import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
 import { UserEntity } from "./user.entity";
+import { ConnectionStatusService } from "@/connection-status/connection-status.service";
+import { FindUserDto } from "./dto/find-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -16,6 +18,7 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private readonly filesService: FilesService,
+    private readonly connectionStatusService: ConnectionStatusService,
   ) {}
 
   async findOrCreate(
@@ -35,7 +38,7 @@ export class UsersService {
   findMany(
     user: UserEntity,
     listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
 
     return this.userRepository

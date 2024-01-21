@@ -87,7 +87,7 @@ onMounted(async () => {
           v-for="user in users"
           v-bind:key="user.id"
         >
-          <div className="avatar">
+          <div className="avatar online">
             <div className="w-24 rounded-full bg-base-300">
               <img
                 v-bind:src="
