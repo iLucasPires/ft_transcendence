@@ -1,6 +1,6 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
-import { ListUsersDto, UpdateUserDto } from "@/users/dto";
+import { FindUserDto, ListUsersDto, UpdateUserDto } from "@/users/dto";
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
 import {
@@ -132,7 +132,7 @@ export class MeController {
   findBlockedUsers(
     @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     return this.usersService.findBlockedUsers(req.user, listUsersDto);
   }
 
@@ -156,7 +156,7 @@ export class MeController {
   findFriends(
     @Req() req: Request,
     @Query() listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     return this.usersService.findFriends(req.user, listUsersDto);
   }
 }

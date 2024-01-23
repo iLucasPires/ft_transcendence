@@ -66,11 +66,12 @@ export class UsersService {
   findBlockedUsers(
     user: UserEntity,
     listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
 
     return this.userRepository
       .createQueryBuilder("user")
+      .select(["user.id", "user.username", "user.avatarUrl"])
       .innerJoin("user.blockedBy", "blockedBy")
       .where("blockedBy.id = :id", { id: user.id })
       .skip(offset)
@@ -267,13 +268,13 @@ export class UsersService {
       .remove(user);
   }
 
-  findFriends(
+  async findFriends(
     user: UserEntity,
     listUsersDto: ListUsersDto,
-  ): Promise<UserEntity[]> {
+  ): Promise<FindUserDto[]> {
     const { offset, limit } = listUsersDto;
 
-    return this.userRepository
+    const friends = await this.userRepository
       .createQueryBuilder("user")
       .where(
         `user.id != :id AND EXISTS (
@@ -288,6 +289,13 @@ export class UsersService {
       .skip(offset)
       .take(limit)
       .getMany();
+
+    return friends.map(({ id, username, avatarUrl }) => ({
+      id,
+      username,
+      avatarUrl,
+      isConnected: this.connectionStatusService.isConnected(user.id),
+    }));
   }
 
   async addFriend(user: UserEntity, username: string) {
