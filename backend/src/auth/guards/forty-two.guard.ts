@@ -13,7 +13,7 @@ export class FortyTwoAuthGuard extends AuthGuard("forty-two") {
     await super.logIn(request);
     response.cookie("connect.flag", 1, {
       httpOnly: false,
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : false,
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     });

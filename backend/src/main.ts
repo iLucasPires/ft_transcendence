@@ -32,18 +32,20 @@ async function bootstrap() {
     },
   });
   const configService = app.get(ConfigService);
+  const isProductionEnv = configService.get("NODE_ENV") === "production";
   const sessionMiddleware = expressSession({
     secret: configService.get("SESSIONS_SECRET"),
     resave: false,
     saveUninitialized: false,
+    proxy: isProductionEnv,
     cookie: {
-      sameSite: "strict",
-      secure: configService.get("NODE_ENV") === "production",
+      sameSite: isProductionEnv ? "strict" : false,
+      secure: isProductionEnv,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days,
     },
   });
 
-  app.set("trust proxy", true);
+  app.set("trust proxy", isProductionEnv);
   app.setGlobalPrefix("api", { exclude: ["health"] });
   app.useGlobalPipes(
     new ValidationPipe({
