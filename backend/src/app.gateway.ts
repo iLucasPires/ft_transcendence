@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { Logger, UseGuards, Inject } from "@nestjs/common";
 import {
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketGateway,
@@ -25,7 +26,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @Inject()
   connectionStatusService: ConnectionStatusService;
 
-  async handleConnection(client: Socket) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
     const req = client.request;
 
     if (!req.isAuthenticated()) {
@@ -36,7 +37,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`Client connected: ${req.user.username}`);
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
     const { user } = client.request;
     this.logger.log(`Client disconnected: ${user.username}`);
     this.connectionStatusService.removeConnectedUser(user.id);
