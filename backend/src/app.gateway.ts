@@ -3,7 +3,6 @@ import { Logger, UseGuards, Inject } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
@@ -41,12 +40,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { user } = client.request;
     this.logger.log(`Client disconnected: ${user.username}`);
     this.connectionStatusService.removeConnectedUser(user.id);
-  }
-
-  @SubscribeMessage("testMessage")
-  handleMessage(client: Socket, payload: string): string {
-    const { username } = client.request.user;
-    this.logger.log(`${username}: ${payload}`);
-    return "Hello world!";
   }
 }
