@@ -2,21 +2,21 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useMeStore } from "@/stores/meStore";
 import { useAppStore } from "@/stores/appStore";
 
-import GameView from "pages/Lobby/GameView.vue";
-import ProfileView from "pages/Lobby/ProfileView.vue";
-import UsersView from "pages/Lobby/UsersView.vue";
-import EditView from "pages/Lobby/EditView.vue";
-import ChatView from "pages/Lobby/ChatView.vue";
+import GameView from "@/pages/Lobby/GameView.vue";
+import ProfileView from "@/pages/Lobby/ProfileView.vue";
+import UsersView from "@/pages/Lobby/UsersView.vue";
+import EditView from "@/pages/Lobby/EditView.vue";
+import ChatView from "@/pages/Lobby/ChatView.vue";
 
 const routes = [
-  { path: "/2fa", name: "2fa", component: () => import("pages/TwoFAView.vue") },
-  { path: "/login", name: "login", component: () => import("pages/LoginView.vue") },
-  { path: "/:catchAll(.*)", name: "not-found", component: () => import("pages/NotFoundView.vue") },
+  { path: "/2fa", name: "2fa", component: () => import("@/pages/TwoFAView.vue") },
+  { path: "/login", name: "login", component: () => import("@/pages/LoginView.vue") },
+  { path: "/:catchAll(.*)", name: "not-found", component: () => import("@/pages/NotFoundView.vue") },
   {
     path: "/",
     name: "lobby",
     redirect: { name: "profile" },
-    component: () => import("pages/Lobby/LobbyView.vue"),
+    component: () => import("@/pages/Lobby/LobbyView.vue"),
     children: [
       { path: "game", name: "game", component: GameView },
       { path: "profile", name: "profile", component: ProfileView },
