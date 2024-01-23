@@ -55,8 +55,10 @@ export class UsersService {
       .skip(offset)
       .take(limit)
       .getMany();
-    return users.map((user) => ({
-      ...user,
+    return users.map(({ id, username, avatarUrl }) => ({
+      id,
+      username,
+      avatarUrl,
       isConnected: this.connectionStatusService.isConnected(user.id),
     }));
   }
