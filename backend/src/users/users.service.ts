@@ -59,7 +59,7 @@ export class UsersService {
       id,
       username,
       avatarUrl,
-      isConnected: this.connectionStatusService.isConnected(user.id),
+      isConnected: this.connectionStatusService.isConnected(id),
     }));
   }
 
@@ -294,7 +294,7 @@ export class UsersService {
       id,
       username,
       avatarUrl,
-      isConnected: this.connectionStatusService.isConnected(user.id),
+      isConnected: this.connectionStatusService.isConnected(id),
     }));
   }
 
