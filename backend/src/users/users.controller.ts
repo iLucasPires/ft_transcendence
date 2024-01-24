@@ -37,7 +37,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of users.",
-    type: [UserEntity],
+    type: [FindUserDto],
   })
   findMany(
     @Req() req: Request,

@@ -127,7 +127,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of blocked users.",
-    type: [UserEntity],
+    type: [FindUserDto],
   })
   findBlockedUsers(
     @Req() req: Request,
@@ -151,7 +151,7 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of users friends.",
-    type: [UserEntity],
+    type: [FindUserDto],
   })
   findFriends(
     @Req() req: Request,
