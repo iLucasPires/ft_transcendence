@@ -21,7 +21,7 @@ async function fetchUsers(tab: string) {
 
   const res = apiMethod ? await apiMethod() : await api.getAllUsers();
   const users = (await res.json()) as iUser[];
-  return users.sort((a, b) => a.email.localeCompare(b.email));
+  return users.sort((a, b) => a.username.localeCompare(b.username));
 }
 
 async function handleClickBlock(username: string) {
