@@ -1,13 +1,16 @@
-all: backend frontend
+all: up
 
-backend:
-	@echo "Building backend..."
-	@npm --prefix backend/ install
-	@npm --prefix backend/ run start:dev
+up: build
+	docker-compose up -d
 
-frontend:
-	@echo "Building frontend..."
-	@npm --prefix frontend/ install
-	@npm --prefix frontend/ run dev
+build:
+	docker-compose build --no-cache
 
-.PHONY: backend frontend
+down:
+	docker-compose down
+
+fclean:
+	docker-compose down --rmi  all --remove-orphans
+
+
+.PHONY: all up build down fclean
