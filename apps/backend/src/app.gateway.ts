@@ -11,12 +11,7 @@ import { WsGuard } from "./auth/guards/ws.guard";
 import { ConnectionStatusService } from "./connection-status/connection-status.service";
 
 @UseGuards(WsGuard)
-@WebSocketGateway({
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true,
-  },
-})
+@WebSocketGateway({ path: "/api/socket.io" })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   logger: Logger = new Logger("AppGateway");
 

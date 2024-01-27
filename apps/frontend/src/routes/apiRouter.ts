@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 
-const URL = import.meta.env.VITE_BACKEND_URL;
 const JSON_HEADER = { "Content-Type": "application/json" };
 
 export const utils = {
@@ -34,7 +33,7 @@ export const utils = {
     body: BodyInit | null = null,
     headers: HeadersInit | undefined = undefined
   ) {
-    const res = await fetch(`${URL}/api/${url}`, {
+    const res = await fetch(`/api/${url}`, {
       method: method,
       credentials: "include",
       headers: headers,

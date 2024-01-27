@@ -1,15 +1,17 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { join } from "path";
 import { TwoFactorAuthModule } from "./2fa/2fa.module";
 import { AppController } from "./app.controller";
+import { AppGateway } from "./app.gateway";
 import { AuthModule } from "./auth/auth.module";
+import { ConnectionStatusModule } from "./connection-status/connection-status.module";
 import { FilesModule } from "./files/files.module";
 import { MeController } from "./me/me.controller";
 import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
-import { AppGateway } from "./app.gateway";
-import { ConnectionStatusModule } from "./connection-status/connection-status.module";
 
 const OrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -38,8 +40,11 @@ const OrmModule = TypeOrmModule.forRootAsync({
     MeModule,
     TwoFactorAuthModule,
     ConnectionStatusModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "../..", "frontend", "dist"),
+    }),
   ],
   controllers: [AppController, MeController],
   providers: [AppGateway],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,8 +1,7 @@
 import { io } from "socket.io-client";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-export const socket = io(backendUrl, {
-  withCredentials: true,
+export const socket = io({
   autoConnect: false,
+  path: "/api/socket.io",
+  withCredentials: true,
 });

@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory, Reflector } from "@nestjs/core";
-import { NestExpressApplication } from "@nestjs/platform-express";
+import { ExpressAdapter, NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as expressSession from "express-session";
 import * as passport from "passport";
@@ -24,13 +24,7 @@ function addSwagger(app: NestExpressApplication) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      origin: [process.env.FRONTEND_URL],
-      credentials: true,
-      exposedHeaders: ["set-cookie"],
-    },
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter());
   const configService = app.get(ConfigService);
   const isProductionEnv = configService.get("NODE_ENV") === "production";
   const sessionMiddleware = expressSession({
@@ -46,7 +40,7 @@ async function bootstrap() {
   });
 
   app.set("trust proxy", isProductionEnv);
-  app.setGlobalPrefix("api", { exclude: ["health"] });
+  app.setGlobalPrefix("api");
   app.useGlobalPipes(
     new ValidationPipe({
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -61,7 +55,9 @@ async function bootstrap() {
   app.use(passport.session());
   app.useWebSocketAdapter(new SessionAdapter(app, sessionMiddleware));
 
-  addSwagger(app);
+  if (!isProductionEnv) {
+    addSwagger(app);
+  }
 
   await app.listen(3000);
 }

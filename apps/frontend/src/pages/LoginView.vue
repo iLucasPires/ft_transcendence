@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { inject } from "vue";
 
-const backendUrl = inject("backendUrl");
-
 function handleLogin() {
-  window.location.href = `${backendUrl}/api/auth/42`;
+  window.location.href = "/api/auth/42";
 }
 </script>
 
