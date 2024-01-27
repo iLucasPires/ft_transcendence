@@ -19,6 +19,9 @@
     "deploy": "npm run build && npm run start"
   },
   "devDependencies": {
-    "turbo": "^1.11.3"
+    "@types/node": "^20.11.8",
+    "prettier": "^3.2.4",
+    "turbo": "^1.11.3",
+    "typescript": "^5.3.3"
   }
 }
