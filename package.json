@@ -1,0 +1,15 @@
+{
+  "name": "ft_transcendence",
+  "version": "1.0.0",
+  "description": "A multiplayer pong game",
+  "contributors": [
+    "Lucas Nogueira <lpires-n@student.42sp.org.br>",
+    "Marcelo Moreira <marcrodr@student.42sp.org.br>",
+    "Vinícius Oliveira <vgoncalv@student.42sp.org.br>"
+  ],
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "workspaces": [
+    "apps/*"
+  ]
+}
