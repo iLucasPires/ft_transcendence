@@ -13,7 +13,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
   pong:
-    image: backend:transcendence
+    image: pong:transcendence
     container_name: "pong"
     build: .
     restart: unless-stopped
