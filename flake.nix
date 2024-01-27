@@ -30,12 +30,8 @@
       packages = with pkgs; [
         nest-cli
         nodejs_20
-
-        nodePackages_latest.npm
-        nodePackages_latest.prettier
-        nodePackages_latest.typescript-language-server
-        nodePackages_latest.serve
-        nodePackages_latest.vscode-langservers-extracted
+        nodePackages.typescript-language-server
+        nodePackages.vscode-langservers-extracted
       ];
     };
   };
