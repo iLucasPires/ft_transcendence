@@ -7,11 +7,7 @@ import { UsersService } from "./users.service";
 import { ConnectionStatusModule } from "@/connection-status/connection-status.module";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([UserEntity]),
-    FilesModule,
-    ConnectionStatusModule,
-  ],
+  imports: [TypeOrmModule.forFeature([UserEntity]), FilesModule, ConnectionStatusModule],
   providers: [UsersService],
   controllers: [UsersController],
   exports: [UsersService],

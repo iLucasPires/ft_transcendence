@@ -1,10 +1,5 @@
 import { FilesService } from "@/files/files.service";
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
 import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
@@ -21,9 +16,7 @@ export class UsersService {
     private readonly connectionStatusService: ConnectionStatusService,
   ) {}
 
-  async findOrCreate(
-    findOrCreateUserDto: FindOrCreateUserDto,
-  ): Promise<UserEntity> {
+  async findOrCreate(findOrCreateUserDto: FindOrCreateUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({
       intraId: findOrCreateUserDto.intraId,
     });
@@ -35,10 +28,7 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  async findMany(
-    user: UserEntity,
-    listUsersDto: ListUsersDto,
-  ): Promise<FindUserDto[]> {
+  async findMany(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
     const users = await this.userRepository
       .createQueryBuilder("user")
@@ -63,10 +53,7 @@ export class UsersService {
     }));
   }
 
-  findBlockedUsers(
-    user: UserEntity,
-    listUsersDto: ListUsersDto,
-  ): Promise<FindUserDto[]> {
+  findBlockedUsers(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
 
     return this.userRepository
@@ -99,10 +86,7 @@ export class UsersService {
     return user;
   }
 
-  async update(
-    user: UserEntity,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     const isUsernameTaken = await this.userRepository.exist({
       where: {
         id: Not(user.id),
@@ -111,9 +95,7 @@ export class UsersService {
     });
 
     if (isUsernameTaken) {
-      throw new ConflictException(
-        `Username already taken: ${updateUserDto.username}`,
-      );
+      throw new ConflictException(`Username already taken: ${updateUserDto.username}`);
     }
 
     const data = {
@@ -131,10 +113,7 @@ export class UsersService {
       .then((result) => result.generatedMaps[0] as UserEntity);
   }
 
-  async updateAvatar(
-    user: UserEntity,
-    avatar: Express.Multer.File,
-  ): Promise<UserEntity> {
+  async updateAvatar(user: UserEntity, avatar: Express.Multer.File): Promise<UserEntity> {
     const oldAvatarUrl = user.avatarUrl;
     const newAvatar = await this.filesService.uploadFile(avatar);
 
@@ -167,10 +146,7 @@ export class UsersService {
       .then((result) => result.secret);
   }
 
-  async setTwoFactorAuthSecret(
-    user: UserEntity,
-    secret: string,
-  ): Promise<void> {
+  async setTwoFactorAuthSecret(user: UserEntity, secret: string): Promise<void> {
     await this.userRepository.update(user.id, { twoFactorAuthSecret: secret });
   }
 
@@ -227,11 +203,7 @@ export class UsersService {
       })
       .execute();
 
-    await this.userRepository
-      .createQueryBuilder()
-      .relation(UserEntity, "blockedUsers")
-      .of(blocker)
-      .add(user);
+    await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(blocker).add(user);
   }
 
   async unblock(unblocker: UserEntity, username: string): Promise<void> {
@@ -261,17 +233,10 @@ export class UsersService {
       throw new ConflictException(`User not blocked: ${username}`);
     }
 
-    await this.userRepository
-      .createQueryBuilder()
-      .relation(UserEntity, "blockedUsers")
-      .of(unblocker)
-      .remove(user);
+    await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(unblocker).remove(user);
   }
 
-  async findFriends(
-    user: UserEntity,
-    listUsersDto: ListUsersDto,
-  ): Promise<FindUserDto[]> {
+  async findFriends(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     const { offset, limit } = listUsersDto;
 
     const friends = await this.userRepository
@@ -365,11 +330,7 @@ export class UsersService {
       throw new ConflictException(`You are already friends with: ${username}`);
     }
 
-    await this.userRepository
-      .createQueryBuilder()
-      .relation(UserEntity, "friends")
-      .of(user)
-      .add(friendUser);
+    await this.userRepository.createQueryBuilder().relation(UserEntity, "friends").of(user).add(friendUser);
   }
 
   async removeFriend(user: UserEntity, username: string) {

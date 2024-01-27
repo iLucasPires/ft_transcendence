@@ -47,4 +47,4 @@ const OrmModule = TypeOrmModule.forRootAsync({
   controllers: [AppController, MeController],
   providers: [AppGateway],
 })
-export class AppModule { }
+export class AppModule {}

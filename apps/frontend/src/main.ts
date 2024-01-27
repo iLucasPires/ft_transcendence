@@ -8,8 +8,4 @@ import { OhVueIcon } from "oh-vue-icons";
 import router from "@/routes/vueRouter";
 import App from "@/App.vue";
 
-createApp(App)
-  .component("Icon", OhVueIcon)
-  .use(createPinia())
-  .use(router)
-  .mount("#app");
+createApp(App).component("Icon", OhVueIcon).use(createPinia()).use(router).mount("#app");

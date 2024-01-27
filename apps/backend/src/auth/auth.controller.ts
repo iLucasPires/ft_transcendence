@@ -18,11 +18,11 @@ import { FortyTwoAuthGuard } from "./guards/forty-two.guard";
 @Controller("auth")
 @ApiExcludeController()
 export class AuthController {
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
 
   @Get("42")
   @UseGuards(FortyTwoAuthGuard)
-  connectWith42() { }
+  connectWith42() {}
 
   @Get("/42/callback")
   @UseGuards(FortyTwoAuthGuard)

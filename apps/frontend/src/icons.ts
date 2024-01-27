@@ -45,5 +45,5 @@ addIcons(
   MdEmail,
   FaHamburger,
   GiPingPongBat,
-  MdCrisisalert
+  MdCrisisalert,
 );

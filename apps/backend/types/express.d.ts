@@ -9,10 +9,7 @@ declare global {
 declare module "express-session" {
   export interface SessionData {
     passport: {
-      user: Pick<
-        UserWithSession,
-        "id" | "isTwoFactorAuthEnabled" | "isTwoFactorAuthApproved"
-      >;
+      user: Pick<UserWithSession, "id" | "isTwoFactorAuthEnabled" | "isTwoFactorAuthApproved">;
     };
   }
 }

@@ -31,7 +31,7 @@ export const utils = {
     url: string,
     method: string = "GET",
     body: BodyInit | null = null,
-    headers: HeadersInit | undefined = undefined
+    headers: HeadersInit | undefined = undefined,
   ) {
     const res = await fetch(`/api/${url}`, {
       method: method,
@@ -109,22 +109,12 @@ export const api = {
   },
 
   async enable2fa(code: string) {
-    const res = await utils.safeFetch(
-      "auth/2fa/turn-on",
-      "POST",
-      JSON.stringify({ code }),
-      JSON_HEADER
-    );
+    const res = await utils.safeFetch("auth/2fa/turn-on", "POST", JSON.stringify({ code }), JSON_HEADER);
     return res;
   },
 
   async disable2fa(code: string) {
-    const res = await utils.safeFetch(
-      "auth/2fa/turn-off",
-      "POST",
-      JSON.stringify({ code }),
-      JSON_HEADER
-    );
+    const res = await utils.safeFetch("auth/2fa/turn-off", "POST", JSON.stringify({ code }), JSON_HEADER);
     return res;
   },
 
@@ -134,12 +124,7 @@ export const api = {
   },
 
   async verify2fa(code: string) {
-    const res = await utils.safeFetch(
-      "auth/2fa/verify",
-      "POST",
-      JSON.stringify({ code }),
-      JSON_HEADER
-    );
+    const res = await utils.safeFetch("auth/2fa/verify", "POST", JSON.stringify({ code }), JSON_HEADER);
     return res;
   },
 };

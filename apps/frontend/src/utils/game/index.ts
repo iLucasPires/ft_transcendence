@@ -4,8 +4,7 @@ import { Ball } from "./ball";
 
 export class Player extends Paddle {
   wasReachedBy(ball: Ball): boolean {
-    const isWithinXBounds =
-      ball.x - ball.radius <= this.x + this.width && ball.x > this.x;
+    const isWithinXBounds = ball.x - ball.radius <= this.x + this.width && ball.x > this.x;
 
     return isWithinXBounds && this.isAtTheSameHeightOf(ball);
   }

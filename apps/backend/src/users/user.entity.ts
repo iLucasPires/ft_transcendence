@@ -1,14 +1,6 @@
 import { ApiResponseProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity({ name: "users" })
 @Unique("intra_unique_constraint", ["intraId", "email"])

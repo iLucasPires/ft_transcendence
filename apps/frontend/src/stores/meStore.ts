@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { api, utils } from "@/routes/apiRouter";
 import type { iUser } from "@/types/props.js";
-import {socket} from "@/socket";
-
+import { socket } from "@/socket";
 
 export const useMeStore = defineStore("meStore", {
   state: function () {
@@ -77,9 +76,7 @@ export const useMeStore = defineStore("meStore", {
     },
 
     async change2FA(totp: string, type2fa: boolean) {
-      const res = type2fa
-        ? await api.enable2fa(totp)
-        : await api.disable2fa(totp);
+      const res = type2fa ? await api.enable2fa(totp) : await api.disable2fa(totp);
 
       if (res.ok && this.data) {
         this.data = await res.json();

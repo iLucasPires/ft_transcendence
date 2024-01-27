@@ -1,15 +1,5 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { Request } from "express";
 import { ListUsersDto } from "./dto";
@@ -39,10 +29,7 @@ export class UsersController {
     description: "A list of users.",
     type: [FindUserDto],
   })
-  findMany(
-    @Req() req: Request,
-    @Query() listUsersDto: ListUsersDto,
-  ): Promise<FindUserDto[]> {
+  findMany(@Req() req: Request, @Query() listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     return this.usersService.findMany(req.user, listUsersDto);
   }
 

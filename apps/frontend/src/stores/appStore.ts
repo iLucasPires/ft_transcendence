@@ -24,17 +24,9 @@ export const useAppStore = defineStore("appStore", {
     changeMessageLog(messagesLog: string | string[]) {
       const messagesLogIsArray = Array.isArray(messagesLog);
 
-      messagesLogIsArray
-        ? this.log.push(...messagesLog)
-        : this.log.push(messagesLog);
+      messagesLogIsArray ? this.log.push(...messagesLog) : this.log.push(messagesLog);
 
-      setTimeout(
-        () =>
-          messagesLogIsArray
-            ? this.log.splice(0, messagesLog.length)
-            : this.log.shift(),
-        3000
-      );
+      setTimeout(() => (messagesLogIsArray ? this.log.splice(0, messagesLog.length) : this.log.shift()), 3000);
     },
 
     changeTab(tab: string) {
@@ -44,13 +36,12 @@ export const useAppStore = defineStore("appStore", {
     changeTheme() {
       this.theme = this.theme === "dark" ? "light" : "dark";
       this.changeMessageLog(`Warning: Theme changed to ${this.theme}`);
-      
+
       document.documentElement.setAttribute("data-theme", this.theme);
       localStorage.setItem("theme", this.theme);
     },
   },
   getters: {
-    getIconByTheme: (state) =>
-      state?.theme === "dark" ? "md-modenight" : "md-sunny",
+    getIconByTheme: (state) => (state?.theme === "dark" ? "md-modenight" : "md-sunny"),
   },
 });

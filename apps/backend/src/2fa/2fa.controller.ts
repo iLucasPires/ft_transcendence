@@ -1,22 +1,7 @@
 import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
 import { UsersService } from "@/users/users.service";
-import {
-  Body,
-  Controller,
-  ForbiddenException,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from "@nestjs/common";
-import {
-  ApiBody,
-  ApiCookieAuth,
-  ApiProduces,
-  ApiResponse,
-} from "@nestjs/swagger";
+import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { ApiBody, ApiCookieAuth, ApiProduces, ApiResponse } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { TwoFactorAuthService } from "./2fa.service";
 import { VerifyCodeDto } from "./dto";
@@ -49,10 +34,7 @@ export class TwoFactorAuthController {
   @ApiBody({ type: VerifyCodeDto })
   async turnOn2FA(@Req() req: Request, @Body() { code }: VerifyCodeDto) {
     const user = req.user;
-    const isCodeValid = await this.twoFactorAuthService.validate2faCode(
-      user,
-      code,
-    );
+    const isCodeValid = await this.twoFactorAuthService.validate2faCode(user, code);
 
     if (!isCodeValid) {
       throw new ForbiddenException("Invalid 2FA code");
@@ -68,10 +50,7 @@ export class TwoFactorAuthController {
   @ApiBody({ type: VerifyCodeDto })
   async turnOff2FA(@Req() req: Request, @Body() { code }: VerifyCodeDto) {
     const user = req.user;
-    const isCodeValid = await this.twoFactorAuthService.validate2faCode(
-      user,
-      code,
-    );
+    const isCodeValid = await this.twoFactorAuthService.validate2faCode(user, code);
 
     if (!isCodeValid) {
       throw new ForbiddenException("Invalid 2FA code");
@@ -87,10 +66,7 @@ export class TwoFactorAuthController {
   @ApiBody({ type: VerifyCodeDto })
   async verifyCode(@Req() req: Request, @Body() { code }: VerifyCodeDto) {
     const user = req.user;
-    const isCodeValid = await this.twoFactorAuthService.validate2faCode(
-      user,
-      code,
-    );
+    const isCodeValid = await this.twoFactorAuthService.validate2faCode(user, code);
 
     if (!isCodeValid) {
       throw new ForbiddenException("Invalid 2FA code");

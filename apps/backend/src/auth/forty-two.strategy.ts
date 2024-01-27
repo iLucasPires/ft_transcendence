@@ -6,27 +6,23 @@ import { Strategy, VerifyCallback } from "passport-oauth2";
 import { AuthService } from "./auth.service";
 
 Strategy.prototype.userProfile = function (accessToken, done) {
-  this._oauth2.get(
-    "https://api.intra.42.fr/v2/me",
-    accessToken,
-    (err: Error, body: string) => {
-      if (err) {
-        return done(err);
-      }
-      try {
-        const json = JSON.parse(body);
-        const profile: Profile = {
-          id: json.id,
-          displayName: json.login,
-          emails: [{ value: json.email }],
-          provider: "forty-two",
-        };
-        return done(null, profile);
-      } catch (err) {
-        return done(err);
-      }
-    },
-  );
+  this._oauth2.get("https://api.intra.42.fr/v2/me", accessToken, (err: Error, body: string) => {
+    if (err) {
+      return done(err);
+    }
+    try {
+      const json = JSON.parse(body);
+      const profile: Profile = {
+        id: json.id,
+        displayName: json.login,
+        emails: [{ value: json.email }],
+        provider: "forty-two",
+      };
+      return done(null, profile);
+    } catch (err) {
+      return done(err);
+    }
+  });
 };
 
 @Injectable()
@@ -45,12 +41,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "forty-two") {
     });
   }
 
-  async validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: Profile,
-    done: VerifyCallback,
-  ): Promise<void> {
+  async validate(_accessToken: string, _refreshToken: string, profile: Profile, done: VerifyCallback): Promise<void> {
     const user = await this.authService.authenticateUser(profile);
     return done(null, user);
   }
