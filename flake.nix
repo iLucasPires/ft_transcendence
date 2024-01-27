@@ -5,27 +5,8 @@
     nixpkgs,
   }: let
     system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      overlays = builtins.attrValues self.overlays;
-    };
+    pkgs = nixpkgs.legacyPackages.${system};
   in {
-    apps.${system} = {
-      nest-cli = {
-        type = "app";
-        program = "${pkgs.nest-cli}/bin/nest";
-      };
-    };
-    packages.${system} = {
-      nest-cli = import ./nix/pkgs/nest-cli {
-        inherit (pkgs) lib buildNpmPackage fetchFromGitHub;
-      };
-    };
-    overlays = {
-      nest-cli = final: prev: {
-        nest-cli = self.packages.${final.system}.nest-cli;
-      };
-    };
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         nest-cli
