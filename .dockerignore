@@ -1,3 +1,5 @@
+.direnv/
+.turbo/
 node_modules/
 test/
 
@@ -5,3 +7,6 @@ test/
 .prettierrc
 
 README.md
+
+flake.nix
+flake.lock

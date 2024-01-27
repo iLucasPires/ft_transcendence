@@ -13,7 +13,10 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "node apps/backend/dist/main",
+    "deploy": "npm run build && npm run start"
   },
   "devDependencies": {
     "turbo": "^1.11.3"

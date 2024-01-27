@@ -151,3 +151,9 @@ result
 
 # Vscode
 .vscode/
+
+# Turbo
+.turbo/
+
+# Direnv
+.direnv/
