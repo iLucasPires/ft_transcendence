@@ -1,0 +1,12 @@
+.direnv/
+.turbo/
+node_modules/
+test/
+
+.eslintrc.js
+.prettierrc
+
+README.md
+
+flake.nix
+flake.lock
