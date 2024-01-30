@@ -30,8 +30,10 @@ export class UsersService {
 
   async findMany(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
+
     const users = await this.userRepository
       .createQueryBuilder("user")
+      .select(["user.id", "user.username", "user.avatarUrl"])
       .where(
         `NOT EXISTS (
           SELECT 1 FROM blocked_users block
@@ -44,12 +46,11 @@ export class UsersService {
       )
       .skip(offset)
       .take(limit)
-      .getMany();
-    return users.map(({ id, username, avatarUrl }) => ({
-      id,
-      username,
-      avatarUrl,
-      isConnected: this.connectionStatusService.isConnected(id),
+      .getRawMany();
+
+    return users.map((userData) => ({
+      ...userData,
+      isConnected: this.connectionStatusService.isConnected(userData.id),
     }));
   }
 
