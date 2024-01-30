@@ -69,7 +69,7 @@ export class UsersService {
       username: userData.user_username,
       avatarUrl: userData.user_avatar_url,
       isFriendsWith: userData.is_friends_with,
-      isConnected: this.connectionStatusService.isConnected(userData.id),
+      isConnected: this.connectionStatusService.isConnected(userData.user_id),
     }));
   }
 
