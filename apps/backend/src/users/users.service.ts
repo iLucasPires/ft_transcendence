@@ -33,7 +33,23 @@ export class UsersService {
 
     const users = await this.userRepository
       .createQueryBuilder("user")
-      .select(["user.id", "user.username", "user.avatarUrl"])
+      .select([
+        "user.id",
+        "user.username",
+        "user.avatarUrl",
+        `CASE
+          WHEN user.id IN (f.friend_1_id, f.friend_2_id)
+          THEN true ELSE false
+        END AS is_friends_with`,
+      ])
+      .leftJoin(
+        "friendships",
+        "f",
+        `(f.friend_1_id = :id AND f.friend_2_id = user.id)
+          OR
+         (f.friend_2_id = :id AND f.friend_1_id = user.id)`,
+        { id: user.id },
+      )
       .where(
         `NOT EXISTS (
           SELECT 1 FROM blocked_users block
@@ -49,7 +65,10 @@ export class UsersService {
       .getRawMany();
 
     return users.map((userData) => ({
-      ...userData,
+      id: userData.user_id,
+      username: userData.user_username,
+      avatarUrl: userData.user_avatarUrl,
+      isFriendsWith: userData.is_friends_with,
       isConnected: this.connectionStatusService.isConnected(userData.id),
     }));
   }

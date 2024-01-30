@@ -3,4 +3,5 @@ export class FindUserDto {
   username: string;
   avatarUrl?: string;
   isConnected?: boolean;
+  isFriendsWith?: boolean;
 }
