@@ -67,7 +67,7 @@ export class UsersService {
     return users.map((userData) => ({
       id: userData.user_id,
       username: userData.user_username,
-      avatarUrl: userData.user_avatarUrl,
+      avatarUrl: userData.user_avatar_url,
       isFriendsWith: userData.is_friends_with,
       isConnected: this.connectionStatusService.isConnected(userData.id),
     }));
