@@ -27,6 +27,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!req.isAuthenticated()) {
       client.disconnect(true);
       this.logger.log("Disconnected unauthenticated client");
+      return;
     }
     this.connectionStatusService.addConnectedUser(req.user.id);
     this.logger.log(`Client connected: ${req.user.username}`);
