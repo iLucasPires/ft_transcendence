@@ -1,5 +1,4 @@
-import { Server, Socket } from "socket.io";
-import { Logger, UseGuards, Inject } from "@nestjs/common";
+import { Inject, Logger, UseGuards } from "@nestjs/common";
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -7,6 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
 import { WsGuard } from "./auth/guards/ws.guard";
 import { ConnectionStatusService } from "./connection-status/connection-status.service";
 
