@@ -13,8 +13,12 @@ export const useAppStore = defineStore("appStore", {
 
   actions: {
     setTheme() {
-      this.theme = localStorage.getItem("theme") || "dark";
-      document.documentElement?.setAttribute("data-theme", this.theme);
+      this.theme =
+        localStorage.getItem("data-theme") ||
+        window.matchMedia("(prefers-color-scheme: dark)")
+          ? "dark"
+          : "light";
+      document.documentElement.setAttribute("data-theme", this.theme);
     },
 
     changeModalLeaveGame() {
@@ -37,8 +41,8 @@ export const useAppStore = defineStore("appStore", {
       this.theme = this.theme === "dark" ? "light" : "dark";
       this.changeMessageLog(`Warning: Theme changed to ${this.theme}`);
 
+      localStorage.setItem("data-theme", this.theme);
       document.documentElement.setAttribute("data-theme", this.theme);
-      localStorage.setItem("theme", this.theme);
     },
   },
   getters: {

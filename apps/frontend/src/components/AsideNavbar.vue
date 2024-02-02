@@ -15,7 +15,7 @@ const menuList = [
 
 <template>
   <aside
-    class="separate column w-16 h-screen smooth bg-base-300 md:w-24 md:hover:w-64"
+    class="separate column w-16 transition-all duration-300 bg-base-300 md:w-24 md:hover:w-64"
   >
     <a
       class="text-center cursor-pointer"
@@ -65,8 +65,7 @@ const menuList = [
             class="btn-nav"
             v-on:click="
               async () => {
-                const message = await meStore.unsetMe();
-                appStore.changeMessageLog(message);
+                appStore.changeMessageLog(await meStore.unsetMe());
                 $router.push({ name: 'login' });
               }
             "

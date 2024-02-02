@@ -39,10 +39,6 @@
     @apply p-4 md:p-10;
   }
 
-  .btn-tab {
-    @apply btn btn-sm aria-selected:btn-primary ;
-  }
-
   .btn-full {
     @apply btn btn-sm md:btn-md w-full flex-1 text-primary-content;
   }
@@ -52,11 +48,20 @@
     @apply focus:focus:btn-primary hover:btn-primary;
   }
 
-  .smooth {
-    @apply transition-all duration-300;
-  }
-
   .border-card {
-    @apply border-2 border-base-300 rounded;
+    @apply border-2 border-base-300 rounded-md;
   }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+
+* {
+  scrollbar-width: thin;
 }

@@ -8,6 +8,7 @@ export type iUser = {
   username: string;
   email: string;
   id: string;
+  isFriendsWith: boolean;
   displayName: string;
   registrationComplete: boolean;
   avatarUrl: string;
