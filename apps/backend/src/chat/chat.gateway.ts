@@ -53,12 +53,10 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("User not found");
     }
 
-    const channel = await this.channelsService.findDmChannel(loggedInUser, user);
-
+    let channel = await this.channelsService.findDmChannel(loggedInUser, user);
     if (!channel) {
-      return await this.channelsService.createDmChannel(loggedInUser, username);
+      channel = await this.channelsService.createDmChannel(loggedInUser, username);
     }
-
     return channel;
   }
 }

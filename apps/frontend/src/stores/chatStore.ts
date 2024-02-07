@@ -27,7 +27,7 @@ export const useChatStore = defineStore("chatStore", {
       if (channel) {
         const events = { dm: "enterDmChat" };
         const event = events[channel.type];
-        chatSocket.emit(event, channel.id);
+        chatSocket.emit(event, event === events.dm ? this.getChatName(channel) : channel.id);
       }
     },
 
