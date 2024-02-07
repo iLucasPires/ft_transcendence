@@ -1,10 +1,9 @@
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
-import { CreateDMChannelDto } from "./dto";
 
 @Injectable()
 export class ChannelsService {
@@ -30,22 +29,38 @@ export class ChannelsService {
       .getMany();
   }
 
-  async createDmChannel(loggedInUser: UserEntity, createDMChannelDto: CreateDMChannelDto): Promise<ChannelEntity> {
-    const user = await this.userService.findOneByUsername(loggedInUser, createDMChannelDto.user);
-    const existingChannel = await this.channelsRepository.findOne({
-      where: {
-        members: [{ id: loggedInUser.id }, { id: user.id }],
-      },
-    });
+  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<ChannelEntity> {
+    return await this.channelsRepository
+      .createQueryBuilder("channel")
+      .innerJoinAndSelect("channel.members", "member")
+      .where("channel.type = :type", { type: "dm" })
+      .andWhere("member.id IN (:...ids)", { ids: [loggedInUser.id, dmUser.id] })
+      .groupBy("channel.id, member.id")
+      .getOne();
+  }
 
-    if (existingChannel) {
-      throw new ConflictException("DM Channel already exists");
+  async createDmChannel(loggedInUser: UserEntity, username: string): Promise<ChannelEntity> {
+    const dmUser = await this.userService.findOneByUsername(loggedInUser, username);
+
+    if (!dmUser) {
+      throw new NotFoundException("User not found");
     }
 
-    const channel = this.channelsRepository.create({
+    const channel = await this.findDmChannel(loggedInUser, dmUser);
+
+    if (!!channel) {
+      throw new ConflictException("DM channel already exists");
+    }
+
+    const ownUser = {
+      id: loggedInUser.id,
+      username: loggedInUser.username,
+      avatarUrl: loggedInUser.avatarUrl,
+    };
+
+    return await this.channelsRepository.save({
       type: "dm",
-      members: [loggedInUser, user],
+      members: [ownUser, dmUser],
     });
-    return await this.channelsRepository.save(channel);
   }
 }
