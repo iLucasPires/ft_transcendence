@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { api, utils } from "@/routes/apiRouter";
 import type { iUser } from "@/types/props.js";
-import { socket } from "@/socket";
+import { chatSocket, socket } from "@/socket";
 
 export const useMeStore = defineStore("meStore", {
   state: function () {
@@ -17,7 +17,6 @@ export const useMeStore = defineStore("meStore", {
 
       if (res.ok) {
         this.data = await res.json();
-        socket.connect();
         return "Success: Get me!";
       }
 
@@ -34,6 +33,7 @@ export const useMeStore = defineStore("meStore", {
         this.status.isGame = false;
         this.status.isOnline = false;
         socket.disconnect();
+        chatSocket.disconnect();
       }
       return "Success: Logout!";
     },

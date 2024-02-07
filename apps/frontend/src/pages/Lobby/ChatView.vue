@@ -1,14 +1,5 @@
 <script setup lang="ts">
-import { chatSocket } from "@/socket";
-import { onMounted, onUnmounted, ref } from "vue";
-
-onMounted(() => {
-  chatSocket.connect();
-});
-
-onUnmounted(() => {
-  chatSocket.disconnect();
-});
+import { ref } from "vue";
 
 type UserChat = {
   name: string;
