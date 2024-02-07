@@ -29,6 +29,24 @@ export class ChannelsService {
       .getMany();
   }
 
+  findUserChannels(user: UserEntity): Promise<ChannelEntity[]> {
+    return this.channelsRepository
+      .createQueryBuilder("channel")
+      .select([
+        "channel.id",
+        "channel.type",
+        "channel.created_at",
+        "channel.updated_at",
+        "member.id",
+        "member.username",
+        "member.avatarUrl",
+      ])
+      .leftJoin("channel.members", "m")
+      .leftJoin("channel.members", "member")
+      .where("m.id = :id", { id: user.id })
+      .getMany();
+  }
+
   async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<ChannelEntity> {
     return await this.channelsRepository
       .createQueryBuilder("channel")

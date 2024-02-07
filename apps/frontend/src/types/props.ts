@@ -16,3 +16,11 @@ export type iUser = {
   isTwoFactorAuthApproved: boolean;
   isConnected: boolean;
 };
+
+export type iChannel = {
+  id: string;
+  type: "dm";
+  members: Pick<iUser, "id" | "username" | "avatarUrl">[];
+  createdAt: string;
+  updatedAt: string;
+};

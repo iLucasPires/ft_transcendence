@@ -1,57 +1,43 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { chatSocket } from "@/socket";
+import { useChatStore } from "@/stores/chatStore";
+import type { iChannel } from "@/types/props";
+import { storeToRefs } from "pinia";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
-type UserChat = {
-  name: string;
-  photo: string;
-};
+const chatStore = useChatStore();
+const { currentChat, chats  } = storeToRefs(chatStore);
 
-type Message = {
-  id: number;
-  message: string;
-  user: UserChat;
-};
-
-const fakeUserChat = [
-  {
-    name: "John Doe",
-    photo: "https://i.pravatar.cc/150",
-  },
-  {
-    name: "Jane Doe",
-    photo: "https://i.pravatar.cc/150",
-  },
-  {
-    name: "John Smith",
-    photo: "https://i.pravatar.cc/150",
-  },
-  {
-    name: "Jane Smith",
-    photo: "https://i.pravatar.cc/150",
-  },
-] as UserChat[];
-
-const userSelect = ref<UserChat | null>(null);
-const message = ref("");
-const messages = ref([] as Message[]);
-
-const handleSendMessage = () => {
-  if (!message.value) return;
-  if (!userSelect.value) return;
-
-  messages.value.push({
-    id: Date.now(),
-    message: message.value,
-    user: userSelect.value,
+onMounted(() => {
+  chatSocket.on("channelsList", (channels: iChannel[]) => {
+    chatStore.setChannels(channels);
   });
-  message.value = "";
+  chatSocket.emit("fetchChannels");
+});
+
+onUnmounted(() => {
+  chatSocket.removeAllListeners();
+});
+
+const message = ref("");
+const messages = ref<any []>([]);
+
+const handleSendMessage = () => {};
+
+const handleClickChat = (chat: iChannel) => {
+  chatStore.setCurrentChat(chat);
 };
 
-const handleGetMessages = (user: UserChat) => {
-  userSelect.value = user;
-  messages.value = [];
-};
+watch(currentChat, (newChat: iChannel | null) => {
+  currentChat.value = newChat;
+  if (newChat !== null) {
+    // chatSocket.emit("fetchMessages", newChat.id);
+  }
+});
 
+watch(chats, (newChats: iChannel[]) => {
+  chats.value = newChats;
+});
 </script>
 
 <template>
@@ -62,17 +48,17 @@ const handleGetMessages = (user: UserChat) => {
         <ul class="overflow-y-auto h-full flex flex-col gap-2 mt-4">
           <li
             class="flex items-center separate cursor-pointer border-card"
-            v-for="user in fakeUserChat"
-            v-bind:class="userSelect?.name === user.name && 'border-primary'"
-            v-on:click="handleGetMessages(user)"
-            v-bind:key="user.name"
+            v-for="chat in chats"
+            v-bind:class="currentChat?.id === chat.id && 'border-primary'"
+            v-on:click="handleClickChat(chat)"
+            v-bind:key="chat.id"
           >
             <div class="avatar">
               <div class="w-16 rounded-full bg-base-200">
-                <img v-bind:src="user.photo" v-bind:alt="`avatar of ${user.name}`" />
+                <img v-bind:src="chatStore.getChatPhoto(chat) || `https://robohash.org/${chatStore.getChatName(chat)}.png`" v-bind:alt="'Chat image'" />
               </div>
             </div>
-            <h2 class="title" v-text="user.name" />
+            <h2 class="title" v-text="chatStore.getChatName(chat)" />
           </li>
         </ul>
       </div>

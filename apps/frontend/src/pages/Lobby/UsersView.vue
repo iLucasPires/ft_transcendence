@@ -4,10 +4,12 @@ import { ref, onMounted } from "vue";
 import { api } from "@/routes/apiRouter";
 import { useAppStore } from "@/stores/appStore";
 import { useMeStore } from "@/stores/meStore";
+import { useChatStore } from "@/stores/chatStore";
 import type { iUser } from "@/types/props";
 
 const appStore = useAppStore();
 const meStore = useMeStore();
+const chatStore = useChatStore();
 
 const users = ref([] as iUser[]);
 const tabs = ["all", "friends", "blocked"];
@@ -22,6 +24,10 @@ async function fetchUsers(tab: string) {
   const res = apiMethod ? await apiMethod() : await api.getAllUsers();
   const users = (await res.json()) as iUser[];
   return users.sort((a, b) => a.username.localeCompare(b.username));
+}
+
+async function handleClickSendMessage(username: string) {
+  chatStore.openDmChat(username);
 }
 
 async function handleClickBlock(username: string) {
@@ -111,7 +117,7 @@ onMounted(async () => {
                 <span v-text="'Invite to game'" />
               </button>
 
-              <button class="btn-full btn-primary">
+              <button class="btn-full btn-primary" v-on:click="handleClickSendMessage(user.username)">
                 <span v-text="'Send message'" />
               </button>
             </div>
