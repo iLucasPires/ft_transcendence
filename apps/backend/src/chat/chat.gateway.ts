@@ -1,7 +1,9 @@
-import { Logger } from "@nestjs/common";
+import { WsGuard } from "@/auth/guards/ws.guard";
+import { Logger, UseGuards } from "@nestjs/common";
 import { ConnectedSocket, OnGatewayConnection, WebSocketGateway } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 
+@UseGuards(WsGuard)
 @WebSocketGateway({
   namespace: "/chat",
   path: "/api/socket.io",
@@ -13,9 +15,9 @@ export class ChatGateway implements OnGatewayConnection {
     const { request } = client;
 
     if (!request.isAuthenticated()) {
+      this.logger.log("Disconnected unauthorized client");
+      client.disconnect(true);
       return;
     }
-
-    this.logger.log(`New user in chat page: ${request.user.username}`);
   }
 }
