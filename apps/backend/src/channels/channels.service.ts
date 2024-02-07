@@ -56,6 +56,7 @@ export class ChannelsService {
       .andWhere("member_1.id = :id", { id: loggedInUser.id })
       .andWhere("member_2.id = :id", { id: dmUser.id })
       .groupBy("channel.id, member_1.id, member_2.id")
+      .having("count(DISTINCT channel.id) = 1")
       .getOne();
   }
 
