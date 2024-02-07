@@ -25,7 +25,10 @@ export const useMeStore = defineStore("meStore", {
     },
 
     async unsetMe() {
-      utils.clearCookies();
+      const res = await api.logout();
+      if (!res.ok) {
+        return "Error: Logout failed!";
+      }
       if (this.data) {
         this.data = null;
         this.status.isGame = false;

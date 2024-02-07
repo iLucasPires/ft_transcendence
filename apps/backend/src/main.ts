@@ -28,6 +28,7 @@ async function bootstrap() {
     resave: false,
     saveUninitialized: false,
     proxy: isProductionEnv,
+    unset: "destroy",
     cookie: {
       sameSite: isProductionEnv ? "strict" : false,
       secure: isProductionEnv,

@@ -22,11 +22,6 @@ export const utils = {
     return formData;
   },
 
-  clearCookies: function () {
-    Cookies.remove("connect.sid");
-    Cookies.remove("connect.flag");
-  },
-
   safeFetch: async function (
     url: string,
     method: string = "GET",
@@ -44,6 +39,11 @@ export const utils = {
 };
 
 export const api = {
+  logout: async function () {
+    const res = await utils.safeFetch("auth/logout", "POST");
+    utils.handleForbidden(res);
+    return res;
+  },
   getMeData: async function () {
     const res = await utils.safeFetch("me");
     utils.handleForbidden(res);
