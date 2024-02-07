@@ -43,8 +43,8 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
-  findOne(@Param("username") username: string): Promise<UserEntity> {
-    return this.usersService.findOneByUsername(username);
+  findOne(@Req() req: Request, @Param("username") username: string): Promise<UserEntity> {
+    return this.usersService.findOneByUsername(req.user, username);
   }
   @Post(":username/block")
   @ApiResponse({

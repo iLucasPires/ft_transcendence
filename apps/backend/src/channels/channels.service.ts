@@ -15,7 +15,7 @@ export class ChannelsService {
   ) {}
 
   async createDmChannel(loggedInUser: UserEntity, createDMChannelDto: CreateDMChannelDto): Promise<ChannelEntity> {
-    const user = await this.userService.findOneByUsername(createDMChannelDto.user);
+    const user = await this.userService.findOneByUsername(loggedInUser, createDMChannelDto.user);
     const channel = this.channelsRepository.create({
       type: "dm",
       members: [loggedInUser, user],

@@ -96,8 +96,22 @@ export class UsersService {
     return user;
   }
 
-  async findOneByUsername(username: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ username });
+  async findOneByUsername(loggedInUser: UserEntity, username: string): Promise<UserEntity> {
+    const user = await this.userRepository
+      .createQueryBuilder("user")
+      .select(["user.id", "user.username", "user.avatarUrl"])
+      .where("user.username = :username", { username })
+      .andWhere(
+        `NOT EXISTS (
+          SELECT 1 FROM blocked_users block
+          WHERE
+            (user.id = block.blocked_id AND block.blocker_id = :id)
+          OR
+            (user.id = block.blocker_id AND block.blocked_id = :id)
+        )`,
+        { id: loggedInUser.id },
+      )
+      .getOne();
 
     if (!user) {
       throw new NotFoundException(`User not found: ${username}`);
