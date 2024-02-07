@@ -50,10 +50,12 @@ export class ChannelsService {
   async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<ChannelEntity> {
     return await this.channelsRepository
       .createQueryBuilder("channel")
-      .innerJoinAndSelect("channel.members", "member")
+      .innerJoinAndSelect("channel.members", "member_1")
+      .innerJoinAndSelect("channel.members", "member_2")
       .where("channel.type = :type", { type: "dm" })
-      .andWhere("member.id IN (:...ids)", { ids: [loggedInUser.id, dmUser.id] })
-      .groupBy("channel.id, member.id")
+      .andWhere("member_1.id = :id", { id: loggedInUser.id })
+      .andWhere("member_2.id = :id", { id: dmUser.id })
+      .groupBy("channel.id, member_1.id, member_2.id")
       .getOne();
   }
 
