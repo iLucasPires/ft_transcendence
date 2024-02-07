@@ -1,5 +1,5 @@
 import { UserEntity } from "@/users/user.entity";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 const channelTypes = ["dm"] as const;
 
@@ -13,7 +13,7 @@ export class ChannelEntity {
   @Column({ type: "enum", enum: channelTypes })
   type: ChannelType;
 
-  @ManyToMany(() => UserEntity, (user) => user.channels)
+  @ManyToMany(() => UserEntity, (user) => user.channels, { eager: true })
   @JoinTable({
     name: "channel_members",
     joinColumn: {
@@ -26,4 +26,15 @@ export class ChannelEntity {
     },
   })
   members: Array<UserEntity>;
+
+  @Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  createdAt: Date;
+
+  @Column({
+    name: "updated_at",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+    onUpdate: "CURRENT_TIMESTAMP(6)",
+  })
+  updatedAt: Date;
 }

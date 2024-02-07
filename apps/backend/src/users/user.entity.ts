@@ -61,7 +61,7 @@ export class UserEntity {
   @ManyToMany(() => UserEntity, (user) => user.blockedBy)
   blockedUsers?: Promise<UserEntity[]>;
 
-  @ManyToMany(() => UserEntity, { lazy: true })
+  @ManyToMany(() => UserEntity)
   @JoinTable({
     name: "friendships",
     joinColumn: {
