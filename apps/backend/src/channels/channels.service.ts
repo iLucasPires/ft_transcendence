@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
+import { ConflictException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UsersService } from "@/users/users.service";
-import { UserEntity } from "@/users/user.entity";
 import { CreateDMChannelDto } from "./dto";
 
 @Injectable()
@@ -32,6 +32,16 @@ export class ChannelsService {
 
   async createDmChannel(loggedInUser: UserEntity, createDMChannelDto: CreateDMChannelDto): Promise<ChannelEntity> {
     const user = await this.userService.findOneByUsername(loggedInUser, createDMChannelDto.user);
+    const existingChannel = await this.channelsRepository.findOne({
+      where: {
+        members: [{ id: loggedInUser.id }, { id: user.id }],
+      },
+    });
+
+    if (existingChannel) {
+      throw new ConflictException("DM Channel already exists");
+    }
+
     const channel = this.channelsRepository.create({
       type: "dm",
       members: [loggedInUser, user],
