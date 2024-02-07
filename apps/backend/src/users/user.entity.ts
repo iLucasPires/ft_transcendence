@@ -1,3 +1,4 @@
+import { ChannelEntity } from "@/channels/channel.entity";
 import { ApiResponseProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Column, Entity, Index, JoinTable, ManyToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
@@ -73,4 +74,7 @@ export class UserEntity {
     },
   })
   friends?: Promise<UserEntity[]>;
+
+  @ManyToMany(() => ChannelEntity, (channel) => channel.members, { lazy: true })
+  channels?: Promise<Array<ChannelEntity>>;
 }

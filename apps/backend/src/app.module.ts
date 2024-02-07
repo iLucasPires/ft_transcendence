@@ -13,6 +13,7 @@ import { MeController } from "./me/me.controller";
 import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
 import { ChatModule } from "./chat/chat.module";
+import { ChannelsModule } from './channels/channels.module';
 
 const OrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -45,6 +46,7 @@ const OrmModule = TypeOrmModule.forRootAsync({
       rootPath: join(__dirname, "../..", "frontend", "dist"),
     }),
     ChatModule,
+    ChannelsModule,
   ],
   controllers: [AppController, MeController],
   providers: [AppGateway],
