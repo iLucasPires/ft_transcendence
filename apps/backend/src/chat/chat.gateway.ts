@@ -1,9 +1,11 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
-import { Logger, UseGuards } from "@nestjs/common";
+import { HttpExceptionFilter } from "@/http-exception.filter";
+import { Logger, UseFilters, UseGuards } from "@nestjs/common";
 import { ConnectedSocket, OnGatewayConnection, WebSocketGateway } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 
 @UseGuards(WsGuard)
+@UseFilters(HttpExceptionFilter)
 @WebSocketGateway({
   namespace: "/chat",
   path: "/api/socket.io",

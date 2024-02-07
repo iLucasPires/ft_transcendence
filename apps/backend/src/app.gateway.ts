@@ -1,4 +1,4 @@
-import { Inject, Logger, UseGuards } from "@nestjs/common";
+import { Inject, Logger, UseFilters, UseGuards } from "@nestjs/common";
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -9,8 +9,10 @@ import {
 import { Server, Socket } from "socket.io";
 import { WsGuard } from "./auth/guards/ws.guard";
 import { ConnectionStatusService } from "./connection-status/connection-status.service";
+import { HttpExceptionFilter } from "./http-exception.filter";
 
 @UseGuards(WsGuard)
+@UseFilters(HttpExceptionFilter)
 @WebSocketGateway({ path: "/api/socket.io" })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   logger: Logger = new Logger("AppGateway");
