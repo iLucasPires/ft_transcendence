@@ -1,5 +1,6 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
+import { ChannelsService } from "@/channels/channels.service";
 import { FindUserDto, ListUsersDto, UpdateUserDto } from "@/users/dto";
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
@@ -24,11 +25,15 @@ import { ApiBody, ApiConsumes, ApiCookieAuth, ApiQuery, ApiResponse } from "@nes
 import { Request } from "express";
 import { diskStorage } from "multer";
 import { UserSessionDto } from "./dto/user-session.dto";
+import { ChannelEntity } from "@/channels/channel.entity";
 
 @Controller("me")
 @ApiCookieAuth("connect.sid")
 export class MeController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly channelsService: ChannelsService,
+  ) {}
 
   @Get()
   @UseGuards(IsAuthenticatedGuard)
@@ -134,5 +139,16 @@ export class MeController {
   })
   findFriends(@Req() req: Request, @Query() listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     return this.usersService.findFriends(req.user, listUsersDto);
+  }
+
+  @Get("channels")
+  @UseGuards(TwoFactorAuthGuard)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "A list of user channels.",
+    type: [ChannelEntity],
+  })
+  findChannels(@Req() req: Request): Promise<ChannelEntity[]> {
+    return this.channelsService.findUserChannels(req.user);
   }
 }
