@@ -25,8 +25,8 @@ export class ChannelsService {
         "member.username",
         "member.avatarUrl",
       ])
-      .leftJoin("channel.members", "m")
-      .leftJoin("channel.members", "member")
+      .innerJoin("channel.members", "m")
+      .innerJoin("channel.members", "member")
       .where("m.id = :id", { id: user.id })
       .getMany();
   }
