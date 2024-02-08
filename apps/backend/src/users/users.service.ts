@@ -378,7 +378,7 @@ export class UsersService {
       throw new BadRequestException("You cannot unfriend yourself");
     }
 
-    const isAlreadyFriend = await this.userRepository.exist({
+    const isAlreadyFriend = await this.userRepository.exists({
       where: [
         {
           id: user.id,
