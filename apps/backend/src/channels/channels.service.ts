@@ -13,22 +13,6 @@ export class ChannelsService {
     private userService: UsersService,
   ) {}
 
-  findMany(): Promise<ChannelEntity[]> {
-    return this.channelsRepository
-      .createQueryBuilder("channel")
-      .select([
-        "channel.id",
-        "channel.type",
-        "channel.created_at",
-        "channel.updated_at",
-        "member.id",
-        "member.username",
-        "member.avatarUrl",
-      ])
-      .leftJoin("channel.members", "member")
-      .getMany();
-  }
-
   findUserChannels(user: UserEntity): Promise<ChannelEntity[]> {
     return this.channelsRepository
       .createQueryBuilder("channel")
