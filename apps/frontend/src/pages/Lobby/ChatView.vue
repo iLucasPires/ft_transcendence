@@ -29,14 +29,9 @@ const handleClickChat = (chat: iChannel) => {
 };
 
 watch(currentChat, (newChat: iChannel | null) => {
-  currentChat.value = newChat;
   if (newChat !== null) {
     // chatSocket.emit("fetchMessages", newChat.id);
   }
-});
-
-watch(chats, (newChats: iChannel[]) => {
-  chats.value = newChats;
 });
 </script>
 

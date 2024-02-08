@@ -14,12 +14,14 @@ export const useChatStore = defineStore("chatStore", {
     openDmChat(username: string) {
       chatSocket.emit("enterDmChat", username, (channel: iChannel) => {
         this.currentChat = channel;
-        this.chats.push(channel);
         router.push("/chat");
       });
     },
     setChannels(channels: iChannel[]) {
       this.chats = channels;
+      if (!channels.find(({ id }) => id === this.currentChat?.id)) {
+        this.currentChat = channels[0] || null;
+      }
     },
     setCurrentChat(channel: iChannel | null) {
       this.currentChat = channel;
