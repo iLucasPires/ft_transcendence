@@ -113,7 +113,7 @@ export class ChannelsService {
     };
   }
 
-  async createDmChannel(loggedInUser: UserEntity, username: string): Promise<ChannelEntity> {
+  async createDmChannel(loggedInUser: UserEntity, username: string): Promise<FindChannelDto> {
     const dmUser = await this.userService.findOneByUsername(loggedInUser, username);
 
     if (!dmUser) {
@@ -126,15 +126,11 @@ export class ChannelsService {
       throw new ConflictException("DM channel already exists");
     }
 
-    const ownUser = {
-      id: loggedInUser.id,
-      username: loggedInUser.username,
-      avatarUrl: loggedInUser.avatarUrl,
-    };
-
-    return await this.channelsRepository.save({
+    await this.channelsRepository.save({
       type: "dm",
-      members: [ownUser, dmUser],
+      members: [loggedInUser, dmUser],
     });
+
+    return this.findDmChannel(loggedInUser, dmUser);
   }
 }
