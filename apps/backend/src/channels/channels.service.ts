@@ -19,8 +19,8 @@ export class ChannelsService {
       .select([
         "channel.id",
         "channel.type",
-        "channel.created_at",
-        "channel.updated_at",
+        "channel.createdAt",
+        "channel.updatedAt",
         "member.id",
         "member.username",
         "member.avatarUrl",
@@ -34,13 +34,23 @@ export class ChannelsService {
   async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<ChannelEntity> {
     return await this.channelsRepository
       .createQueryBuilder("channel")
-      .innerJoinAndSelect("channel.members", "member_1")
-      .innerJoinAndSelect("channel.members", "member_2")
+      .select([
+        "channel.id",
+        "channel.type",
+        "channel.createdAt",
+        "channel.updatedAt",
+        "member_1.id",
+        "member_1.username",
+        "member_1.avatarUrl",
+        "member_2.id",
+        "member_2.username",
+        "member_2.avatarUrl",
+      ])
+      .innerJoin("channel.members", "member_1")
+      .innerJoin("channel.members", "member_2")
       .where("channel.type = :type", { type: "dm" })
       .andWhere("member_1.id = :id", { id: loggedInUser.id })
       .andWhere("member_2.id = :id", { id: dmUser.id })
-      .groupBy("channel.id, member_1.id, member_2.id")
-      .having("count(DISTINCT channel.id) = 1")
       .getOne();
   }
 
