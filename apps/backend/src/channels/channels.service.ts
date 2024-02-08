@@ -66,27 +66,51 @@ export class ChannelsService {
     }));
   }
 
-  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<ChannelEntity> {
-    return await this.channelsRepository
+  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto | null> {
+    const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .select([
         "channel.id",
         "channel.type",
         "channel.createdAt",
         "channel.updatedAt",
-        "member_1.id",
-        "member_1.username",
-        "member_1.avatarUrl",
-        "member_2.id",
-        "member_2.username",
-        "member_2.avatarUrl",
+        `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
+          OVER (PARTITION BY channel.id) AS channel_members`,
       ])
-      .innerJoin("channel.members", "member_1")
-      .innerJoin("channel.members", "member_2")
-      .where("channel.type = :type", { type: "dm" })
-      .andWhere("member_1.id = :id", { id: loggedInUser.id })
-      .andWhere("member_2.id = :id", { id: dmUser.id })
-      .getOne();
+      .distinctOn(["channel.id"])
+      .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
+      .innerJoin("users", "m", "m.id = cm.member_id")
+      .leftJoin(
+        "friendships",
+        "f",
+        `(f.friend_1_id = :id AND f.friend_2_id = m.id)
+          OR
+         (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
+        { id: loggedInUser.id },
+      )
+      .where("channel.type = 'dm'")
+      .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)", {
+        loggedInUserId: loggedInUser.id,
+      })
+      .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :dmUserId)", {
+        dmUserId: dmUser.id,
+      })
+      .getRawOne<FindUserChannelsQueryResult>();
+
+    if (!result) {
+      return null;
+    }
+
+    return {
+      id: result.channel_id,
+      type: result.channel_type,
+      members: result.channel_members.map((member) => ({
+        ...member,
+        isConnected: this.connectionStatusService.isConnected(member.id),
+      })),
+      createdAt: result.channel_created_at,
+      updatedAt: result.channel_updated_at,
+    };
   }
 
   async createDmChannel(loggedInUser: UserEntity, username: string): Promise<ChannelEntity> {
