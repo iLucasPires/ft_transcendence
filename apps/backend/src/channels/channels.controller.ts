@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import { ChannelsService } from "./channels.service";
-import { CreateDMChannelDto } from "./dto";
-import { Request } from "express";
 import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
+import { Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Request } from "express";
 import { ChannelEntity } from "./channel.entity";
+import { ChannelsService } from "./channels.service";
 
 @Controller("channels")
 @UseGuards(IsAuthenticatedGuard)
@@ -15,8 +14,8 @@ export class ChannelsController {
     return this.channelsService.findMany();
   }
 
-  @Post("dm")
-  createDmChannel(@Req() req: Request, @Body() createChannelDto: CreateDMChannelDto): Promise<ChannelEntity> {
-    return this.channelsService.createDmChannel(req.user, createChannelDto.user);
+  @Post("dm/:username")
+  createDmChannel(@Req() req: Request, @Param("username") username: string): Promise<ChannelEntity> {
+    return this.channelsService.createDmChannel(req.user, username);
   }
 }
