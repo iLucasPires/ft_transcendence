@@ -50,7 +50,7 @@ watch(currentChat, (newChat: iChannel | null) => {
           >
             <div class="avatar">
               <div class="w-16 rounded-full bg-base-200">
-                <img v-bind:src="chatStore.getChatPhoto(chat) || `https://robohash.org/${chatStore.getChatName(chat)}.png`" v-bind:alt="'Chat image'" />
+                <img v-bind:src="chatStore.getChatPhoto(chat)" v-bind:alt="'Chat image'" />
               </div>
             </div>
             <h2 class="title" v-text="chatStore.getChatName(chat)" />

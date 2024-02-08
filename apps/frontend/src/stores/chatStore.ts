@@ -44,7 +44,8 @@ export const useChatStore = defineStore("chatStore", {
       const meStore = useMeStore();
 
       if (channel.type === "dm") {
-        return channel.members.find(({ id }) => id !== meStore.data?.id)?.avatarUrl;
+        const member = channel.members.find(({ id }) => id !== meStore.data?.id);
+        return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
     },
   },
