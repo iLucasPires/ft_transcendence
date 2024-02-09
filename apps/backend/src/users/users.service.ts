@@ -196,34 +196,12 @@ export class UsersService {
     await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(blocker).add(userToBlock);
   }
 
-  async unblock(unblocker: UserEntity, username: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ username });
-
-    if (!user) {
-      throw new NotFoundException(`User not found: ${username}`);
-    }
-
-    if (user.id === unblocker.id) {
-      throw new BadRequestException("You cannot unblock yourself");
-    }
-
-    const isAlreadyBlocked = await this.userRepository.exists({
-      where: {
-        id: unblocker.id,
-        blockedUsers: {
-          id: user.id,
-        },
-      },
-      relations: {
-        blockedUsers: true,
-      },
-    });
-
-    if (!isAlreadyBlocked) {
-      throw new ConflictException(`User not blocked: ${username}`);
-    }
-
-    await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(unblocker).remove(user);
+  async unblock(unblocker: UserEntity, blockedUser: UserEntity): Promise<void> {
+    await this.userRepository
+      .createQueryBuilder()
+      .relation(UserEntity, "blockedUsers")
+      .of(unblocker)
+      .remove(blockedUser);
   }
 
   async isBlockedBy(user: UserEntity, blocker: UserEntity): Promise<boolean> {

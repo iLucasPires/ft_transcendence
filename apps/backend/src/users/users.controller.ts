@@ -115,7 +115,16 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async unblock(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.unblock(req.user, username);
+    const { user } = req;
+    const blockedUser = await this.usersService.findOneByUsernameForUser(user, username);
+
+    if (!blockedUser) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+    if (blockedUser.id === user.id) {
+      throw new BadRequestException("User cannot unblock itself.");
+    }
+    await this.usersService.unblock(user, blockedUser);
   }
 
   @Post(":username/friend")
