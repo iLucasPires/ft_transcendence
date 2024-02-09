@@ -9,16 +9,14 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query,
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiCookieAuth, ApiResponse } from "@nestjs/swagger";
 import { Request } from "express";
-import { ListUsersDto } from "./dto";
+import { FindUserDto } from "./dto/find-user.dto";
 import { UserEntity } from "./user.entity";
 import { UsersService } from "./users.service";
-import { FindUserDto } from "./dto/find-user.dto";
 
 @Controller("users")
 @ApiCookieAuth("connect.sid")
@@ -27,23 +25,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiQuery({
-    name: "limit",
-    required: false,
-    description: "Limit of the list of users.",
-  })
-  @ApiQuery({
-    name: "offset",
-    required: false,
-    description: "Offset of the list of users.",
-  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: "A list of users.",
     type: [FindUserDto],
   })
-  findMany(@Req() req: Request, @Query() listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
-    return this.usersService.findManyForUser(req.user, listUsersDto);
+  findMany(@Req() req: Request): Promise<FindUserDto[]> {
+    return this.usersService.findManyForUser(req.user);
   }
 
   @Get(":username")

@@ -3,7 +3,7 @@ import { FilesService } from "@/files/files.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { FindOrCreateUserDto, ListUsersDto } from "./dto";
+import { FindOrCreateUserDto } from "./dto";
 import { FindUserDto } from "./dto/find-user.dto";
 import { UserEntity } from "./user.entity";
 
@@ -28,9 +28,7 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  async findManyForUser(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
-    const { offset = 0, limit = 10 } = listUsersDto;
-
+  async findManyForUser(user: UserEntity): Promise<FindUserDto[]> {
     const users = await this.userRepository
       .createQueryBuilder("user")
       .select([
@@ -60,8 +58,6 @@ export class UsersService {
         )`,
         { id: user.id },
       )
-      .skip(offset)
-      .take(limit)
       .getRawMany();
 
     return users.map((userData) => ({
@@ -73,16 +69,12 @@ export class UsersService {
     }));
   }
 
-  findBlockedUsers(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
-    const { offset = 0, limit = 10 } = listUsersDto;
-
+  findBlockedUsers(user: UserEntity): Promise<FindUserDto[]> {
     return this.userRepository
       .createQueryBuilder("user")
       .select(["user.id", "user.username", "user.avatarUrl"])
       .innerJoin("user.blockedBy", "blockedBy")
       .where("blockedBy.id = :id", { id: user.id })
-      .skip(offset)
-      .take(limit)
       .getMany();
   }
 
@@ -209,9 +201,7 @@ export class UsersService {
     });
   }
 
-  async findFriends(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
-    const { offset, limit } = listUsersDto;
-
+  async findFriends(user: UserEntity): Promise<FindUserDto[]> {
     const friends = await this.userRepository
       .createQueryBuilder("user")
       .where(
@@ -224,8 +214,6 @@ export class UsersService {
         )`,
         { id: user.id },
       )
-      .skip(offset)
-      .take(limit)
       .getMany();
 
     return friends.map(({ id, username, avatarUrl }) => ({
