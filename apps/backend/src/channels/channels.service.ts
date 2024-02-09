@@ -38,9 +38,8 @@ export class ChannelsService {
         "channel.createdAt",
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
-          OVER (PARTITION BY channel.id) AS channel_members`,
+          AS channel_members`,
       ])
-      .distinctOn(["channel.id"])
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
@@ -52,6 +51,7 @@ export class ChannelsService {
         { id: user.id },
       )
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
+      .groupBy("channel.id")
       .getRawMany<FindUserChannelsQueryResult>();
 
     return result.map((channel) => ({
@@ -75,9 +75,8 @@ export class ChannelsService {
         "channel.createdAt",
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
-          OVER (PARTITION BY channel.id) AS channel_members`,
+          AS channel_members`,
       ])
-      .distinctOn(["channel.id"])
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
@@ -95,6 +94,7 @@ export class ChannelsService {
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :dmUserId)", {
         dmUserId: dmUser.id,
       })
+      .groupBy("channel.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
     if (!result) {
