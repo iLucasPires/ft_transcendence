@@ -157,3 +157,6 @@ result
 
 # Direnv
 .direnv/
+
+# Backend uploads
+uploads/
