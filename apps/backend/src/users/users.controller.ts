@@ -43,7 +43,7 @@ export class UsersController {
     type: [FindUserDto],
   })
   findMany(@Req() req: Request, @Query() listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
-    return this.usersService.findMany(req.user, listUsersDto);
+    return this.usersService.findManyForUser(req.user, listUsersDto);
   }
 
   @Get(":username")

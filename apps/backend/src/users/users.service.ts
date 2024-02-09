@@ -28,7 +28,7 @@ export class UsersService {
     return await this.userRepository.save(findOrCreateUserDto);
   }
 
-  async findMany(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
+  async findManyForUser(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {
     const { offset = 0, limit = 10 } = listUsersDto;
 
     const users = await this.userRepository
