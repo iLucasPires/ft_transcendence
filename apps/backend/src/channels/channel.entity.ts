@@ -1,5 +1,6 @@
+import { MessageEntity } from "@/messages/messages.entity";
 import { UserEntity } from "@/users/user.entity";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 const channelTypes = ["dm"] as const;
 
@@ -26,6 +27,9 @@ export class ChannelEntity {
     },
   })
   members: Array<UserEntity>;
+
+  @OneToMany(() => MessageEntity, (message) => message.channel)
+  messages: Array<MessageEntity>;
 
   @Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

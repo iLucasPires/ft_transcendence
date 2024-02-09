@@ -14,6 +14,7 @@ import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
 import { ChatModule } from "./chat/chat.module";
 import { ChannelsModule } from './channels/channels.module';
+import { MessagesModule } from './messages/messages.module';
 
 const OrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -47,6 +48,7 @@ const OrmModule = TypeOrmModule.forRootAsync({
     }),
     ChatModule,
     ChannelsModule,
+    MessagesModule,
   ],
   controllers: [AppController, MeController],
   providers: [AppGateway],
