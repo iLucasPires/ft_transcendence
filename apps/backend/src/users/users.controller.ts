@@ -1,6 +1,7 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import {
   BadRequestException,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
@@ -146,7 +147,24 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async addFriend(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.addFriend(req.user, username);
+    const { user } = req;
+    const userToAdd = await this.usersService.findOneByUsernameForUser(user, username);
+
+    if (!userToAdd) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+    if (userToAdd.id === user.id) {
+      throw new BadRequestException("User cannot add itself as friends.");
+    }
+    const isBlocked = await this.usersService.isBlockedBy(userToAdd, user);
+    if (isBlocked) {
+      throw new BadRequestException("User cannot add a blocked user as friend.");
+    }
+    const isFriendsWith = await this.usersService.isFriendsWith(user, userToAdd);
+    if (isFriendsWith) {
+      throw new ConflictException("Friendship already exists.");
+    }
+    await this.usersService.addFriend(user, userToAdd);
   }
 
   @Post(":username/unfriend")
