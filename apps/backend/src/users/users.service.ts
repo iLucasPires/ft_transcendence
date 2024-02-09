@@ -121,7 +121,7 @@ export class UsersService {
   }
 
   async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    const isUsernameTaken = await this.userRepository.exist({
+    const isUsernameTaken = await this.userRepository.exists({
       where: {
         id: Not(user.id),
         username: updateUserDto.username,
@@ -206,7 +206,7 @@ export class UsersService {
       throw new BadRequestException("You cannot block yourself");
     }
 
-    const isAlreadyBlocked = await this.userRepository.exist({
+    const isAlreadyBlocked = await this.userRepository.exists({
       where: {
         id: blocker.id,
         blockedUsers: {
@@ -251,7 +251,7 @@ export class UsersService {
       throw new BadRequestException("You cannot unblock yourself");
     }
 
-    const isAlreadyBlocked = await this.userRepository.exist({
+    const isAlreadyBlocked = await this.userRepository.exists({
       where: {
         id: unblocker.id,
         blockedUsers: {
@@ -308,7 +308,7 @@ export class UsersService {
       throw new BadRequestException("You cannot add yourself as a friend");
     }
 
-    const isBlockedByFriend = await this.userRepository.exist({
+    const isBlockedByFriend = await this.userRepository.exists({
       where: {
         id: user.id,
         blockedBy: {
@@ -324,7 +324,7 @@ export class UsersService {
       throw new NotFoundException(`User not found: ${username}`);
     }
 
-    const isBlockedByUser = await this.userRepository.exist({
+    const isBlockedByUser = await this.userRepository.exists({
       where: {
         id: friendUser.id,
         blockedBy: {
@@ -340,7 +340,7 @@ export class UsersService {
       throw new ConflictException(`You can't add a blocked user: ${username}`);
     }
 
-    const isAlreadyFriend = await this.userRepository.exist({
+    const isAlreadyFriend = await this.userRepository.exists({
       where: [
         {
           id: user.id,
