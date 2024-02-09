@@ -56,7 +56,8 @@ export class UsersController {
     description: "User not found",
   })
   findOne(@Req() req: Request, @Param("username") username: string): Promise<UserEntity> {
-    const user = this.usersService.findOneByUsername(req.user, username);
+    const user = this.usersService.findOneByUsernameForUser(req.user, username);
+
     if (!user) {
       throw new NotFoundException(`User not found: ${username}`);
     }
@@ -83,7 +84,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async block(@Req() req: Request, @Param("username") username: string) {
     const { user } = req;
-    const userToBlock = await this.usersService.findOneByUsername(user, username);
+    const userToBlock = await this.usersService.findOneByUsernameForUser(user, username);
 
     if (!userToBlock) {
       throw new NotFoundException(`User not found: ${username}`);

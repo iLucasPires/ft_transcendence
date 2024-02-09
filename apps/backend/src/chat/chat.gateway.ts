@@ -50,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection {
   @SubscribeMessage("enterDmChat")
   async handleEnterDmChat(@ConnectedSocket() client: Socket, @MessageBody() username: string) {
     const loggedInUser = client.request.user;
-    const user = await this.usersService.findOneByUsername(loggedInUser, username);
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
 
     if (!user) {
       throw new WsException(`User not found: ${username}`);

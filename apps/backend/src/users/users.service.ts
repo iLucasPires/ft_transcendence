@@ -90,20 +90,16 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  async findOneByUsername(loggedInUser: UserEntity, username: string): Promise<UserEntity | undefined> {
+  async findOneByUsernameForUser(user: UserEntity, username: string): Promise<UserEntity | undefined> {
     return await this.userRepository
       .createQueryBuilder("user")
-      .select(["user.id", "user.username", "user.avatarUrl"])
-      .where("user.username = :username", { username })
+      .where("username = :username", { username })
       .andWhere(
         `NOT EXISTS (
           SELECT 1 FROM blocked_users block
-          WHERE
-            (user.id = block.blocked_id AND block.blocker_id = :id)
-          OR
-            (user.id = block.blocker_id AND block.blocked_id = :id)
+          WHERE (user.id = block.blocked_id AND block.blocker_id = :id)
         )`,
-        { id: loggedInUser.id },
+        { id: user.id },
       )
       .getOne();
   }
@@ -228,6 +224,20 @@ export class UsersService {
     }
 
     await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(unblocker).remove(user);
+  }
+
+  async isBlockedBy(user: UserEntity, blocker: UserEntity): Promise<boolean> {
+    return await this.userRepository.exists({
+      where: {
+        id: user.id,
+        blockedBy: {
+          id: blocker.id,
+        },
+      },
+      relations: {
+        blockedBy: true,
+      },
+    });
   }
 
   async findFriends(user: UserEntity, listUsersDto: ListUsersDto): Promise<FindUserDto[]> {

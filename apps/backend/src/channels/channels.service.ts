@@ -114,7 +114,7 @@ export class ChannelsService {
   }
 
   async createDmChannel(loggedInUser: UserEntity, username: string): Promise<FindChannelDto> {
-    const dmUser = await this.userService.findOneByUsername(loggedInUser, username);
+    const dmUser = await this.userService.findOneByUsernameForUser(loggedInUser, username);
 
     if (!dmUser) {
       throw new NotFoundException("User not found");
