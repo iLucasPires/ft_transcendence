@@ -7,6 +7,7 @@ import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpCode,
@@ -57,8 +58,15 @@ export class MeController {
     status: HttpStatus.CONFLICT,
     description: "Username already exists",
   })
-  updateMe(@Req() req: Request, @Body() body: UpdateUserDto): Promise<UserEntity> {
-    return this.usersService.update(req.user, body);
+  async updateMe(@Req() req: Request, @Body() { username }: UpdateUserDto): Promise<UserEntity> {
+    const { user } = req;
+    const userWithUsername = await this.usersService.findOneByUsername(username);
+
+    if (userWithUsername && userWithUsername.id !== user.id) {
+      throw new ConflictException(`Username already exists: ${username}`);
+    }
+
+    return await this.usersService.updateUsername(user, username);
   }
 
   @Post("avatar")

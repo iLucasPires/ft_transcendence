@@ -1,9 +1,9 @@
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { FilesService } from "@/files/files.service";
-import { ConflictException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Not, Repository } from "typeorm";
-import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
+import { Repository } from "typeorm";
+import { FindOrCreateUserDto, ListUsersDto } from "./dto";
 import { FindUserDto } from "./dto/find-user.dto";
 import { UserEntity } from "./user.entity";
 
@@ -90,6 +90,10 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
+  findOneByUsername(username: string): Promise<UserEntity | undefined> {
+    return this.userRepository.findOneBy({ username });
+  }
+
   async findOneByUsernameForUser(user: UserEntity, username: string): Promise<UserEntity | undefined> {
     return await this.userRepository
       .createQueryBuilder("user")
@@ -104,29 +108,16 @@ export class UsersService {
       .getOne();
   }
 
-  async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    const isUsernameTaken = await this.userRepository.exists({
-      where: {
-        id: Not(user.id),
-        username: updateUserDto.username,
-      },
-    });
-
-    if (isUsernameTaken) {
-      throw new ConflictException(`Username already taken: ${updateUserDto.username}`);
-    }
-
-    const data = {
-      ...updateUserDto,
-      registrationComplete: true,
-    };
-
+  async updateUsername(user: UserEntity, username: string): Promise<UserEntity> {
     return this.userRepository
       .createQueryBuilder()
       .update(UserEntity)
-      .set(data)
+      .set({
+        username,
+        registrationComplete: true,
+      })
       .whereEntity(user)
-      .returning("*")
+      .returning("id, username, avatarUrl, registrationComplete, isTwoFactorAuthEnabled")
       .execute()
       .then((result) => result.generatedMaps[0] as UserEntity);
   }
