@@ -1,11 +1,11 @@
+import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
 import { FindChannelDto } from "./dto";
-import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 
 interface FindUserChannelsQueryResult {
   channel_id: string;
@@ -113,23 +113,19 @@ export class ChannelsService {
     };
   }
 
-  async createDmChannel(loggedInUser: UserEntity, username: string): Promise<FindChannelDto> {
-    const dmUser = await this.userService.findOneByUsernameForUser(loggedInUser, username);
+  async createDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto> {
+    const result = await this.channelsRepository
+      .createQueryBuilder("channel")
+      .insert()
+      .values({ type: "dm" })
+      .returning("id")
+      .execute();
 
-    if (!dmUser) {
-      throw new NotFoundException("User not found");
-    }
-
-    const channel = await this.findDmChannel(loggedInUser, dmUser);
-
-    if (!!channel) {
-      throw new ConflictException("DM channel already exists");
-    }
-
-    await this.channelsRepository.save({
-      type: "dm",
-      members: [loggedInUser, dmUser],
-    });
+    await this.channelsRepository
+      .createQueryBuilder()
+      .relation(ChannelEntity, "members")
+      .of(result.raw[0].id)
+      .add([loggedInUser, dmUser]);
 
     return this.findDmChannel(loggedInUser, dmUser);
   }
