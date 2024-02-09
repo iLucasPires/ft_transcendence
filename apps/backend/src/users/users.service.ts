@@ -1,11 +1,11 @@
+import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { FilesService } from "@/files/files.service";
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
 import { FindOrCreateUserDto, ListUsersDto, UpdateUserDto } from "./dto";
-import { UserEntity } from "./user.entity";
-import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { FindUserDto } from "./dto/find-user.dto";
+import { UserEntity } from "./user.entity";
 
 @Injectable()
 export class UsersService {
@@ -249,41 +249,7 @@ export class UsersService {
     await this.userRepository.createQueryBuilder().relation(UserEntity, "friends").of(user).add(userToAdd);
   }
 
-  async removeFriend(user: UserEntity, username: string) {
-    const friendUser = await this.userRepository.findOneBy({ username });
-
-    if (!friendUser) {
-      throw new NotFoundException(`User not found: ${username}`);
-    }
-
-    if (user.id === friendUser.id) {
-      throw new BadRequestException("You cannot unfriend yourself");
-    }
-
-    const isAlreadyFriend = await this.userRepository.exists({
-      where: [
-        {
-          id: user.id,
-          friends: {
-            id: friendUser.id,
-          },
-        },
-        {
-          id: friendUser.id,
-          friends: {
-            id: user.id,
-          },
-        },
-      ],
-      relations: {
-        friends: true,
-      },
-    });
-
-    if (!isAlreadyFriend) {
-      throw new ConflictException(`You're not friends with: ${username}`);
-    }
-
+  async removeFriend(user: UserEntity, friendUser: UserEntity) {
     await this.userRepository
       .createQueryBuilder()
       .delete()

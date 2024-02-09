@@ -186,6 +186,19 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeFriend(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.removeFriend(req.user, username);
+    const { user } = req;
+    const friendUser = await this.usersService.findOneByUsernameForUser(user, username);
+
+    if (!friendUser) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+    if (user.id === friendUser.id) {
+      throw new BadRequestException("User cannot unfriend itself.");
+    }
+    const isFriendsWith = await this.usersService.isFriendsWith(user, friendUser);
+    if (!isFriendsWith) {
+      throw new ConflictException(`You're not friends with: ${username}`);
+    }
+    await this.usersService.removeFriend(user, friendUser);
   }
 }
