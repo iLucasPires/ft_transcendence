@@ -2,7 +2,7 @@ import { MessageEntity } from "@/messages/messages.entity";
 import { UserEntity } from "@/users/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-const channelTypes = ["dm"] as const;
+export const channelTypes = ["dm"] as const;
 
 export type ChannelType = (typeof channelTypes)[number];
 
