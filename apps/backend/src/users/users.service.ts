@@ -97,7 +97,7 @@ export class UsersService {
       .andWhere(
         `NOT EXISTS (
           SELECT 1 FROM blocked_users block
-          WHERE (user.id = block.blocked_id AND block.blocker_id = :id)
+          WHERE (block.blocked_id = :id AND block.blocker_id = user.id)
         )`,
         { id: user.id },
       )
