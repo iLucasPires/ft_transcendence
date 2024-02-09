@@ -90,8 +90,8 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  async findOneByUsername(loggedInUser: UserEntity, username: string): Promise<UserEntity> {
-    const user = await this.userRepository
+  async findOneByUsername(loggedInUser: UserEntity, username: string): Promise<UserEntity | undefined> {
+    return await this.userRepository
       .createQueryBuilder("user")
       .select(["user.id", "user.username", "user.avatarUrl"])
       .where("user.username = :username", { username })
@@ -106,12 +106,6 @@ export class UsersService {
         { id: loggedInUser.id },
       )
       .getOne();
-
-    if (!user) {
-      throw new NotFoundException(`User not found: ${username}`);
-    }
-
-    return user;
   }
 
   async update(user: UserEntity, updateUserDto: UpdateUserDto): Promise<UserEntity> {

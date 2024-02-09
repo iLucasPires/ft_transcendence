@@ -1,5 +1,16 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
-import { Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiCookieAuth, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { Request } from "express";
 import { ListUsersDto } from "./dto";
@@ -44,8 +55,13 @@ export class UsersController {
     description: "User not found",
   })
   findOne(@Req() req: Request, @Param("username") username: string): Promise<UserEntity> {
-    return this.usersService.findOneByUsername(req.user, username);
+    const user = this.usersService.findOneByUsername(req.user, username);
+    if (!user) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+    return user;
   }
+
   @Post(":username/block")
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
