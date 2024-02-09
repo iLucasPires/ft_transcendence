@@ -183,49 +183,21 @@ export class UsersService {
     });
   }
 
-  async block(blocker: UserEntity, username: string): Promise<void> {
-    const user = await this.userRepository.findOneBy({ username });
-
-    if (!user) {
-      throw new NotFoundException(`User not found: ${username}`);
-    }
-
-    if (user.id === blocker.id) {
-      throw new BadRequestException("You cannot block yourself");
-    }
-
-    const isAlreadyBlocked = await this.userRepository.exists({
-      where: {
-        id: blocker.id,
-        blockedUsers: {
-          id: user.id,
-        },
-      },
-      relations: {
-        blockedUsers: true,
-      },
-    });
-
-    if (isAlreadyBlocked) {
-      throw new ConflictException(`User already blocked: ${username}`);
-    }
-
-    // If user is friends with blocker, remove friendship
+  async block(blocker: UserEntity, userToBlock: UserEntity): Promise<void> {
     await this.userRepository
       .createQueryBuilder()
       .delete()
       .from("friendships")
       .where("friend_1_id = :id AND friend_2_id = :friendId", {
         id: blocker.id,
-        friendId: user.id,
+        friendId: userToBlock.id,
       })
       .orWhere("friend_1_id = :friendId AND friend_2_id = :id", {
-        id: user.id,
+        id: userToBlock.id,
         friendId: blocker.id,
       })
       .execute();
-
-    await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(blocker).add(user);
+    await this.userRepository.createQueryBuilder().relation(UserEntity, "blockedUsers").of(blocker).add(userToBlock);
   }
 
   async unblock(unblocker: UserEntity, username: string): Promise<void> {

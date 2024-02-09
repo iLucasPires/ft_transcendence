@@ -1,5 +1,6 @@
 import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import {
+  BadRequestException,
   Controller,
   Get,
   HttpCode,
@@ -81,7 +82,17 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async block(@Req() req: Request, @Param("username") username: string) {
-    await this.usersService.block(req.user, username);
+    const { user } = req;
+    const userToBlock = await this.usersService.findOneByUsername(user, username);
+
+    if (!userToBlock) {
+      throw new NotFoundException(`User not found: ${username}`);
+    }
+    if (userToBlock.id === user.id) {
+      throw new BadRequestException("User cannot block itself.");
+    }
+
+    await this.usersService.block(user, userToBlock);
   }
 
   @Post(":username/unblock")
