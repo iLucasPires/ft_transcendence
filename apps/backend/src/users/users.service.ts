@@ -86,14 +86,8 @@ export class UsersService {
       .getMany();
   }
 
-  async findOneById(id: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id });
-
-    if (!user) {
-      throw new NotFoundException(`User not found: ${id}`);
-    }
-
-    return user;
+  findOneById(id: string): Promise<UserEntity | undefined> {
+    return this.userRepository.findOneBy({ id });
   }
 
   async findOneByUsername(loggedInUser: UserEntity, username: string): Promise<UserEntity> {
