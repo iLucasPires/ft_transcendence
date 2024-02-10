@@ -1,13 +1,14 @@
 import { addIcons } from "oh-vue-icons";
 
 import {
-  IoGameController,
-  IoChatbubblesSharp,
-  RiPingPongFill,
+  MdVideogameasset,
+  MdMessage,
+
   MdKeyboarddoublearrowleft,
   MdWorkhistoryRound,
   MdLogout,
   MdPerson,
+  MdPersonaddalt1,
   MdSunny,
   MdModenight,
   MdSettings,
@@ -17,20 +18,19 @@ import {
   MdInfoRound,
   MdSupervisoraccount,
   MdModeeditTwotone,
-  GiBananaBunch,
   MdEmail,
-  FaHamburger,
   GiPingPongBat,
   MdCrisisalert,
 } from "oh-vue-icons/icons";
 
 addIcons(
+  MdPersonaddalt1,
   MdSettings,
   MdPerson,
   MdLogout,
-  IoGameController,
-  IoChatbubblesSharp,
-  RiPingPongFill,
+  MdVideogameasset,
+  MdMessage,
+
   MdWorkhistoryRound,
   MdKeyboarddoublearrowleft,
   MdModenight,
@@ -41,9 +41,7 @@ addIcons(
   MdInfoRound,
   MdSupervisoraccount,
   MdModeeditTwotone,
-  GiBananaBunch,
   MdEmail,
-  FaHamburger,
   GiPingPongBat,
   MdCrisisalert,
 );

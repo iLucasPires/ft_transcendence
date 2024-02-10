@@ -8,5 +8,7 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+
+  "files": ["./components.d.ts"]
 }

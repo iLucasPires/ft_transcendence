@@ -44,7 +44,7 @@
   }
 
   .btn-nav {
-    @apply btn md:btn-md btn-sm flex-nowrap justify-start  gap-6 overflow-hidden w-full;
+    @apply md:btn-md btn-sm flex-nowrap justify-start gap-6 overflow-hidden w-full;
     @apply focus:focus:btn-primary hover:btn-primary;
   }
 
@@ -60,7 +60,6 @@
 [data-theme="light"] {
   color-scheme: light;
 }
-
 
 * {
   scrollbar-width: thin;
