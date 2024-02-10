@@ -56,6 +56,19 @@ export class ChatGateway implements OnGatewayConnection {
     if (!channel) {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
     }
+    client.join(channel.id);
     return channel;
+  }
+
+  @SubscribeMessage("sendMessage")
+  async handleSendMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { channelId: string; content: string },
+  ) {
+    const author = client.request.user;
+    const { channelId, content } = data;
+
+    const message = await this.channelsService.sendMessage(channelId, author.id, content);
+    client.to(channelId).emit("newMessage", message);
   }
 }

@@ -22,7 +22,15 @@ onUnmounted(() => {
 const message = ref("");
 const messages = ref<any []>([]);
 
-const handleSendMessage = () => {};
+const handleSendMessage = () => {
+  const content = message.value.trim();
+
+  if (!currentChat.value || content === "") {
+    return;
+  }
+  chatSocket.emit("sendMessage", { content, channelId: currentChat.value.id });
+  message.value = "";
+};
 
 const handleClickChat = (chat: iChannel) => {
   chatStore.setCurrentChat(chat);
@@ -89,7 +97,7 @@ watch(currentChat, (newChat: iChannel | null) => {
               placeholder="Type a message"
               v-model="message"
             />
-            <button class="btn btn-primary ml-2 h-5">
+            <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">
               Send
             </button>
           </form>

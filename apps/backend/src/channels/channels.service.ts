@@ -1,11 +1,11 @@
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { UserEntity } from "@/users/user.entity";
-import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity } from "./channel.entity";
-import { FindChannelDto } from "./dto";
+import { FindChannelDto, MessageDto } from "./dto";
+import { MessageEntity } from "./messages.entity";
 
 interface FindUserChannelsQueryResult {
   channel_id: string;
@@ -20,13 +20,24 @@ interface FindUserChannelsQueryResult {
   }>;
 }
 
+interface FindMessageQueryResult {
+  message_id: string;
+  message_channel_id: string;
+  message_content: string;
+  message_sent_at: Date;
+  author_id: string;
+  author_username: string;
+  author_avatar_url: string;
+}
+
 @Injectable()
 export class ChannelsService {
   constructor(
     @InjectRepository(ChannelEntity)
     private channelsRepository: Repository<ChannelEntity>,
+    @InjectRepository(MessageEntity)
+    private messagesRepository: Repository<MessageEntity>,
     private connectionStatusService: ConnectionStatusService,
-    private userService: UsersService,
   ) {}
 
   async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
@@ -128,5 +139,40 @@ export class ChannelsService {
       .add([loggedInUser, dmUser]);
 
     return this.findDmChannel(loggedInUser, dmUser);
+  }
+
+  async sendMessage(channelId: string, authorId: string, content: string): Promise<MessageDto> {
+    const qb = this.messagesRepository.createQueryBuilder("message");
+    const insertResult = await qb
+      .insert()
+      .values({ author: { id: authorId }, channel: { id: channelId }, content })
+      .returning("id")
+      .execute();
+
+    const rawMessage = await qb
+      .select([
+        "message.id",
+        "author.id",
+        "author.username",
+        "author.avatarUrl",
+        "message.channel_id",
+        "message.content",
+        "message.sentAt",
+      ])
+      .innerJoin("users", "author", "author.id = message.author_id")
+      .where("message.id = :id", { id: insertResult.raw[0].id })
+      .getRawOne<FindMessageQueryResult>();
+
+    return {
+      id: rawMessage.message_id,
+      author: {
+        id: rawMessage.author_id,
+        username: rawMessage.author_username,
+        avatarUrl: rawMessage.author_avatar_url,
+      },
+      channelId: rawMessage.message_channel_id,
+      content: rawMessage.message_content,
+      sentAt: rawMessage.message_sent_at,
+    };
   }
 }
