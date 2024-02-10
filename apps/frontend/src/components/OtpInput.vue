@@ -35,8 +35,8 @@ function handleOtpInput(payload: Event) {
       />
     </div>
     <div class="flex w-full gap-2">
-      <button class="btn-full btn-primary" type="submit" v-text="'Finish'" />
-      <button class="btn-full btn-secondary" type="reset" v-text="'Clear'" />
+      <button class="btn-full btn-primary" type="submit">Finish</button>
+      <button class="btn-full btn-secondary" type="reset">Clear</button>
     </div>
   </form>
 </template>

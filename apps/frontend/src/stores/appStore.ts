@@ -8,16 +8,16 @@ export const useAppStore = defineStore("appStore", {
       theme: "dark",
       gameP5Instance: null as any,
       modalLeaveGame: false,
+      modalProfile: false,
     };
   },
 
   actions: {
     setTheme() {
       this.theme =
-        localStorage.getItem("data-theme") ||
-        window.matchMedia("(prefers-color-scheme: dark)")
-          ? "dark"
-          : "light";
+        localStorage.getItem("data-theme") 
+        || window.matchMedia("(prefers-color-scheme: dark)") 
+        ? "dark" : "light";
       document.documentElement.setAttribute("data-theme", this.theme);
     },
 
@@ -27,9 +27,7 @@ export const useAppStore = defineStore("appStore", {
 
     changeMessageLog(messagesLog: string | string[]) {
       const messagesLogIsArray = Array.isArray(messagesLog);
-
       messagesLogIsArray ? this.log.push(...messagesLog) : this.log.push(messagesLog);
-
       setTimeout(() => (messagesLogIsArray ? this.log.splice(0, messagesLog.length) : this.log.shift()), 3000);
     },
 

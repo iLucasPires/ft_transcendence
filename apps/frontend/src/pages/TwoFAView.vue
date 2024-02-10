@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { useMeStore } from "@/stores/meStore";
 import { useAppStore } from "@/stores/appStore";
-import OtpInput from "@/components/OtpInput.vue";
 
 const totp = ref("");
 const meStore = useMeStore();
