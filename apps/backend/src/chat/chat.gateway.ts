@@ -35,9 +35,6 @@ export class ChatGateway implements OnGatewayConnection {
       client.disconnect(true);
       return;
     }
-
-    const clientChannels = await this.channelsService.findUserChannels(request.user);
-    client.join(clientChannels.map((channel) => channel.id));
   }
 
   @SubscribeMessage("fetchChannels")
@@ -59,7 +56,6 @@ export class ChatGateway implements OnGatewayConnection {
     if (!channel) {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
     }
-    client.join(channel.id);
     return channel;
   }
 }
