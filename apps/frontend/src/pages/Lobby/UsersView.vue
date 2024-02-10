@@ -42,26 +42,25 @@ async function handleClickBlock(username: string) {
   }
 }
 
-async function handleClickAddFriend(username: string) {
-  const message = appStore.tab === "friends" ? "Unfriended" : "Added";
-
-  const res = appStore.tab === "friends" 
-    ? await api.unfriend(username) 
-    : await api.addFriend(username);
-
-  if (res?.ok) {
-    appStore.changeMessageLog(`Successfully ${message} ${username}`);
-
-    if (appStore.tab === "friends") {
-      users.value = users.value.filter((user) => user.username !== username);
-    }
-
-    if (appStore.tab === "all") {
-      users.value[users.value.findIndex((user) => user.username === username)].isFriendsWith = true;
+async function handleClickFriendshipAction(user: iUser) {
+  let message = "added";
+  if (user.isFriendsWith) {
+    message = "unfriended";
+    const res = await api.unfriend(user.username);
+    if (!res.ok) {
+      appStore.changeMessageLog(`Failed to unfriend ${user.username}`);
+      return;
     }
   } else {
-    appStore.changeMessageLog(`Failed to ${message} ${username}, maybe you are already friends?`);
+    const res = await api.addFriend(user.username);
+    if (!res.ok) {
+      appStore.changeMessageLog(`Failed to add friend ${user.username}`);
+      return;
+    }
   }
+  appStore.changeMessageLog(`Successfully ${message} ${user.username}`);
+  const index = users.value.findIndex((u) => u.username === user.username);
+  users.value[index].isFriendsWith = !user.isFriendsWith;
 }
 
 async function handleTabChange() {
@@ -83,7 +82,7 @@ onMounted(handleTabChange);
           :key="key"
           @handleSendMessage="handleClickSendMessage"
           @handleBlock="handleClickBlock"
-          @handleAdd="handleClickAddFriend"
+          @handleFriendship="handleClickFriendshipAction"
           @showProfile="detailProfile = user"
         />
       </ul>

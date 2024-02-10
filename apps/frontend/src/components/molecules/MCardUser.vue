@@ -4,7 +4,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useMeStore } from "@/stores/meStore";
 
 defineProps<{ user: iUser }>();
-defineEmits(["handleSendMessage", "handleBlock", "handleAdd", "showProfile"]);
+defineEmits(["handleSendMessage", "handleBlock", "handleFriendship", "showProfile"]);
 
 const appStore = useAppStore();
 const meStore = useMeStore();
@@ -30,7 +30,7 @@ const isOwnUser = (user: iUser) => user.username === meStore.data?.username;
           icon="md-personaddalt1"
           :text="user.isFriendsWith ? 'Unfriend' : 'Add Friend'"
           class="w-full btn-sm justify-start"
-          @click="$emit('handleAdd', user.username)"
+          @click="$emit('handleFriendship', user)"
         />
         <AButton
           icon="md-block"
