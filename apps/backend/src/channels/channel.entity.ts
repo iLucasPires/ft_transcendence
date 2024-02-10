@@ -1,6 +1,6 @@
-import { MessageEntity } from "@/messages/messages.entity";
 import { UserEntity } from "@/users/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { MessageEntity } from "./messages.entity";
 
 export const channelTypes = ["dm"] as const;
 
