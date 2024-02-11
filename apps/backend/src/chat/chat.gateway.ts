@@ -57,7 +57,10 @@ export class ChatGateway implements OnGatewayConnection {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
     }
     client.join(channel.id);
-    return channel;
+    return {
+      ...channel,
+      messages: await this.channelsService.findChannelMessages(channel.id),
+    };
   }
 
   @SubscribeMessage("sendMessage")
@@ -70,5 +73,6 @@ export class ChatGateway implements OnGatewayConnection {
 
     const message = await this.channelsService.sendMessage(channelId, author.id, content);
     client.to(channelId).emit("newMessage", message);
+    return message;
   }
 }

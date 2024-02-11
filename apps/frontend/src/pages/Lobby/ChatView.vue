@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import { chatSocket } from "@/socket";
 import { useChatStore } from "@/stores/chatStore";
-import type { iChannel } from "@/types/props";
+import type { iChannel, iMessage } from "@/types/props";
 import { storeToRefs } from "pinia";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 
 const chatStore = useChatStore();
-const { currentChat, chats  } = storeToRefs(chatStore);
+const { currentChat, chats, currentChatId, currentChatMessages  } = storeToRefs(chatStore);
 
 onMounted(() => {
   chatSocket.on("channelsList", (channels: iChannel[]) => {
     chatStore.setChannels(channels);
+  });
+  chatSocket.on("newMessage", (message: iMessage) => {
+    console.log(chatStore.currentChatId, message);
+    if (chatStore.currentChatId !== message.channelId) {
+      return;
+    }
+    chatStore.addMessage(message);
   });
   chatSocket.emit("fetchChannels");
 });
@@ -20,7 +27,6 @@ onUnmounted(() => {
 });
 
 const message = ref("");
-const messages = ref<any []>([]);
 
 const handleSendMessage = () => {
   const content = message.value.trim();
@@ -28,19 +34,15 @@ const handleSendMessage = () => {
   if (!currentChat.value || content === "") {
     return;
   }
-  chatSocket.emit("sendMessage", { content, channelId: currentChat.value.id });
-  message.value = "";
+  chatSocket.emit("sendMessage", { content, channelId: currentChat.value.id }, (msg: iMessage) => {
+    chatStore.addMessage(msg);
+    message.value = "";
+  });
 };
 
 const handleClickChat = (chat: iChannel) => {
   chatStore.setCurrentChat(chat);
 };
-
-watch(currentChat, (newChat: iChannel | null) => {
-  if (newChat !== null) {
-    // chatSocket.emit("fetchMessages", newChat.id);
-  }
-});
 </script>
 
 <template>
@@ -52,13 +54,13 @@ watch(currentChat, (newChat: iChannel | null) => {
           <li
             class="flex items-center separate cursor-pointer border-card"
             v-for="chat in chats"
-            v-bind:class="currentChat?.id === chat.id && 'border-primary'"
+            :class="currentChatId === chat.id && 'border-primary'"
             v-on:click="handleClickChat(chat)"
-            v-bind:key="chat.id"
+            :key="chat.id"
           >
             <div class="avatar">
               <div class="w-16 rounded-full bg-base-200">
-                <img v-bind:src="chatStore.getChatPhoto(chat)" v-bind:alt="'Chat image'" />
+                <img :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
               </div>
             </div>
             <h2 class="title" v-text="chatStore.getChatName(chat)" />
@@ -68,18 +70,18 @@ watch(currentChat, (newChat: iChannel | null) => {
 
       <div class="w-full border-card separate flex flex-col h-full">
         <div class="h-full flex flex-col gap-2">
-          <div v-if="messages.length !== 0" class="overflow-y-auto h-full flex flex-col-reverse py-2">
+          <div v-if="currentChatMessages.length !== 0" class="overflow-y-auto h-full flex flex-col-reverse py-2">
             <ul class="flex flex-col gap-2">
-              <li class="border-card p-4" v-for="message in messages" v-bind:key="message.id">
+              <li class="border-card p-4" v-for="message in currentChatMessages" :key="message.id">
                 <div class="flex items-center gap-2">
                   <div class="avatar">
                     <div class="w-16 rounded-full bg-base-200">
-                      <img v-bind:src="message.user.photo" v-bind:alt="`avatar of ${message.user.name}`" />
+                      <img :src="message.author.avatarUrl" :alt="`avatar of ${message.author.username}`" />
                     </div>
                   </div>
                   <div>
-                    <h2 class="text-md" v-text="message.user.name" />
-                    <p class="text-md font-bold" v-text="message.message" />
+                    <h2 class="text-md" v-text="message.author.username" />
+                    <p class="text-md font-bold" v-text="message.content" />
                   </div>
                 </div>
               </li>

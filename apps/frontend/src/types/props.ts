@@ -24,3 +24,15 @@ export type iChannel = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type iMessage = {
+  id?: string;
+  author: Pick<iUser, "id" | "username" | "avatarUrl">;
+  channelId: string;
+  content: string;
+  sentAt: string;
+};
+
+export type iCurrentChannel = iChannel & {
+  messages: iMessage[];
+};

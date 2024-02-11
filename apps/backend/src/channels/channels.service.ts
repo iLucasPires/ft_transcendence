@@ -155,7 +155,7 @@ export class ChannelsService {
         "author.id",
         "author.username",
         "author.avatarUrl",
-        "message.channel_id",
+        "message.channel_id AS message_channel_id",
         "message.content",
         "message.sentAt",
       ])
@@ -174,5 +174,35 @@ export class ChannelsService {
       content: rawMessage.message_content,
       sentAt: rawMessage.message_sent_at,
     };
+  }
+
+  async findChannelMessages(channelId: string): Promise<MessageDto[]> {
+    const result = await this.messagesRepository
+      .createQueryBuilder("message")
+      .select([
+        "message.id",
+        "author.id",
+        "author.username",
+        "author.avatarUrl",
+        "message.channel_id",
+        "message.content",
+        "message.sentAt",
+      ])
+      .innerJoin("users", "author", "author.id = message.author_id")
+      .where("message.channel_id = :channelId", { channelId })
+      .orderBy("message.sentAt", "ASC")
+      .getRawMany<FindMessageQueryResult>();
+
+    return result.map((message) => ({
+      id: message.message_id,
+      author: {
+        id: message.author_id,
+        username: message.author_username,
+        avatarUrl: message.author_avatar_url,
+      },
+      channelId: message.message_channel_id,
+      content: message.message_content,
+      sentAt: message.message_sent_at,
+    }));
   }
 }
