@@ -63,6 +63,11 @@ export class ChatGateway implements OnGatewayConnection {
     };
   }
 
+  @SubscribeMessage("leaveChannel")
+  async handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+    client.leave(channelId);
+  }
+
   @SubscribeMessage("sendMessage")
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
