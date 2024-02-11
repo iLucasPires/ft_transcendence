@@ -73,15 +73,15 @@ const handleClickChat = (chat: iChannel) => {
           <div v-if="currentChatMessages.length !== 0" class="overflow-y-auto h-full flex flex-col-reverse py-2">
             <ul class="flex flex-col gap-2">
               <li class="border-card p-4" v-for="message in currentChatMessages" :key="message.id">
-                <div class="flex items-center gap-2">
+                <div class="max-w-5xl flex items-center gap-2">
                   <div class="avatar">
                     <div class="w-16 rounded-full bg-base-200">
                       <img :src="message.author.avatarUrl || `https://robohash.org/${message.author.username}.png`" :alt="`avatar of ${message.author.username}`" />
                     </div>
                   </div>
-                  <div>
-                    <h2 class="text-md" v-text="message.author.username" />
-                    <p class="text-md font-bold" v-text="message.content" />
+                  <div class="w-full">
+                    <h2 class="text-md font-bold" v-text="message.author.username" />
+                    <p class="text-md text-pretty break-words whitespace-pre-wrap" v-text="message.content" />
                   </div>
                 </div>
               </li>
