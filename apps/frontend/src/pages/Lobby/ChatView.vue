@@ -99,6 +99,7 @@ const handleClickChat = (chat: iChannel) => {
               placeholder="Type a message"
               v-model="message"
               :disabled="!currentChat"
+              @keydown.enter.exact.prevent="handleSendMessage"
             />
             <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">
               Send
