@@ -76,7 +76,7 @@ const handleClickChat = (chat: iChannel) => {
                 <div class="flex items-center gap-2">
                   <div class="avatar">
                     <div class="w-16 rounded-full bg-base-200">
-                      <img :src="message.author.avatarUrl" :alt="`avatar of ${message.author.username}`" />
+                      <img :src="message.author.avatarUrl || `https://robohash.org/${message.author.username}.png`" :alt="`avatar of ${message.author.username}`" />
                     </div>
                   </div>
                   <div>
