@@ -96,6 +96,7 @@ watch(currentChat, (newChat: iChannel | null) => {
               class="textarea bg-base-300 w-full h-5 resize-y"
               placeholder="Type a message"
               v-model="message"
+              :disabled="!currentChat"
             />
             <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">
               Send
