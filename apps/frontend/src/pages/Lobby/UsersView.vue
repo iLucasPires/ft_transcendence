@@ -80,8 +80,11 @@ onMounted(handleTabChange);
           v-for="(user, key) in users"
           :user="user"
           :key="key"
+          
+          
           @handleSendMessage="handleClickSendMessage"
           @handleBlock="handleClickBlock"
+
           @handleFriendship="handleClickFriendshipAction"
           @showProfile="detailProfile = user"
         />

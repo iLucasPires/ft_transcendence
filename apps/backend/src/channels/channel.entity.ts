@@ -1,8 +1,8 @@
 import { UserEntity } from "@/users/user.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { MessageEntity } from "./messages.entity";
 
-export const channelTypes = ["dm"] as const;
+export const channelTypes = ["dm", "group"] as const;
 
 export type ChannelType = (typeof channelTypes)[number];
 
@@ -10,6 +10,12 @@ export type ChannelType = (typeof channelTypes)[number];
 export class ChannelEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column({ type: String, nullable: true })
+  name?: string;
+
+  @ManyToOne(() => UserEntity, { eager: true, nullable: true })
+  owner?: UserEntity;
 
   @Column({ type: "enum", enum: channelTypes })
   type: ChannelType;

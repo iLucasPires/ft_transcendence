@@ -6,7 +6,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted, ref } from "vue";
 
 const chatStore = useChatStore();
-const { currentChat, chats, currentChatId, currentChatMessages  } = storeToRefs(chatStore);
+const { currentChat, chats, currentChatId, currentChatMessages } = storeToRefs(chatStore);
 
 onMounted(() => {
   chatSocket.on("channelsList", (channels: iChannel[]) => {
@@ -101,9 +101,7 @@ const handleClickChat = (chat: iChannel) => {
               :disabled="!currentChat"
               @keydown.enter.exact.prevent="handleSendMessage"
             />
-            <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">
-              Send
-            </button>
+            <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">Send</button>
           </form>
         </div>
       </div>

@@ -41,7 +41,7 @@ export const useChatStore = defineStore("chatStore", {
         this.currentChat = null;
         return;
       }
-      const events = { dm: "enterDmChat" };
+      const events = { dm: "enterDmChat", group: "enterGroupChat" };
       const event = events[channel.type];
 
       chatSocket.emit(
@@ -62,6 +62,7 @@ export const useChatStore = defineStore("chatStore", {
       if (channel.type === "dm") {
         return channel.members.find(({ id }) => id !== meStore.data?.id)?.username;
       }
+      return channel.name;
     },
 
     getChatPhoto(channel: iChannel): string | undefined {
@@ -71,6 +72,7 @@ export const useChatStore = defineStore("chatStore", {
         const member = channel.members.find(({ id }) => id !== meStore.data?.id);
         return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
+      return `https://robohash.org/${this.getChatName(channel)}.png`;
     },
 
     getChatLastMessage(channel: iChannel): string | null {

@@ -3,21 +3,19 @@ import { UserEntity } from "@/users/user.entity";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ChannelEntity } from "./channel.entity";
+import { ChannelEntity, ChannelType } from "./channel.entity";
 import { FindChannelDto, MessageDto } from "./dto";
 import { MessageEntity } from "./messages.entity";
+import { FindUserDto } from "@/users/dto";
 
 interface FindUserChannelsQueryResult {
   channel_id: string;
-  channel_type: "dm";
+  channel_name?: string;
+  channel_type: ChannelType;
+  channel_owner?: Pick<FindUserDto, "id" | "username">;
   channel_created_at: Date;
   channel_updated_at: Date;
-  channel_members: Array<{
-    id: string;
-    username: string;
-    avatarUrl: string;
-    isFriendsWith: boolean;
-  }>;
+  channel_members: Array<FindUserDto>;
   last_message: MessageDto | null;
 }
 
@@ -46,7 +44,10 @@ export class ChannelsService {
       .createQueryBuilder("channel")
       .select([
         "channel.id",
+        "channel.name",
         "channel.type",
+        "owner.id",
+        "owner.username",
         "channel.createdAt",
         "channel.updatedAt",
         `array_agg(
@@ -74,6 +75,7 @@ export class ChannelsService {
           ORDER BY message.sent_at DESC
           LIMIT 1) AS last_message`,
       ])
+      .leftJoin("channel.owner", "owner")
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
@@ -85,12 +87,14 @@ export class ChannelsService {
         { id: user.id },
       )
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
-      .groupBy("channel.id")
+      .groupBy("channel.id, owner.id")
       .getRawMany<FindUserChannelsQueryResult>();
 
     return result.map((channel) => ({
       id: channel.channel_id,
+      name: channel.channel_name,
       type: channel.channel_type,
+      owner: channel.channel_owner,
       lastMessage: channel.last_message,
       members: channel.channel_members.map((member) => ({
         ...member,
@@ -101,12 +105,15 @@ export class ChannelsService {
     }));
   }
 
-  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto | null> {
+  async findChannelById(loggedInUser: UserEntity, channelId: string) {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .select([
         "channel.id",
+        "channel.name",
         "channel.type",
+        "owner.id",
+        "owner.username",
         "channel.createdAt",
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
@@ -128,6 +135,66 @@ export class ChannelsService {
           ORDER BY message.sent_at DESC
           LIMIT 1) AS last_message`,
       ])
+      .leftJoin("channel.owner", "owner")
+      .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
+      .innerJoin("users", "m", "m.id = cm.member_id")
+      .leftJoin(
+        "friendships",
+        "f",
+        `(f.friend_1_id = :id AND f.friend_2_id = m.id)
+          OR
+         (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
+        { id: loggedInUser.id },
+      )
+      .where("channel.id = :channelId", { channelId })
+      .groupBy("channel.id, owner.id")
+      .getRawOne<FindUserChannelsQueryResult>();
+
+    return {
+      id: result.channel_id,
+      name: result.channel_name,
+      type: result.channel_type,
+      owner: result.channel_owner,
+      lastMessage: result.last_message,
+      members: result.channel_members.map((member) => ({
+        ...member,
+        isConnected: this.connectionStatusService.isConnected(member.id),
+      })),
+      createdAt: result.channel_created_at,
+      updatedAt: result.channel_updated_at,
+    };
+  }
+
+  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto | null> {
+    const result = await this.channelsRepository
+      .createQueryBuilder("channel")
+      .select([
+        "channel.id",
+        "channel.type",
+        "owner.id",
+        "owner.username",
+        "channel.createdAt",
+        "channel.updatedAt",
+        `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
+          AS channel_members`,
+        `(SELECT json_build_object(
+            'id', message.id,
+            'channelId', message.channel_id,
+            'author', json_build_object(
+              'id', author.id,
+              'username', author.username,
+              'avatarUrl', author.avatar_url
+            ),
+            'content', message.content,
+            'sentAt', message.sent_at
+          )
+          FROM messages message
+          INNER JOIN users author ON author.id = message.author_id
+          WHERE message.channel_id = channel.id
+          ORDER BY message.sent_at DESC
+          LIMIT 1) AS last_message`,
+      ])
+      .leftJoin("channel.owner", "owner")
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
@@ -145,7 +212,7 @@ export class ChannelsService {
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :dmUserId)", {
         dmUserId: dmUser.id,
       })
-      .groupBy("channel.id")
+      .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
     if (!result) {
@@ -154,7 +221,9 @@ export class ChannelsService {
 
     return {
       id: result.channel_id,
+      name: result.channel_name,
       type: result.channel_type,
+      owner: result.channel_owner,
       lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
@@ -164,7 +233,6 @@ export class ChannelsService {
       updatedAt: result.channel_updated_at,
     };
   }
-
   async createDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto> {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
@@ -180,6 +248,24 @@ export class ChannelsService {
       .add([loggedInUser, dmUser]);
 
     return this.findDmChannel(loggedInUser, dmUser);
+  }
+
+  async createGroupChannel(name: string, owner: UserEntity, members: UserEntity[]): Promise<FindChannelDto> {
+    const result = await this.channelsRepository
+      .createQueryBuilder("channel")
+      .insert()
+      .values({ name, type: "group" })
+      .returning("id")
+      .execute();
+
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "owner").of(result.raw[0].id).set(owner);
+    await this.channelsRepository
+      .createQueryBuilder()
+      .relation(ChannelEntity, "members")
+      .of(result.raw[0].id)
+      .add([owner, ...members]);
+
+    return await this.findChannelById(owner, result.raw[0].id);
   }
 
   async sendMessage(channelId: string, authorId: string, content: string): Promise<MessageDto> {

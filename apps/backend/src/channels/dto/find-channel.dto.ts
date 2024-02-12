@@ -1,14 +1,20 @@
 import { FindUserDto } from "@/users/dto";
 import { ApiResponseProperty } from "@nestjs/swagger";
-import { channelTypes } from "../channel.entity";
+import { ChannelType, channelTypes } from "../channel.entity";
 import { MessageDto } from "./message.dto";
 
 export class FindChannelDto {
   @ApiResponseProperty({ type: String, format: "uuid" })
   id: string;
 
+  @ApiResponseProperty({ type: String })
+  name?: string;
+
   @ApiResponseProperty({ type: String, enum: channelTypes, example: "dm" })
-  type: "dm";
+  type: ChannelType;
+
+  @ApiResponseProperty({ type: [FindUserDto] })
+  owner: Pick<FindUserDto, "id" | "username">;
 
   @ApiResponseProperty({ type: MessageDto })
   lastMessage: MessageDto | null;
