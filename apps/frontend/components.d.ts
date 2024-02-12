@@ -17,6 +17,7 @@ declare module 'vue' {
     ButtonIcon: typeof import('./src/components/atoms/ButtonIcon.vue')['default']
     CardUser: typeof import('./src/components/molecules/CardUser.vue')['default']
     Logo: typeof import('./src/components/atoms/Logo.vue')['default']
+    MCardChat: typeof import('./src/components/molecules/MCardChat.vue')['default']
     MCardUser: typeof import('./src/components/molecules/MCardUser.vue')['default']
     MModalProfile: typeof import('./src/components/molecules/MModalProfile.vue')['default']
     ModalLeaveGame: typeof import('./src/components/ModalLeaveGame.vue')['default']

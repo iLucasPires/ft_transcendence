@@ -12,7 +12,8 @@ interface FindUserChannelsQueryResult {
   channel_id: string;
   channel_name?: string;
   channel_type: ChannelType;
-  channel_owner?: Pick<FindUserDto, "id" | "username">;
+  owner_id?: string;
+  owner_username?: string;
   channel_created_at: Date;
   channel_updated_at: Date;
   channel_members: Array<FindUserDto>;
@@ -94,7 +95,10 @@ export class ChannelsService {
       id: channel.channel_id,
       name: channel.channel_name,
       type: channel.channel_type,
-      owner: channel.channel_owner,
+      owner: channel.owner_id && {
+        id: channel.owner_id,
+        username: channel.owner_username,
+      },
       lastMessage: channel.last_message,
       members: channel.channel_members.map((member) => ({
         ...member,
@@ -150,11 +154,16 @@ export class ChannelsService {
       .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
+    console.log(result);
+
     return {
       id: result.channel_id,
       name: result.channel_name,
       type: result.channel_type,
-      owner: result.channel_owner,
+      owner: result.owner_id && {
+        id: result.owner_id,
+        username: result.owner_username,
+      },
       lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
@@ -223,7 +232,10 @@ export class ChannelsService {
       id: result.channel_id,
       name: result.channel_name,
       type: result.channel_type,
-      owner: result.channel_owner,
+      owner: result.owner_id && {
+        id: result.owner_id,
+        username: result.owner_username,
+      },
       lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
