@@ -80,7 +80,7 @@ export class MeController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
           return cb(new UnprocessableEntityException("Only image files are allowed!"), false);
         }
         cb(null, true);
