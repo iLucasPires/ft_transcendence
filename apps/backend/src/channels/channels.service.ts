@@ -18,6 +18,7 @@ interface FindUserChannelsQueryResult {
     avatarUrl: string;
     isFriendsWith: boolean;
   }>;
+  last_message: MessageDto | null;
 }
 
 interface FindMessageQueryResult {
@@ -56,6 +57,22 @@ export class ChannelsService {
             'isFriendsWith', f.friend_1_id IS NOT NULL
           )
         ) AS channel_members`,
+        `(SELECT json_build_object(
+            'id', message.id,
+            'channelId', message.channel_id,
+            'author', json_build_object(
+              'id', author.id,
+              'username', author.username,
+              'avatarUrl', author.avatar_url
+            ),
+            'content', message.content,
+            'sentAt', message.sent_at
+          )
+          FROM messages message
+          INNER JOIN users author ON author.id = message.author_id
+          WHERE message.channel_id = channel.id
+          ORDER BY message.sent_at DESC
+          LIMIT 1) AS last_message`,
       ])
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
@@ -74,6 +91,7 @@ export class ChannelsService {
     return result.map((channel) => ({
       id: channel.channel_id,
       type: channel.channel_type,
+      lastMessage: channel.last_message,
       members: channel.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),
@@ -93,6 +111,22 @@ export class ChannelsService {
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
           AS channel_members`,
+        `(SELECT json_build_object(
+            'id', message.id,
+            'channelId', message.channel_id,
+            'author', json_build_object(
+              'id', author.id,
+              'username', author.username,
+              'avatarUrl', author.avatar_url
+            ),
+            'content', message.content,
+            'sentAt', message.sent_at
+          )
+          FROM messages message
+          INNER JOIN users author ON author.id = message.author_id
+          WHERE message.channel_id = channel.id
+          ORDER BY message.sent_at DESC
+          LIMIT 1) AS last_message`,
       ])
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
@@ -121,6 +155,7 @@ export class ChannelsService {
     return {
       id: result.channel_id,
       type: result.channel_type,
+      lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),

@@ -63,7 +63,13 @@ const handleClickChat = (chat: iChannel) => {
                 <img :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
               </div>
             </div>
-            <h2 class="title" v-text="chatStore.getChatName(chat)" />
+            <div class="truncate">
+              <h2 class="title" v-text="chatStore.getChatName(chat)" />
+              <p class="text-sm truncate" v-if="chat.lastMessage !== null">
+                <span class="font-bold" v-text="`${chat.lastMessage.author.username}: `" />
+                <span v-text="chat.lastMessage.content" />
+              </p>
+            </div>
           </li>
         </ul>
       </div>

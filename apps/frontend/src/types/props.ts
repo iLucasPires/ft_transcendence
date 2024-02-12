@@ -20,6 +20,7 @@ export type iUser = {
 export type iChannel = {
   id: string;
   type: "dm";
+  lastMessage: iMessage | null;
   members: Pick<iUser, "id" | "username" | "avatarUrl">[];
   createdAt: string;
   updatedAt: string;

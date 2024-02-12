@@ -26,8 +26,11 @@ export const useChatStore = defineStore("chatStore", {
     },
 
     addMessage(msg: iMessage) {
-      if (!this.currentChat) return;
+      if (!this.currentChat) {
+        return;
+      }
       this.currentChat.messages.push(msg);
+      this.chats.find(({ id }) => id === msg.channelId)!.lastMessage = msg;
     },
 
     setCurrentChat(channel: iChannel | null) {
@@ -68,6 +71,16 @@ export const useChatStore = defineStore("chatStore", {
         const member = channel.members.find(({ id }) => id !== meStore.data?.id);
         return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
+    },
+
+    getChatLastMessage(channel: iChannel): string | null {
+      if (channel.lastMessage) {
+        if (channel.lastMessage.content.length > 50) {
+          return channel.lastMessage.content.slice(0, 50) + "...";
+        }
+        return channel.lastMessage.content;
+      }
+      return null;
     },
   },
   getters: {
