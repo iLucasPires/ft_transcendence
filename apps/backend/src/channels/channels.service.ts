@@ -48,8 +48,14 @@ export class ChannelsService {
         "channel.type",
         "channel.createdAt",
         "channel.updatedAt",
-        `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
-          AS channel_members`,
+        `array_agg(
+          json_build_object(
+            'id', m.id,
+            'username', m.username,
+            'avatarUrl', m.avatarUrl,
+            'isFriendsWith', f.friend_1_id IS NOT NULL
+          )
+        ) AS channel_members`,
       ])
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
       .innerJoin("users", "m", "m.id = cm.member_id")
