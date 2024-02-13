@@ -1,26 +1,26 @@
 import { addIcons } from "oh-vue-icons";
 
 import {
-  MdVideogameasset,
-  MdMessage,
-
+  GiPingPongBat,
+  MdBlock,
+  MdCrisisalert,
+  MdEmail,
+  MdGroupsSharp,
+  MdInfoRound,
   MdKeyboarddoublearrowleft,
-  MdWorkhistoryRound,
   MdLogout,
+  MdMessage,
+  MdModeedit,
+  MdModeeditTwotone,
+  MdModenight,
   MdPerson,
   MdPersonaddalt1,
-  MdSunny,
-  MdModenight,
   MdSettings,
-  Si42,
-  MdBlock,
-  MdModeedit,
-  MdInfoRound,
+  MdSunny,
   MdSupervisoraccount,
-  MdModeeditTwotone,
-  MdEmail,
-  GiPingPongBat,
-  MdCrisisalert,
+  MdVideogameasset,
+  MdWorkhistoryRound,
+  Si42,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -30,7 +30,7 @@ addIcons(
   MdLogout,
   MdVideogameasset,
   MdMessage,
-
+  MdGroupsSharp,
   MdWorkhistoryRound,
   MdKeyboarddoublearrowleft,
   MdModenight,

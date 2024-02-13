@@ -73,7 +73,10 @@ const handleCloseModal = () => {
           >
             <div class="avatar">
               <div class="w-16 rounded-full bg-base-200">
-                <img :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
+                <span v-if="chat.type === 'group'" class="h-full w-full flex justify-center items-center bg-secondary">
+                  <Icon name="md-groups-sharp" scale="2" class="text-secondary-content" />
+                </span>
+                <img v-else :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
               </div>
             </div>
             <h2 class="title" v-text="chatStore.getChatName(chat)" />

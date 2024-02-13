@@ -78,7 +78,6 @@ export const useChatStore = defineStore("chatStore", {
         const member = channel.members.find(({ id }) => id !== meStore.data?.id);
         return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
-      return `https://robohash.org/${this.getChatName(channel)}.png`;
     },
   },
   getters: {
