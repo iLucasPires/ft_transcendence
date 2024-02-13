@@ -20,6 +20,7 @@ declare module 'vue' {
     MCardChat: typeof import('./src/components/molecules/MCardChat.vue')['default']
     MCardUser: typeof import('./src/components/molecules/MCardUser.vue')['default']
     MModalProfile: typeof import('./src/components/molecules/MModalProfile.vue')['default']
+    MModalSearch: typeof import('./src/components/molecules/MModalSearch.vue')['default']
     ModalCreateGroupChannel: typeof import('./src/components/ModalCreateGroupChannel.vue')['default']
     ModalLeaveGame: typeof import('./src/components/ModalLeaveGame.vue')['default']
     ModalProfile: typeof import('./src/components/molecules/ModalProfile.vue')['default']
