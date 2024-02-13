@@ -22,7 +22,6 @@ export type iChannel = {
   name?: string;
   type: "dm" | "group";
   owner?: Pick<iUser, "id" | "username">;
-  lastMessage: iMessage | null;
   members: Pick<iUser, "id" | "username" | "avatarUrl">[];
   createdAt: string;
   updatedAt: string;

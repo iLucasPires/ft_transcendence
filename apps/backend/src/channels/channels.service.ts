@@ -1,4 +1,5 @@
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
+import { FindUserDto } from "@/users/dto";
 import { UserEntity } from "@/users/user.entity";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -6,7 +7,6 @@ import { Repository } from "typeorm";
 import { ChannelEntity, ChannelType } from "./channel.entity";
 import { FindChannelDto, MessageDto } from "./dto";
 import { MessageEntity } from "./messages.entity";
-import { FindUserDto } from "@/users/dto";
 
 interface FindUserChannelsQueryResult {
   channel_id: string;
@@ -17,7 +17,6 @@ interface FindUserChannelsQueryResult {
   channel_created_at: Date;
   channel_updated_at: Date;
   channel_members: Array<FindUserDto>;
-  last_message: MessageDto | null;
 }
 
 interface FindMessageQueryResult {
@@ -59,22 +58,6 @@ export class ChannelsService {
             'isFriendsWith', f.friend_1_id IS NOT NULL
           )
         ) AS channel_members`,
-        `(SELECT json_build_object(
-            'id', message.id,
-            'channelId', message.channel_id,
-            'author', json_build_object(
-              'id', author.id,
-              'username', author.username,
-              'avatarUrl', author.avatar_url
-            ),
-            'content', message.content,
-            'sentAt', message.sent_at
-          )
-          FROM messages message
-          INNER JOIN users author ON author.id = message.author_id
-          WHERE message.channel_id = channel.id
-          ORDER BY message.sent_at DESC
-          LIMIT 1) AS last_message`,
       ])
       .leftJoin("channel.owner", "owner")
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
@@ -99,7 +82,6 @@ export class ChannelsService {
         id: channel.owner_id,
         username: channel.owner_username,
       },
-      lastMessage: channel.last_message,
       members: channel.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),
@@ -122,22 +104,6 @@ export class ChannelsService {
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
           AS channel_members`,
-        `(SELECT json_build_object(
-            'id', message.id,
-            'channelId', message.channel_id,
-            'author', json_build_object(
-              'id', author.id,
-              'username', author.username,
-              'avatarUrl', author.avatar_url
-            ),
-            'content', message.content,
-            'sentAt', message.sent_at
-          )
-          FROM messages message
-          INNER JOIN users author ON author.id = message.author_id
-          WHERE message.channel_id = channel.id
-          ORDER BY message.sent_at DESC
-          LIMIT 1) AS last_message`,
       ])
       .leftJoin("channel.owner", "owner")
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
@@ -154,8 +120,6 @@ export class ChannelsService {
       .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
-    console.log(result);
-
     return {
       id: result.channel_id,
       name: result.channel_name,
@@ -164,7 +128,6 @@ export class ChannelsService {
         id: result.owner_id,
         username: result.owner_username,
       },
-      lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),
@@ -186,22 +149,6 @@ export class ChannelsService {
         "channel.updatedAt",
         `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
           AS channel_members`,
-        `(SELECT json_build_object(
-            'id', message.id,
-            'channelId', message.channel_id,
-            'author', json_build_object(
-              'id', author.id,
-              'username', author.username,
-              'avatarUrl', author.avatar_url
-            ),
-            'content', message.content,
-            'sentAt', message.sent_at
-          )
-          FROM messages message
-          INNER JOIN users author ON author.id = message.author_id
-          WHERE message.channel_id = channel.id
-          ORDER BY message.sent_at DESC
-          LIMIT 1) AS last_message`,
       ])
       .leftJoin("channel.owner", "owner")
       .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
@@ -236,7 +183,6 @@ export class ChannelsService {
         id: result.owner_id,
         username: result.owner_username,
       },
-      lastMessage: result.last_message,
       members: result.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),

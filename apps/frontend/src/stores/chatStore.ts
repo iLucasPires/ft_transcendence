@@ -1,6 +1,6 @@
 import router from "@/routes/vueRouter";
-import { useMeStore } from "@/stores/meStore";
 import { chatSocket } from "@/socket";
+import { useMeStore } from "@/stores/meStore";
 import type { iChannel, iCurrentChannel, iMessage } from "@/types/props";
 import { defineStore } from "pinia";
 
@@ -30,7 +30,6 @@ export const useChatStore = defineStore("chatStore", {
         return;
       }
       this.currentChat.messages.push(msg);
-      this.chats.find(({ id }) => id === msg.channelId)!.lastMessage = msg;
     },
 
     setCurrentChat(channel: iChannel | null) {
@@ -73,16 +72,6 @@ export const useChatStore = defineStore("chatStore", {
         return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
       return `https://robohash.org/${this.getChatName(channel)}.png`;
-    },
-
-    getChatLastMessage(channel: iChannel): string | null {
-      if (channel.lastMessage) {
-        if (channel.lastMessage.content.length > 50) {
-          return channel.lastMessage.content.slice(0, 50) + "...";
-        }
-        return channel.lastMessage.content;
-      }
-      return null;
     },
   },
   getters: {

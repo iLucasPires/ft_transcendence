@@ -13,7 +13,6 @@ onMounted(() => {
     chatStore.setChannels(channels);
   });
   chatSocket.on("newMessage", (message: iMessage) => {
-    console.log(chatStore.currentChatId, message);
     if (chatStore.currentChatId !== message.channelId) {
       return;
     }
@@ -63,13 +62,7 @@ const handleClickChat = (chat: iChannel) => {
                 <img :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
               </div>
             </div>
-            <div class="truncate">
-              <h2 class="title" v-text="chatStore.getChatName(chat)" />
-              <p class="text-sm truncate" v-if="chat.lastMessage !== null">
-                <span class="font-bold" v-text="`${chat.lastMessage.author.username}: `" />
-                <span v-text="chat.lastMessage.content" />
-              </p>
-            </div>
+            <h2 class="title" v-text="chatStore.getChatName(chat)" />
           </li>
         </ul>
       </div>
