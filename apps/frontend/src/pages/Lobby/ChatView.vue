@@ -44,24 +44,48 @@ const handleClickChat = (chat: iChannel) => {
 };
 
 const isCreateGroupModalOpen = ref<boolean>(false);
+const isSearchModalOpen = ref<boolean>(false);
 
 const handleClickNewGroup = () => {
   isCreateGroupModalOpen.value = true;
 };
 
-const handleCloseModal = () => {
+const handleClickSearchChat = () => {
+  isSearchModalOpen.value = true;
+}
+
+const handleCloseCreateGroupModal = () => {
   isCreateGroupModalOpen.value = false;
+};
+
+const handleCloseModalSearch = () => {
+  isSearchModalOpen.value = false;
 };
 </script>
 
 <template>
   <main class="full card-padding overflow-hidden">
+    <ModalCreateGroupChannel :isOpen="isCreateGroupModalOpen" @closeModal="handleCloseCreateGroupModal" />
+    <MModalSearch :isOpen="isSearchModalOpen" @closeModal="handleCloseModalSearch" />
+
     <div class="row h-full separate">
       <div class="w-96 border-card p-4">
-        <div class="flex gap-4">
-          <input type="text" class="input input-bordered w-full" placeholder="Search" />
-          <AButton class="btn-secondary" text="New Group" @click="handleClickNewGroup()" />
-          <ModalCreateGroupChannel :isOpen="isCreateGroupModalOpen" @closeModal="handleCloseModal" />
+        <div class="flex justify-between gap-4">
+          <h1 class="text-2xl font-bold">Chats</h1>
+          <div class="dropdown">
+            <div tabindex="0" role="button" class="btn btn-sm">&vellip;</div>
+            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
+              <li @click="handleClickSearchChat">
+                <a><Icon name="md-search" />Search</a>
+              </li>
+              <li>
+                <a @click="handleClickNewGroup()">
+                  <Icon name="md-groups-sharp" />
+                  New group
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <ul class="overflow-y-auto h-full flex flex-col gap-2 mt-4">
           <li

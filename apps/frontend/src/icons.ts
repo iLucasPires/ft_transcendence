@@ -19,6 +19,7 @@ import {
   MdSunny,
   MdSupervisoraccount,
   MdVideogameasset,
+  MdSearch,
   MdWorkhistoryRound,
   Si42,
 } from "oh-vue-icons/icons";
@@ -28,6 +29,7 @@ addIcons(
   MdSettings,
   MdPerson,
   MdLogout,
+  MdSearch,
   MdVideogameasset,
   MdMessage,
   MdGroupsSharp,
