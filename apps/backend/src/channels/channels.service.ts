@@ -208,7 +208,7 @@ export class ChannelsService {
     return this.findDmChannel(loggedInUser, dmUser);
   }
 
-  async createGroupChannel(name: string, owner: UserEntity, members: UserEntity[]): Promise<FindChannelDto> {
+  async createGroupChannel(name: string, owner: UserEntity, members: string[]): Promise<FindChannelDto> {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .insert()
@@ -221,7 +221,7 @@ export class ChannelsService {
       .createQueryBuilder()
       .relation(ChannelEntity, "members")
       .of(result.raw[0].id)
-      .add([owner, ...members]);
+      .add([owner, ...members.map((id) => ({ id }))]);
 
     return await this.findChannelById(owner, result.raw[0].id);
   }

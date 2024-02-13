@@ -1,5 +1,6 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
 import { ChannelsService } from "@/channels/channels.service";
+import { CreateGroupChannelDto } from "@/channels/dto";
 import { HttpExceptionFilter } from "@/http-exception.filter";
 import { UsersService } from "@/users/users.service";
 import { Inject, Logger, UseFilters, UseGuards } from "@nestjs/common";
@@ -60,6 +61,18 @@ export class ChatGateway implements OnGatewayConnection {
     return {
       ...channel,
       messages: await this.channelsService.findChannelMessages(channel.id),
+    };
+  }
+
+  @SubscribeMessage("createGroupChat")
+  async handleCreateGroupChat(@ConnectedSocket() client: Socket, @MessageBody() data: CreateGroupChannelDto) {
+    const loggedInUser = client.request.user;
+    const { name, members } = data;
+    const channel = await this.channelsService.createGroupChannel(name, loggedInUser, members);
+
+    return {
+      ...channel,
+      messages: [],
     };
   }
 

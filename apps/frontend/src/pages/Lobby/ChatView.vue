@@ -42,13 +42,27 @@ const handleSendMessage = () => {
 const handleClickChat = (chat: iChannel) => {
   chatStore.setCurrentChat(chat);
 };
+
+const isCreateGroupModalOpen = ref<boolean>(false);
+
+const handleClickNewGroup = () => {
+  isCreateGroupModalOpen.value = true;
+};
+
+const handleCloseModal = () => {
+  isCreateGroupModalOpen.value = false;
+};
 </script>
 
 <template>
   <main class="full card-padding overflow-hidden">
     <div class="row h-full separate">
       <div class="w-96 border-card p-4">
-        <input type="text" class="input input-bordered w-full" placeholder="Search" />
+        <div class="flex gap-4">
+          <input type="text" class="input input-bordered w-full" placeholder="Search" />
+          <AButton class="btn-secondary" text="New Group" @click="handleClickNewGroup()" />
+          <ModalCreateGroupChannel :isOpen="isCreateGroupModalOpen" @closeModal="handleCloseModal" />
+        </div>
         <ul class="overflow-y-auto h-full flex flex-col gap-2 mt-4">
           <li
             class="flex items-center separate cursor-pointer border-card"
