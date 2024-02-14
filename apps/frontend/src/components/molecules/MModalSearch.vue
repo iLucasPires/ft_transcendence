@@ -69,7 +69,7 @@ onMounted(() => {
 
 <template>
   <dialog v-if="isOpen" class="modal modal-open" @click.prevent="$emit('closeModal')">
-    <div class="modal-box" @click.prevent.stop="handleClick">
+    <div class="modal-box absolute top-20" @click.prevent.stop="handleClick">
       <h3 class="font-bold text-xl mb-2">Search</h3>
       <input
         type="text"
