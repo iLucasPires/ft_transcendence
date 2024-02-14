@@ -1,11 +1,13 @@
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { FindUserDto } from "@/users/dto";
 import { UserEntity } from "@/users/user.entity";
+import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity, ChannelType } from "./channel.entity";
 import { FindChannelDto, MessageDto } from "./dto";
+import { SearchResultDto } from "./dto/SearchResult.dto";
 import { FindChannelWithMembersDto } from "./dto/find-channel.dto";
 import { MessageEntity } from "./messages.entity";
 
@@ -38,6 +40,7 @@ export class ChannelsService {
     @InjectRepository(MessageEntity)
     private messagesRepository: Repository<MessageEntity>,
     private connectionStatusService: ConnectionStatusService,
+    private usersService: UsersService,
   ) {}
 
   private selectChannelsForUser(qb: ReturnType<Repository<ChannelEntity>["createQueryBuilder"]>, userId: string) {
@@ -64,7 +67,8 @@ export class ChannelsService {
           OR
          (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
         { id: userId },
-      );
+      )
+      .groupBy("channel.id, owner.id");
   }
 
   async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
@@ -72,7 +76,6 @@ export class ChannelsService {
 
     const result = await this.selectChannelsForUser(qb, user.id)
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
-      .groupBy("channel.id, owner.id")
       .getRawMany<FindUserChannelsQueryResult>();
 
     return result.map((channel) => ({
@@ -97,7 +100,6 @@ export class ChannelsService {
 
     const result = await this.selectChannelsForUser(qb, loggedInUser.id)
       .where("channel.id = :channelId", { channelId })
-      .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
     return {
@@ -128,7 +130,6 @@ export class ChannelsService {
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :dmUserId)", {
         dmUserId: dmUser.id,
       })
-      .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
 
     if (!result) {
@@ -236,5 +237,38 @@ export class ChannelsService {
       content: message.message_content,
       sentAt: message.message_sent_at,
     }));
+  }
+
+  async searchChannels(loggedInUser: UserEntity, query: string): Promise<SearchResultDto[]> {
+    const users = await this.usersService.searchUsers(loggedInUser, query);
+    const dmResults: SearchResultDto[] = users.map((user) => {
+      const tags = ["dm"];
+
+      if (user.isFriendsWith) {
+        tags.push("friend");
+      }
+      return {
+        name: user.username,
+        type: "dm",
+        tags,
+        imageUrl: user.avatarUrl,
+      };
+    });
+
+    const qb = this.channelsRepository.createQueryBuilder("channel");
+    const rawGroupChannels = await this.selectChannelsForUser(qb, loggedInUser.id)
+      .where("channel.type = 'group'")
+      .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
+      .getRawMany<FindUserChannelsQueryResult>();
+    const groupResults = rawGroupChannels.map((channel) => {
+      return {
+        name: channel.channel_name,
+        type: channel.channel_type,
+        tags: ["group", `owner: ${channel.owner_username}`],
+        imageUrl: null,
+      };
+    });
+
+    return [...dmResults, ...groupResults];
   }
 }

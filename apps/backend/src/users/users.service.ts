@@ -271,4 +271,30 @@ export class UsersService {
       username,
     });
   }
+
+  async searchUsers(user: UserEntity, query: string): Promise<FindUserDto[]> {
+    const result = await this.userRepository
+      .createQueryBuilder("user")
+      .select(["user.id", "user.username", "user.avatarUrl", "f.friend_1_id IS NOT NULL AS is_friends_with"])
+      .leftJoin(
+        "friendships",
+        "f",
+        `(f.friend_1_id = :id AND f.friend_2_id = user.id)
+          OR
+         (f.friend_1_id = user.id AND f.friend_2_id = :id)`,
+        { id: user.id },
+      )
+      .where("user.id != :id", { id: user.id })
+      .andWhere("user.username ILIKE :query", { query: `%${query}%` })
+      .orderBy("is_friends_with", "DESC")
+      .getRawMany();
+
+    return result.map((userData) => ({
+      id: userData.user_id,
+      username: userData.user_username,
+      avatarUrl: userData.user_avatar_url,
+      isFriendsWith: userData.is_friends_with,
+      isConnected: this.connectionStatusService.isConnected(userData.user_id),
+    }));
+  }
 }

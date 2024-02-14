@@ -45,6 +45,14 @@ export class ChatGateway implements OnGatewayConnection {
     client.emit("channelsList", channels);
   }
 
+  @SubscribeMessage("searchChannels")
+  async handleSearchChannels(@ConnectedSocket() client: Socket, @MessageBody() query: string) {
+    const loggedInUser = client.request.user;
+    const results = await this.channelsService.searchChannels(loggedInUser, query);
+
+    client.emit("searchResults", results);
+  }
+
   @SubscribeMessage("enterDmChat")
   async handleEnterDmChat(@ConnectedSocket() client: Socket, @MessageBody() username: string) {
     const loggedInUser = client.request.user;

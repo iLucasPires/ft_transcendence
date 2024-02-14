@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { chatSocket } from "@/socket";
+import { onMounted, ref, watch } from "vue";
 
 defineProps({ isOpen: Boolean });
 defineEmits(["closeModal"]);
 
 const search = ref<string>("");
-const options = ref<{ name: string; tags: string[] }[]>([
-  {
-    name: "Test",
-    tags: ["dm"],
-  },
-  {
-    name: "Test",
-    tags: ["group", "public"],
-  },
-]);
+const options = ref<{ name: string; tags: string[] }[]>([]);
 
 const useDebounce = () => {
   let timeout: number | null = null;
@@ -30,8 +22,12 @@ const useDebounce = () => {
 };
 const debounce = useDebounce();
 
-watch(search, () => {
-  debounce(() => console.log("Searching channels"));
+watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value)));
+onMounted(() => {
+  chatSocket.on("searchResults", (results: { name: string; tags: string[] }[]) => {
+    options.value = results;
+  });
+  chatSocket.emit("searchChannels", search.value);
 });
 </script>
 

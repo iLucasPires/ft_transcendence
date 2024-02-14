@@ -38,3 +38,10 @@ export type iMessage = {
 export type iCurrentChannel = iChannel & {
   messages: iMessage[];
 };
+
+export type iChannelSearchResult = {
+  name: string;
+  type: "dm" | "group";
+  tags: string[];
+  imageUrl?: string;
+};
