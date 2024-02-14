@@ -6,6 +6,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChannelEntity, ChannelType } from "./channel.entity";
 import { FindChannelDto, MessageDto } from "./dto";
+import { FindChannelWithMembersDto } from "./dto/find-channel.dto";
 import { MessageEntity } from "./messages.entity";
 
 interface FindUserChannelsQueryResult {
@@ -39,17 +40,11 @@ export class ChannelsService {
     private connectionStatusService: ConnectionStatusService,
   ) {}
 
-  async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
-    const result = await this.channelsRepository
-      .createQueryBuilder("channel")
-      .select([
-        "channel.id",
-        "channel.name",
-        "channel.type",
-        "owner.id",
-        "owner.username",
-        "channel.createdAt",
-        "channel.updatedAt",
+  private selectChannelsForUser(qb: ReturnType<Repository<ChannelEntity>["createQueryBuilder"]>, userId: string) {
+    return qb
+      .addSelect(["owner.id", "owner.username"])
+      .leftJoin("channel.owner", "owner")
+      .addSelect(
         `array_agg(
           json_build_object(
             'id', m.id,
@@ -57,19 +52,25 @@ export class ChannelsService {
             'avatarUrl', m.avatarUrl,
             'isFriendsWith', f.friend_1_id IS NOT NULL
           )
-        ) AS channel_members`,
-      ])
-      .leftJoin("channel.owner", "owner")
-      .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
-      .innerJoin("users", "m", "m.id = cm.member_id")
+        )`,
+        "channel_members",
+      )
+      .leftJoin("channel_members", "cm", "cm.channel_id = channel.id")
+      .leftJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
         "friendships",
         "f",
         `(f.friend_1_id = :id AND f.friend_2_id = m.id)
           OR
          (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
-        { id: user.id },
-      )
+        { id: userId },
+      );
+  }
+
+  async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
+    const qb = this.channelsRepository.createQueryBuilder("channel");
+
+    const result = await this.selectChannelsForUser(qb, user.id)
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
       .groupBy("channel.id, owner.id")
       .getRawMany<FindUserChannelsQueryResult>();
@@ -92,30 +93,9 @@ export class ChannelsService {
   }
 
   async findChannelById(loggedInUser: UserEntity, channelId: string) {
-    const result = await this.channelsRepository
-      .createQueryBuilder("channel")
-      .select([
-        "channel.id",
-        "channel.name",
-        "channel.type",
-        "owner.id",
-        "owner.username",
-        "channel.createdAt",
-        "channel.updatedAt",
-        `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
-          AS channel_members`,
-      ])
-      .leftJoin("channel.owner", "owner")
-      .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
-      .innerJoin("users", "m", "m.id = cm.member_id")
-      .leftJoin(
-        "friendships",
-        "f",
-        `(f.friend_1_id = :id AND f.friend_2_id = m.id)
-          OR
-         (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
-        { id: loggedInUser.id },
-      )
+    const qb = this.channelsRepository.createQueryBuilder("channel");
+
+    const result = await this.selectChannelsForUser(qb, loggedInUser.id)
       .where("channel.id = :channelId", { channelId })
       .groupBy("channel.id, owner.id")
       .getRawOne<FindUserChannelsQueryResult>();
@@ -137,30 +117,10 @@ export class ChannelsService {
     };
   }
 
-  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto | null> {
-    const result = await this.channelsRepository
-      .createQueryBuilder("channel")
-      .select([
-        "channel.id",
-        "channel.type",
-        "owner.id",
-        "owner.username",
-        "channel.createdAt",
-        "channel.updatedAt",
-        `array_agg(json_build_object('id', m.id, 'username', m.username, 'avatarUrl', m.avatarUrl, 'isFriendsWith', f.friend_1_id IS NOT NULL))
-          AS channel_members`,
-      ])
-      .leftJoin("channel.owner", "owner")
-      .innerJoin("channel_members", "cm", "cm.channel_id = channel.id")
-      .innerJoin("users", "m", "m.id = cm.member_id")
-      .leftJoin(
-        "friendships",
-        "f",
-        `(f.friend_1_id = :id AND f.friend_2_id = m.id)
-          OR
-         (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
-        { id: loggedInUser.id },
-      )
+  async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelWithMembersDto | null> {
+    const qb = this.channelsRepository.createQueryBuilder("channel");
+
+    const result = await this.selectChannelsForUser(qb, loggedInUser.id)
       .where("channel.type = 'dm'")
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)", {
         loggedInUserId: loggedInUser.id,
@@ -191,7 +151,7 @@ export class ChannelsService {
       updatedAt: result.channel_updated_at,
     };
   }
-  async createDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelDto> {
+  async createDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelWithMembersDto> {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .insert()
@@ -226,6 +186,13 @@ export class ChannelsService {
     return await this.findChannelById(owner, result.raw[0].id);
   }
 
+  private selectMessages(qb: ReturnType<Repository<MessageEntity>["createQueryBuilder"]>) {
+    return qb
+      .addSelect(["author.id", "author.username", "author.avatarUrl"])
+      .innerJoin("users", "author", "message.author_id = author.id")
+      .orderBy("message.sentAt", "ASC");
+  }
+
   async sendMessage(channelId: string, authorId: string, content: string): Promise<MessageDto> {
     const qb = this.messagesRepository.createQueryBuilder("message");
     const insertResult = await qb
@@ -234,17 +201,7 @@ export class ChannelsService {
       .returning("id")
       .execute();
 
-    const rawMessage = await qb
-      .select([
-        "message.id",
-        "author.id",
-        "author.username",
-        "author.avatarUrl",
-        "message.channel_id AS message_channel_id",
-        "message.content",
-        "message.sentAt",
-      ])
-      .innerJoin("users", "author", "author.id = message.author_id")
+    const rawMessage = await this.selectMessages(qb)
       .where("message.id = :id", { id: insertResult.raw[0].id })
       .getRawOne<FindMessageQueryResult>();
 
@@ -262,20 +219,10 @@ export class ChannelsService {
   }
 
   async findChannelMessages(channelId: string): Promise<MessageDto[]> {
-    const result = await this.messagesRepository
-      .createQueryBuilder("message")
-      .select([
-        "message.id",
-        "author.id",
-        "author.username",
-        "author.avatarUrl",
-        "message.channel_id",
-        "message.content",
-        "message.sentAt",
-      ])
-      .innerJoin("users", "author", "author.id = message.author_id")
+    const qb = this.messagesRepository.createQueryBuilder("message");
+
+    const result = await this.selectMessages(qb)
       .where("message.channel_id = :channelId", { channelId })
-      .orderBy("message.sentAt", "ASC")
       .getRawMany<FindMessageQueryResult>();
 
     return result.map((message) => ({

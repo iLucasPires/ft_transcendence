@@ -15,12 +15,14 @@ export class FindChannelDto {
   @ApiResponseProperty({ type: [FindUserDto] })
   owner: Pick<FindUserDto, "id" | "username">;
 
-  @ApiResponseProperty({ type: [FindUserDto] })
-  members: Array<FindUserDto>;
-
   @ApiResponseProperty({ type: Date, format: "date-time" })
   createdAt: Date;
 
   @ApiResponseProperty({ type: Date, format: "date-time" })
   updatedAt: Date;
+}
+
+export class FindChannelWithMembersDto extends FindChannelDto {
+  @ApiResponseProperty({ type: [FindUserDto] })
+  members: Array<FindUserDto>;
 }
