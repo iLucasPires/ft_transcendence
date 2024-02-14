@@ -27,6 +27,12 @@ const useDebounce = () => {
 };
 const debounce = useDebounce();
 
+const handleEsc = () => {
+  search.value = "";
+  selectedOption.value = null;
+  emit("closeModal");
+};
+
 const handleClick = () => {
   const channel = selectedOption.value;
   search.value = "";
@@ -65,7 +71,13 @@ onMounted(() => {
   <dialog v-if="isOpen" class="modal modal-open" @click.prevent="$emit('closeModal')">
     <div class="modal-box" @click.prevent.stop="handleClick">
       <h3 class="font-bold text-xl mb-2">Search</h3>
-      <input type="text" class="input input-primary w-full mb-2" placeholder="Search chat" v-model="search" />
+      <input
+        type="text"
+        class="input input-primary w-full mb-2"
+        placeholder="Search chat"
+        v-model="search"
+        @keydown.prevent.exact.esc="handleEsc"
+      />
       <div class="overflow-y-auto max-h-96 grid items-center" :class="!options.length && 'h-48'">
         <ul v-if="options.length" class="w-full">
           <li
