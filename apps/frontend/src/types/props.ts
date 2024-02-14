@@ -40,6 +40,7 @@ export type iCurrentChannel = iChannel & {
 };
 
 export type iChannelSearchResult = {
+  id: string;
   name: string;
   type: "dm" | "group";
   tags: string[];

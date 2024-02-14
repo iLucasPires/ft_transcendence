@@ -243,11 +243,11 @@ export class ChannelsService {
     const users = await this.usersService.searchUsers(loggedInUser, query);
     const dmResults: SearchResultDto[] = users.map((user) => {
       const tags = ["dm"];
-
       if (user.isFriendsWith) {
         tags.push("friend");
       }
       return {
+        id: user.id,
         name: user.username,
         type: "dm",
         tags,
@@ -261,14 +261,24 @@ export class ChannelsService {
       .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
       .getRawMany<FindUserChannelsQueryResult>();
     const groupResults = rawGroupChannels.map((channel) => {
+      const tags = ["group", `owner: ${channel.owner_username}`];
+      const isMember = channel.channel_members.some((member) => member.id === loggedInUser.id);
+      if (isMember) {
+        tags.push("member");
+      }
       return {
+        id: channel.channel_id,
         name: channel.channel_name,
         type: channel.channel_type,
-        tags: ["group", `owner: ${channel.owner_username}`],
+        tags,
         imageUrl: null,
       };
     });
 
     return [...dmResults, ...groupResults];
+  }
+
+  async joinGroupChannel(channelId: string, userId: string) {
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "members").of(channelId).add(userId);
   }
 }

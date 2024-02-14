@@ -84,6 +84,20 @@ export class ChatGateway implements OnGatewayConnection {
     };
   }
 
+  @SubscribeMessage("joinGroupChat")
+  async handleJoinGroupChat(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    await this.channelsService.joinGroupChannel(channelId, loggedInUser.id);
+    client.join(channel.id);
+
+    return {
+      ...channel,
+      messages: await this.channelsService.findChannelMessages(channel.id),
+    };
+  }
+
   @SubscribeMessage("enterGroupChat")
   async handleEnterGroupChat(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
     const loggedInUser = client.request.user;

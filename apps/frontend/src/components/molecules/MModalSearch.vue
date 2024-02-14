@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { useChatStore } from "@/stores/chatStore";
 import { chatSocket } from "@/socket";
+import type { iChannelSearchResult, iCurrentChannel } from "@/types/props";
 import { onMounted, ref, watch } from "vue";
 
 defineProps({ isOpen: Boolean });
-defineEmits(["closeModal"]);
+const emit = defineEmits(["closeModal"]);
+
+const chatStore = useChatStore();
 
 const search = ref<string>("");
-const options = ref<{ name: string; tags: string[] }[]>([]);
+const options = ref<iChannelSearchResult[]>([]);
+const selectedOption = ref<iChannelSearchResult | null>(null);
 
 const useDebounce = () => {
   let timeout: number | null = null;
@@ -22,9 +27,33 @@ const useDebounce = () => {
 };
 const debounce = useDebounce();
 
+const handleClick = () => {
+  const channel = selectedOption.value;
+  selectedOption.value = null;
+  if (channel === null) {
+    return;
+  }
+  const events = { dm: "enterDmChat", group: "enterGroupChat" };
+  const event = events[channel.type];
+  const isDm = channel.type === "dm";
+  const isMember = !isDm && channel.tags.includes("member");
+
+  if (isDm || isMember) {
+    chatSocket.emit(event, isDm ? channel.name : channel.id, (channel: iCurrentChannel) => {
+      chatStore.currentChat = channel;
+    });
+  } else {
+    chatSocket.emit("joinGroupChat", channel.id, (channel: iCurrentChannel) => {
+      chatStore.currentChat = channel;
+      chatSocket.emit("fetchChannels");
+    });
+  }
+  emit("closeModal");
+};
+
 watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value)));
 onMounted(() => {
-  chatSocket.on("searchResults", (results: { name: string; tags: string[] }[]) => {
+  chatSocket.on("searchResults", (results: iChannelSearchResult[]) => {
     options.value = results;
   });
   chatSocket.emit("searchChannels", search.value);
@@ -33,12 +62,18 @@ onMounted(() => {
 
 <template>
   <dialog v-if="isOpen" class="modal modal-open" @click.prevent="$emit('closeModal')">
-    <div class="modal-box" @click.stop="">
+    <div class="modal-box" @click.prevent.stop="handleClick">
       <h3 class="font-bold text-xl mb-2">Search</h3>
       <input type="text" class="input input-primary w-full mb-2" placeholder="Search chat" v-model="search" />
       <div class="overflow-y-auto max-h-96 grid items-center" :class="!options.length && 'h-48'">
         <ul v-if="options.length" class="w-full">
-          <li v-for="option in options" class="p-4 border border-base-300 mt-2">
+          <li
+            v-for="option in options"
+            class="p-4 border border-base-300 mt-2"
+            :class="selectedOption === option && 'bg-base-200 bg-opacity-20 cursor-pointer'"
+            @mouseover="selectedOption = option"
+            @mouseleave="selectedOption = null"
+          >
             <div class="flex gap-4 items-center">
               <div class="avatar w-16">
                 <div class="rounded-full bg-base-200">
