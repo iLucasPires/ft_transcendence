@@ -29,6 +29,7 @@ const debounce = useDebounce();
 
 const handleClick = () => {
   const channel = selectedOption.value;
+  search.value = "";
   selectedOption.value = null;
   if (channel === null) {
     return;
