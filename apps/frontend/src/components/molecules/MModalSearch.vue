@@ -52,7 +52,7 @@ const handleClick = () => {
   emit("closeModal");
 };
 
-watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value)));
+watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value), 300));
 onMounted(() => {
   chatSocket.on("searchResults", (results: iChannelSearchResult[]) => {
     options.value = results;
