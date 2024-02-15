@@ -5,7 +5,6 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
-import RadixVueResolver from "radix-vue/resolver";
 
 export default defineConfig({
   plugins: [
@@ -24,7 +23,6 @@ export default defineConfig({
     }),
     Components({
       dts: true,
-      resolvers: [RadixVueResolver()],
     }),
   ],
   resolve: {
