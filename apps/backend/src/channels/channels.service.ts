@@ -76,6 +76,18 @@ export class ChannelsService {
 
     const result = await this.selectChannelsForUser(qb, user.id)
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
+      .andWhere(
+        `(channel.type = 'group' OR NOT EXISTS (
+          SELECT 1 FROM blocked_users bu
+          WHERE
+            (bu.blocked_id = m.id AND bu.blocker_id = :id)
+              OR
+            (bu.blocker_id = m.id AND bu.blocked_id = :id)
+          )
+        )`,
+        { id: user.id },
+      )
+      .having("channel.type = 'group' OR COUNT(cm.member_id) = 2")
       .getRawMany<FindUserChannelsQueryResult>();
 
     return result.map((channel) => ({
