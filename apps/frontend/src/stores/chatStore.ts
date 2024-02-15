@@ -1,6 +1,6 @@
 import router from "@/routes/vueRouter";
 import { chatSocket } from "@/socket";
-import { useMeStore } from "@/stores/meStore";
+
 import type { iChannel, iCurrentChannel, iMessage } from "@/types/props";
 import { defineStore } from "pinia";
 

@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
-const otpArray = ref<string[]>([]);
-
 type OtpInputEvent = InputEvent & {
   nextElementSibling?: HTMLInputElement | null;
   previousElementSibling?: HTMLInputElement | null;
 };
 
-function handleOtpInput(payload: Event) {
+const otpArray = ref<string[]>([]);
+
+const handleOtpInput = (payload: Event) => {
   const env = payload as OtpInputEvent;
   const target = env.target as HTMLInputElement;
   const prevEl = target.previousElementSibling as HTMLInputElement;
@@ -16,7 +14,7 @@ function handleOtpInput(payload: Event) {
 
   if (env.data && nextEl) nextEl.focus();
   else if (!env.data && prevEl) prevEl.focus();
-}
+};
 </script>
 
 <template>

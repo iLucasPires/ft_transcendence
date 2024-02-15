@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import { api } from "@/routes/apiRouter";
-import { useAppStore } from "@/stores/appStore";
-import { useChatStore } from "@/stores/chatStore";
 import type { iUser } from "@/types/props";
+import { api } from "@/routes/apiRouter";
 
 const appStore = useAppStore();
 const chatStore = useChatStore();

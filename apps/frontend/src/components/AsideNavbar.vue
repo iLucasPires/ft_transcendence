@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useMeStore } from "@/stores/meStore";
-import { useAppStore } from "@/stores/appStore";
-
 const meStore = useMeStore();
 const appStore = useAppStore();
 

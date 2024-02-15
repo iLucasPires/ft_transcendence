@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { chatSocket } from "@/socket";
-import { useChatStore } from "@/stores/chatStore";
 import type { iChannel, iMessage } from "@/types/props";
-import { storeToRefs } from "pinia";
-import { onMounted, onUnmounted, ref } from "vue";
+import { chatSocket } from "@/socket";
 
 const chatStore = useChatStore();
 const { currentChat, chats, currentChatId, currentChatMessages } = storeToRefs(chatStore);

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useChatStore } from "@/stores/chatStore";
 import { chatSocket } from "@/socket";
 import type { iChannelSearchResult, iCurrentChannel } from "@/types/props";
-import { onMounted, ref, watch } from "vue";
 
 defineProps({ isOpen: Boolean });
 const emit = defineEmits(["closeModal"]);

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { iUser } from "@/types/props";
-import { useAppStore } from "@/stores/appStore";
-import { useMeStore } from "@/stores/meStore";
 
 defineProps<{ user: iUser }>();
 defineEmits(["handleSendMessage", "handleBlock", "handleFriendship", "showProfile"]);

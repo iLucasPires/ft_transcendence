@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useMeStore } from "@/stores/meStore";
-import { useAppStore } from "@/stores/appStore";
+
+
 
 import GameView from "@/pages/Lobby/GameView.vue";
 import ProfileView from "@/pages/Lobby/ProfileView.vue";

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useChatStore } from "@/stores/chatStore";
-import { ref } from "vue";
-
-defineProps<{ isOpen: boolean }>();
+const props = defineProps<{ isOpen: boolean }>();
 const emit = defineEmits(["closeModal"]);
 
 const chatStore = useChatStore();

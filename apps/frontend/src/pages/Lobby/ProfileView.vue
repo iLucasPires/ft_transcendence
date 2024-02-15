@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useMeStore } from "@/stores/meStore";
-
 const meStore = useMeStore();
 
 const infos = computed(() => {

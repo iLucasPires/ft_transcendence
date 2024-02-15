@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
 
-import { useMeStore } from "@/stores/meStore";
-import { useAppStore } from "@/stores/appStore";
+
+
+
 import { api } from "@/routes/apiRouter";
 import OtpInput from "@/components/OtpInput.vue";
 

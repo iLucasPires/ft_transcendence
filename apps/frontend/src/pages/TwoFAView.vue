@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useMeStore } from "@/stores/meStore";
-import { useAppStore } from "@/stores/appStore";
-
 const totp = ref("");
 const meStore = useMeStore();
 const appStore = useAppStore();

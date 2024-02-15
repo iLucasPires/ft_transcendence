@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
-import { useAppStore } from "@/stores/appStore";
-import { useMeStore } from "@/stores/meStore";
 import { startGame } from "@/utils/game";
 
 const appStore = useAppStore();
