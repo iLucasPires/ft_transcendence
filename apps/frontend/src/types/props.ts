@@ -22,7 +22,7 @@ export type iChannel = {
   name?: string;
   type: "dm" | "group";
   owner?: Pick<iUser, "id" | "username">;
-  members: Pick<iUser, "id" | "username" | "avatarUrl">[];
+  members: Pick<iUser, "id" | "username" | "avatarUrl" | "isFriendsWith" | "isConnected">[];
   createdAt: string;
   updatedAt: string;
 };

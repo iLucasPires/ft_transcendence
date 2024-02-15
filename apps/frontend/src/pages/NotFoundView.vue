@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { RouterLink } from "vue-router";
-</script>
-
 <template>
   <div class="hero min-h-screen bg-base-200">
     <div class="hero-content text-center column">

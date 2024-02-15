@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useAppStore } from "@/stores/appStore";
-
 const appStore = useAppStore();
-defineEmits(["clickTab"]);
+const emits = defineEmits(["clickTab"]);
 </script>
 
 <template>

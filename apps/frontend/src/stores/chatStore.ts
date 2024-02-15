@@ -71,13 +71,14 @@ export const useChatStore = defineStore("chatStore", {
       return channel.name;
     },
 
-    getChatPhoto(channel: iChannel): string | undefined {
+    getChatPhoto(channel: iChannel): string {
       const meStore = useMeStore();
 
       if (channel.type === "dm") {
         const member = channel.members.find(({ id }) => id !== meStore.data?.id);
         return member?.avatarUrl || `https://robohash.org/${this.getChatName(channel)}.png`;
       }
+      return "/group.png";
     },
   },
   getters: {
@@ -91,19 +92,26 @@ export const useChatStore = defineStore("chatStore", {
       if (this.currentChat?.type === "dm") {
         return this.currentChat.members.find(({ id }) => id !== meStore.data?.id)?.username;
       }
+      return this.currentChat?.name;
     },
 
-    currentChatPhoto(): string | undefined {
+    currentChatPhoto(): string {
       const meStore = useMeStore();
 
       if (this.currentChat?.type === "dm") {
-        return this.currentChat.members.find(({ id }) => id !== meStore.data?.id)?.avatarUrl;
+        const member = this.currentChat.members.find(({ id }) => id !== meStore.data?.id)!;
+        return member.avatarUrl || `https://robohash.org/${member.username}.png`;
       }
+      return "/group.png";
     },
 
     currentChatMessages(): iMessage[] {
       if (!this.currentChat) return [];
       return this.currentChat.messages;
     },
+
+    currentChatMembers(): iChannel["members"] {
+      return this.currentChat?.members || [];
+    }
   },
 });

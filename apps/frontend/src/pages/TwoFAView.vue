@@ -7,11 +7,8 @@ const appStore = useAppStore();
 <template>
   <main class="full hero card-padding">
     <div class="column separate max-w-md hero-content bg-base-200 rounded-md">
-      <h1 class="title" v-text="'Two Factor Authentication'" />
-      <p
-        class="text-center"
-        v-text="'please enter your 2FA code to continue'"
-      />
+      <h1 class="title">Two Factor Authentication</h1>
+      <p class="text-center">please enter your 2FA code to continue</p>
       <OtpInput
         v-model:modelValue="totp"
         v-on:submit.prevent="

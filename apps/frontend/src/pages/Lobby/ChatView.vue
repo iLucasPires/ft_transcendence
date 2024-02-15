@@ -3,16 +3,20 @@ import type { iChannel, iMessage } from "@/types/props";
 import { chatSocket } from "@/socket";
 
 const chatStore = useChatStore();
-const { currentChat, chats, currentChatId, currentChatMessages } = storeToRefs(chatStore);
+const {
+  currentChat,
+  chats,
+  currentChatId,
+  currentChatName,
+  currentChatPhoto,
+  currentChatMessages,
+  currentChatMembers,
+} = storeToRefs(chatStore);
 
 onMounted(() => {
-  chatSocket.on("channelsList", (channels: iChannel[]) => {
-    chatStore.setChannels(channels);
-  });
+  chatSocket.on("channelsList", (channels: iChannel[]) => chatStore.setChannels(channels));
   chatSocket.on("newMessage", (message: iMessage) => {
-    if (chatStore.currentChatId !== message.channelId) {
-      return;
-    }
+    if (chatStore.currentChatId !== message.channelId) return;
     chatStore.addMessage(message);
   });
   chatSocket.emit("fetchChannels");
@@ -26,10 +30,7 @@ const message = ref("");
 
 const handleSendMessage = () => {
   const content = message.value.trim();
-
-  if (!currentChat.value || content === "") {
-    return;
-  }
+  if (!currentChat.value || content === "") return;
   chatSocket.emit("sendMessage", { content, channelId: currentChat.value.id }, (msg: iMessage) => {
     chatStore.addMessage(msg);
     message.value = "";
@@ -49,7 +50,7 @@ const handleClickNewGroup = () => {
 
 const handleClickSearchChat = () => {
   isSearchModalOpen.value = true;
-}
+};
 
 const handleCloseCreateGroupModal = () => {
   isCreateGroupModalOpen.value = false;
@@ -64,51 +65,21 @@ const handleCloseModalSearch = () => {
   <main class="full card-padding overflow-hidden">
     <ModalCreateGroupChannel :isOpen="isCreateGroupModalOpen" @closeModal="handleCloseCreateGroupModal" />
     <MModalSearch :isOpen="isSearchModalOpen" @closeModal="handleCloseModalSearch" />
-
-    <div class="row h-full separate">
-      <div class="w-96 border-card p-4">
+    <div class="grid grid-cols-5 h-full separate">
+      <div class="col-span-1 flex flex-col separate border-card overflow-y-hidden">
         <div class="flex justify-between gap-4">
           <h1 class="text-2xl font-bold">Chats</h1>
-          <div class="dropdown">
-            <div tabindex="0" role="button" class="btn btn-sm">&vellip;</div>
-            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
-              <li @click="handleClickSearchChat">
-                <a><Icon name="md-search" />Search</a>
-              </li>
-              <li>
-                <a @click="handleClickNewGroup()">
-                  <Icon name="md-groups-sharp" />
-                  New group
-                </a>
-              </li>
-            </ul>
-          </div>
+          <MDropDown @handleClickSearchChat="handleClickSearchChat" @handleClickNewGroup="handleClickNewGroup" />
         </div>
-        <ul class="overflow-y-auto h-full flex flex-col gap-2 mt-4">
-          <li
-            class="flex items-center separate cursor-pointer border-card"
-            v-for="chat in chats"
-            :class="currentChatId === chat.id && 'border-primary'"
-            v-on:click="handleClickChat(chat)"
-            :key="chat.id"
-          >
-            <div class="avatar">
-              <div class="w-16 rounded-full bg-base-200">
-                <span v-if="chat.type === 'group'" class="h-full w-full flex justify-center items-center bg-secondary">
-                  <Icon name="md-groups-sharp" scale="2" class="text-secondary-content" />
-                </span>
-                <img v-else :src="chatStore.getChatPhoto(chat)" :alt="'Chat image'" />
-              </div>
-            </div>
-            <h2 class="title" v-text="chatStore.getChatName(chat)" />
-          </li>
+        <ul class="overflow-y-auto h-full flex flex-col gap-2 ">
+          <MCardChatEntry v-for="chat in chats" :chat="chat" :is-current-chat="currentChatId === chat.id" @handle-click-chat="handleClickChat(chat)" />
         </ul>
       </div>
 
-      <div class="w-full border-card separate flex flex-col h-full">
-        <div class="h-full flex flex-col gap-2">
+      <div class="col-span-3 w-full border-card separate overflow-hidden" :class="!currentChat && 'col-span-4'">
+        <div class="h-full flex flex-col gap-2 mx-2">
           <div v-if="currentChatMessages.length" class="overflow-y-auto h-full flex flex-col-reverse py-2">
-            <ul class="flex flex-col gap-2">
+            <ul class="w-full">
               <MCardChat
                 v-for="msg in currentChatMessages"
                 :key="msg.id"
@@ -118,22 +89,39 @@ const handleCloseModalSearch = () => {
               />
             </ul>
           </div>
-          <div v-else class="flex items-center justify-center h-full">
+          <div v-else class="m-auto">
             <p class="text-2xl font-bold">No messages</p>
           </div>
 
-          <form class="flex items-center" v-on:submit.prevent="handleSendMessage">
-            <textarea
-              type="text"
-              name="message"
-              class="textarea bg-base-300 w-full h-5 resize-y"
-              placeholder="Type a message"
-              v-model="message"
-              :disabled="!currentChat"
-              @keydown.enter.exact.prevent="handleSendMessage"
-            />
-            <button class="btn btn-primary ml-2 h-5" :disabled="!currentChat">Send</button>
-          </form>
+          <textarea
+            type="text"
+            name="message"
+            class="bg-base-300 h-12 textarea w-full resize-none"
+            placeholder="Type a message"
+            v-model="message"
+            :disabled="!currentChat"
+            @input="
+              (e: Event) => {
+                const element = e.target as HTMLTextAreaElement;
+                element.style.height = '18px';
+                element.style.height = element.scrollHeight + 'px';
+              }
+            "
+            @keydown.enter.exact.prevent="handleSendMessage"
+          />
+        </div>
+      </div>
+
+      <div v-if="currentChat !== null" class="col-span-1 flex flex-col items-center border-card full p-4">
+        <AChatImage :image-url="currentChatPhoto" />
+        <h1 class="text-2xl font-bold text-center mt-4">{{currentChatName}}</h1>
+        <div class="w-full">
+          <span>Channel Members</span>
+          <ul>
+            <li v-for="member in currentChatMembers">
+              {{ member.username }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>

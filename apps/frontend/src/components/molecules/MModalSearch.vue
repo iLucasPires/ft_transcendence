@@ -12,7 +12,7 @@ const options = ref<iChannelSearchResult[]>([]);
 const selectedOption = ref<iChannelSearchResult | null>(null);
 
 const useDebounce = () => {
-  let timeout: number | null = null;
+  let timeout: NodeJS.Timeout | null = null;
   return function (fnc: Function, delayMs: number = 500) {
     if (timeout !== null) {
       clearTimeout(timeout);
@@ -35,16 +35,15 @@ const handleClick = () => {
   const channel = selectedOption.value;
   search.value = "";
   selectedOption.value = null;
-  if (channel === null) {
-    return;
-  }
-  const events = { dm: "enterDmChat", group: "enterGroupChat" };
-  const event = events[channel.type];
+
+  if (channel === null) return;
+
   const isDm = channel.type === "dm";
+  const events = { dm: "enterDmChat", group: "enterGroupChat" };
   const isMember = !isDm && channel.tags.includes("member");
 
   if (isDm || isMember) {
-    chatSocket.emit(event, isDm ? channel.name : channel.id, (channel: iCurrentChannel) => {
+    chatSocket.emit(events[channel.type], isDm ? channel.name : channel.id, (channel: iCurrentChannel) => {
       chatStore.currentChat = channel;
       chatSocket.emit("fetchChannels");
     });
@@ -57,11 +56,16 @@ const handleClick = () => {
   emit("closeModal");
 };
 
+const chatImage = (option: iChannelSearchResult) => {
+  if (option.type === "dm") {
+    return option.imageUrl || `https://robohash.org/${option.name}.png`;
+  }
+  return "/group.png";
+}
+
 watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value), 300));
 onMounted(() => {
-  chatSocket.on("searchResults", (results: iChannelSearchResult[]) => {
-    options.value = results;
-  });
+  chatSocket.on("searchResults", (results: iChannelSearchResult[]) => (options.value = results));
   chatSocket.emit("searchChannels", search.value);
 });
 </script>
@@ -87,11 +91,7 @@ onMounted(() => {
             @mouseleave="selectedOption = null"
           >
             <div class="flex gap-4 items-center">
-              <div class="avatar w-16">
-                <div class="rounded-full bg-base-200">
-                  <img :src="option.imageUrl || `https://robohash.org/${option.name}.png`" :alt="`channel image`" />
-                </div>
-              </div>
+              <AChatImage :image-url="chatImage(option)" />
               <div>
                 <div class="text-xl text-base-content">{{ option.name }}</div>
                 <ul class="flex gap-2">
