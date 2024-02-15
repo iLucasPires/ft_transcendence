@@ -70,7 +70,7 @@ onMounted(() => {
 
 <template>
   <dialog v-if="isOpen" class="modal modal-open" @click.prevent="$emit('closeModal')">
-    <div class="modal-box absolute top-20" @click.prevent.stop="handleClick">
+    <div class="modal-box absolute top-20" @click.prevent.stop="">
       <h3 class="font-bold text-xl mb-2">Search</h3>
       <input
         type="text"
@@ -80,7 +80,7 @@ onMounted(() => {
         @keydown.prevent.exact.esc="handleEsc"
       />
       <div class="overflow-y-auto max-h-96 grid items-center" :class="!options.length && 'h-48'">
-        <ul v-if="options.length" class="w-full">
+        <ul v-if="options.length" class="w-full" @click.prevent.stop="handleClick">
           <li
             v-for="option in options"
             class="p-4 border border-base-300 mt-2"
