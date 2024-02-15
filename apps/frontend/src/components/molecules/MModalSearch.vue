@@ -90,7 +90,7 @@ onMounted(() => {
             <div class="flex gap-4 items-center">
               <div class="avatar w-16">
                 <div class="rounded-full bg-base-200">
-                  <img :src="`https://robohash.org/${option.name}.png`" :alt="`channel image`" />
+                  <img :src="option.imageUrl || `https://robohash.org/${option.name}.png`" :alt="`channel image`" />
                 </div>
               </div>
               <div>
