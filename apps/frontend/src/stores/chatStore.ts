@@ -18,13 +18,6 @@ export const useChatStore = defineStore("chatStore", {
       });
     },
 
-    createGroupChat(name: string, members: string[]) {
-      chatSocket.emit("createGroupChat", { name, members }, (channel: iCurrentChannel) => {
-        this.currentChat = channel;
-        chatSocket.emit("fetchChannels");
-      });
-    },
-
     setChannels(channels: iChannel[]) {
       this.chats = channels;
       if (!channels.find(({ id }) => id === this.currentChat?.id)) {
@@ -112,6 +105,6 @@ export const useChatStore = defineStore("chatStore", {
 
     currentChatMembers(): iChannel["members"] {
       return this.currentChat?.members || [];
-    }
+    },
   },
 });

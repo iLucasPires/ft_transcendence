@@ -75,8 +75,12 @@ export class ChatGateway implements OnGatewayConnection {
   @SubscribeMessage("createGroupChat")
   async handleCreateGroupChat(@ConnectedSocket() client: Socket, @MessageBody() data: CreateGroupChannelDto) {
     const loggedInUser = client.request.user;
-    const { name, members } = data;
-    const channel = await this.channelsService.createGroupChannel(name, loggedInUser, members);
+    const { name } = data;
+
+    if (!name) {
+      throw new WsException("Group name cannot be empty");
+    }
+    const channel = await this.channelsService.createGroupChannel(name, loggedInUser);
 
     return {
       ...channel,

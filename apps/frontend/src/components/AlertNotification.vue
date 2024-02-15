@@ -11,7 +11,7 @@ const appStore = useAppStore();
         v-bind:class="{
           'border-success': item.includes('Success'),
           'border-warning': item.includes('Warning'),
-          'border-error': item.includes('Failed'),
+          'border-error': item.includes('Failed') || item.includes('Error'),
         }"
         v-for="item in appStore.log"
       >

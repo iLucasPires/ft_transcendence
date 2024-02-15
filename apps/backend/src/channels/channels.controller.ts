@@ -2,7 +2,6 @@ import { IsAuthenticatedGuard } from "@/auth/guards/authenticated.guard";
 import { UsersService } from "@/users/users.service";
 import {
   BadRequestException,
-  Body,
   ConflictException,
   Controller,
   NotFoundException,
@@ -13,8 +12,7 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { ChannelsService } from "./channels.service";
-import { CreateGroupChannelDto, FindChannelDto } from "./dto";
-import { ApiBody } from "@nestjs/swagger";
+import { FindChannelDto } from "./dto";
 
 @Controller("channels")
 @UseGuards(IsAuthenticatedGuard)
@@ -40,17 +38,5 @@ export class ChannelsController {
       throw new ConflictException("DM channel already exists");
     }
     return await this.channelsService.createDmChannel(user, dmUser);
-  }
-
-  @Post("groups")
-  @ApiBody({ type: CreateGroupChannelDto })
-  async createGroupChannel(
-    @Req() req: Request,
-    @Body() createGroupChannelDto: CreateGroupChannelDto,
-  ): Promise<FindChannelDto> {
-    const { user } = req;
-    const { name } = createGroupChannelDto;
-
-    return await this.channelsService.createGroupChannel(name, user, []);
   }
 }

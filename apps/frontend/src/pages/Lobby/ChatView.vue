@@ -23,7 +23,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  chatSocket.removeAllListeners();
+  chatSocket.removeListener("channelsList");
+  chatSocket.removeListener("newMessage");
 });
 
 const message = ref("");
@@ -71,8 +72,13 @@ const handleCloseModalSearch = () => {
           <h1 class="text-2xl font-bold">Chats</h1>
           <MDropDown @handleClickSearchChat="handleClickSearchChat" @handleClickNewGroup="handleClickNewGroup" />
         </div>
-        <ul class="overflow-y-auto h-full flex flex-col gap-2 ">
-          <MCardChatEntry v-for="chat in chats" :chat="chat" :is-current-chat="currentChatId === chat.id" @handle-click-chat="handleClickChat(chat)" />
+        <ul class="overflow-y-auto h-full flex flex-col gap-2">
+          <MCardChatEntry
+            v-for="chat in chats"
+            :chat="chat"
+            :is-current-chat="currentChatId === chat.id"
+            @handle-click-chat="handleClickChat(chat)"
+          />
         </ul>
       </div>
 
@@ -114,7 +120,7 @@ const handleCloseModalSearch = () => {
 
       <div v-if="currentChat !== null" class="col-span-1 flex flex-col items-center border-card full p-4">
         <AChatImage :image-url="currentChatPhoto" />
-        <h1 class="text-2xl font-bold text-center mt-4">{{currentChatName}}</h1>
+        <h1 class="text-2xl font-bold text-center mt-4">{{ currentChatName }}</h1>
         <div class="w-full">
           <span>Channel Members</span>
           <ul>

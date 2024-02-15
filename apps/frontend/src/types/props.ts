@@ -46,3 +46,8 @@ export type iChannelSearchResult = {
   tags: string[];
   imageUrl?: string;
 };
+
+export type iChatException = {
+  status: string;
+  message: string;
+};
