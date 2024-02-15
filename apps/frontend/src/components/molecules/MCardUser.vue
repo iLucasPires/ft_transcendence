@@ -12,7 +12,8 @@ const isOwnUser = (user: iUser) => user.username === meStore.data?.username;
 </script>
 
 <template>
-  <li class="column separate items-center relative border rounded-md"
+  <li
+    class="column separate items-center relative border rounded-md"
     :class="isOwnUser(user) ? 'border-primary' : 'border-base-300'"
   >
     <AAvatar :username="user.username" :avatarUrl="user.avatarUrl" :isConnected="user.isConnected" />
@@ -43,7 +44,7 @@ const isOwnUser = (user: iUser) => user.username === meStore.data?.username;
 
     <div class="w-full flex gap-2">
       <AButton
-        v-if="!isOwnUser(user)"
+        v-if="!isOwnUser(user) && appStore.tab !== 'blocked'"
         text="Send Message"
         icon="md-message"
         class="flex-1 btn-primary"

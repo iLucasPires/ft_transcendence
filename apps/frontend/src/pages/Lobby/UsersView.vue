@@ -28,9 +28,7 @@ async function handleClickSendMessage(username: string) {
 }
 
 async function handleClickBlock(username: string) {
-  const res = appStore.tab === "blocked" 
-    ? await api.unblockUser(username) 
-    : await api.blockUser(username);
+  const res = appStore.tab === "blocked" ? await api.unblockUser(username) : await api.blockUser(username);
 
   const message = appStore.tab === "blocked" ? "Unblocked" : "Blocked";
 
@@ -80,11 +78,8 @@ onMounted(handleTabChange);
           v-for="(user, key) in users"
           :user="user"
           :key="key"
-          
-          
           @handleSendMessage="handleClickSendMessage"
           @handleBlock="handleClickBlock"
-
           @handleFriendship="handleClickFriendshipAction"
           @showProfile="detailProfile = user"
         />
