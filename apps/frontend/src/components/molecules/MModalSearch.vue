@@ -48,6 +48,7 @@ const handleClick = () => {
   if (isDm || isMember) {
     chatSocket.emit(event, isDm ? channel.name : channel.id, (channel: iCurrentChannel) => {
       chatStore.currentChat = channel;
+      chatSocket.emit("fetchChannels");
     });
   } else {
     chatSocket.emit("joinGroupChat", channel.id, (channel: iCurrentChannel) => {
