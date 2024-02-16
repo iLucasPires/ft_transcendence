@@ -113,19 +113,51 @@ const handleCloseModalSearch = () => {
                 element.style.height = element.scrollHeight + 'px';
               }
             "
-            @keydown.enter.exact.prevent="handleSendMessage"
+            @keydown.enter.exact.prevent="
+              (e: Event) => {
+                handleSendMessage();
+                const element = e.target as HTMLTextAreaElement;
+                element.style.height = '18px';
+              }
+            "
           />
         </div>
       </div>
 
-      <div v-if="currentChat !== null" class="col-span-1 flex flex-col items-center border-card full p-4">
+      <div v-if="currentChat !== null" class="col-span-1 flex flex-col items-center border-card full p-4 gap-2">
         <AChatImage :image-url="currentChatPhoto" />
-        <h1 class="text-2xl font-bold text-center mt-4">{{ currentChatName }}</h1>
-        <div class="w-full">
-          <span>Channel Members</span>
-          <ul>
+        <h1 class="text-2xl font-bold text-center">{{ currentChatName }}</h1>
+        <div class="w-full border-card p-4 rounded flex-1">
+          <span class="block text-lg font-bold mb-2">Channel Members</span>
+          <ul class="overflow-y-auto h-full flex flex-col gap-2">
+            
+            
             <li v-for="member in currentChatMembers">
-              {{ member.username }}
+              <details class="rounded-md bg-base-300 overflow-hidden">
+                <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
+                  <AChatImage class="h-8 w-8" :image-url="member.avatarUrl" />
+                  <span class="font-bold">{{ member.username }}</span>
+                </summary>
+                <ul class="p-2">
+                  <li class="">
+                    <AButton class="btn-sm w-full flex justify-start" text="Profile" icon="md-person" />
+                  </li>
+                </ul>
+              </details>
+            </li>
+
+
+          </ul>
+        </div>
+
+        <div class="w-full border-card p-4 rounded">
+          <span class="block text-lg font-bold mb-2">Channel Settings</span>
+          <ul class="overflow-y-auto h-full flex flex-col gap-2">
+            <li>
+              <AButton class="btn-sm w-full flex justify-start" text="Leave Channel" icon="md-exit" />
+            </li>
+            <li>
+              <AButton class="btn-sm w-full flex justify-start" text="Delete Channel" icon="md-trash" />
             </li>
           </ul>
         </div>
