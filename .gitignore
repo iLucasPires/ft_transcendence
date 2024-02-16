@@ -160,3 +160,6 @@ result
 
 # Backend uploads
 uploads/
+
+# Vue Auto Imports
+auto-imports.d.ts
