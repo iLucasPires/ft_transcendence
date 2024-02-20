@@ -11,6 +11,7 @@ const handleFormSubmit = () => {
     chatStore.setCurrentChat(channel);
     chatSocket.emit("fetchChannels");
     appStore.changeModalCreateGroupChannel();
+    groupName.value = "";
   });
 };
 </script>
