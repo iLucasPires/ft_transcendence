@@ -44,6 +44,13 @@ const handleLeaveChat = () => {
                 icon="md-person"
                 @click.prevent="handleOpenProfile(member.username)"
               />
+              <AButton
+                v-if="currentChat?.type === 'group'"
+                class="btn-sm join-iteml flex justify-start"
+                text="Private Message"
+                icon="md-message"
+                @click="chatStore.openDmChat(member.username)"
+              />
             </div>
           </details>
         </li>
