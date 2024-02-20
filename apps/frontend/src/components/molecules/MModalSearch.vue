@@ -7,6 +7,7 @@ const appStore = useAppStore();
 const search = ref<string>("");
 const options = ref<iChannelSearchResult[]>([]);
 const selectedOption = ref<iChannelSearchResult | null>(null);
+const { modalSearch } = storeToRefs(appStore);
 
 const useDebounce = () => {
   let timeout: number | null = null;
@@ -62,9 +63,13 @@ const chatImage = (option: iChannelSearchResult) => {
 };
 
 watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value), 300));
+watch(modalSearch, (value) => {
+  if (value) {
+    chatSocket.emit("searchChannels", search.value);
+  }
+});
 onMounted(() => {
   chatSocket.on("searchResults", (results: iChannelSearchResult[]) => (options.value = results));
-  chatSocket.emit("searchChannels", search.value);
 });
 </script>
 
