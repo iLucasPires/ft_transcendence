@@ -37,7 +37,7 @@ const handleLeaveChat = () => {
       </ul>
     </div>
 
-    <div class="w-full border-card p-4 rounded">
+    <div v-if="currentChat?.type === 'group'" class="w-full border-card p-4 rounded">
       <span class="block text-lg font-bold mb-2">Channel Settings</span>
       <div class="join join-vertical w-full">
         <AButton
