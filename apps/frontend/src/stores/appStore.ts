@@ -17,9 +17,7 @@ export const useAppStore = defineStore("appStore", {
   actions: {
     setTheme() {
       this.theme =
-        localStorage.getItem("data-theme") 
-        || window.matchMedia("(prefers-color-scheme: dark)") 
-        ? "dark" : "light";
+        localStorage.getItem("data-theme") || window.matchMedia("(prefers-color-scheme: dark)") ? "dark" : "light";
       document.documentElement.setAttribute("data-theme", this.theme);
     },
 
