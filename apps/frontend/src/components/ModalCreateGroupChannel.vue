@@ -2,23 +2,25 @@
 import { chatSocket } from "@/socket";
 import type { iCurrentChannel } from "@/types/props";
 
-defineProps<{ isOpen: boolean }>();
-const emit = defineEmits(["closeModal"]);
-
 const chatStore = useChatStore();
+const appStore = useAppStore();
 const groupName = ref<string>("");
 
 const handleFormSubmit = () => {
   chatSocket.emit("createGroupChat", { name: groupName.value }, (channel: iCurrentChannel) => {
     chatStore.setCurrentChat(channel);
     chatSocket.emit("fetchChannels");
-    emit("closeModal");
+    appStore.changeModalCreateGroupChannel();
   });
 };
 </script>
 
 <template>
-  <dialog class="modal modal-open" v-if="isOpen" @click.prevent="$emit('closeModal')">
+  <dialog
+    class="modal modal-open"
+    v-if="appStore.modalCreateGroupChannel"
+    @click.prevent="appStore.changeModalCreateGroupChannel()"
+  >
     <div class="modal-box" @click.stop="">
       <h3 class="font-bold text-xl">Create Group</h3>
       <form class="py-4" @submit.prevent="handleFormSubmit">

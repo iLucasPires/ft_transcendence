@@ -2,17 +2,14 @@
 import { chatSocket } from "@/socket";
 import type { iChannelSearchResult, iCurrentChannel } from "@/types/props";
 
-defineProps({ isOpen: Boolean });
-const emit = defineEmits(["closeModal"]);
-
 const chatStore = useChatStore();
-
+const appStore = useAppStore();
 const search = ref<string>("");
 const options = ref<iChannelSearchResult[]>([]);
 const selectedOption = ref<iChannelSearchResult | null>(null);
 
 const useDebounce = () => {
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: number | null = null;
   return function (fnc: Function, delayMs: number = 500) {
     if (timeout !== null) {
       clearTimeout(timeout);
@@ -23,12 +20,13 @@ const useDebounce = () => {
     }, delayMs);
   };
 };
+
 const debounce = useDebounce();
 
 const handleEsc = () => {
   search.value = "";
   selectedOption.value = null;
-  emit("closeModal");
+  appStore.changeModalSearch();
 };
 
 const handleClick = () => {
@@ -53,7 +51,7 @@ const handleClick = () => {
       chatSocket.emit("fetchChannels");
     });
   }
-  emit("closeModal");
+  appStore.changeModalSearch();
 };
 
 const chatImage = (option: iChannelSearchResult) => {
@@ -61,7 +59,7 @@ const chatImage = (option: iChannelSearchResult) => {
     return option.imageUrl || `https://robohash.org/${option.name}.png`;
   }
   return "/group.png";
-}
+};
 
 watch(search, () => debounce(() => chatSocket.emit("searchChannels", search.value), 300));
 onMounted(() => {
@@ -71,7 +69,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <dialog v-if="isOpen" class="modal modal-open" @click.prevent="$emit('closeModal')">
+  <dialog v-if="appStore.modalSearch" class="modal modal-open" @click.prevent="appStore.changeModalSearch()">
     <div class="modal-box absolute top-20" @click.prevent.stop="">
       <h3 class="font-bold text-xl mb-2">Search</h3>
       <input
@@ -85,7 +83,7 @@ onMounted(() => {
         <ul v-if="options.length" class="w-full" @click.prevent.stop="handleClick">
           <li
             v-for="option in options"
-            class="p-4 border border-base-300 mt-2"
+            class="p-4 border border-base-300 rounded mt-2 hover:border-primary"
             :class="selectedOption === option && 'bg-base-200 bg-opacity-20 cursor-pointer'"
             @mouseover="selectedOption = option"
             @mouseleave="selectedOption = null"

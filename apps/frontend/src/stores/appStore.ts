@@ -9,6 +9,8 @@ export const useAppStore = defineStore("appStore", {
       gameP5Instance: null as any,
       modalLeaveGame: false,
       modalProfile: false,
+      modalSearch: false,
+      modalCreateGroupChannel: false,
     };
   },
 
@@ -23,6 +25,18 @@ export const useAppStore = defineStore("appStore", {
 
     changeModalLeaveGame() {
       this.modalLeaveGame = !this.modalLeaveGame;
+    },
+
+    changeModalProfile() {
+      this.modalProfile = !this.modalProfile;
+    },
+
+    changeModalSearch() {
+      this.modalSearch = !this.modalSearch;
+    },
+
+    changeModalCreateGroupChannel() {
+      this.modalCreateGroupChannel = !this.modalCreateGroupChannel;
     },
 
     changeMessageLog(messagesLog: string | string[]) {

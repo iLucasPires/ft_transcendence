@@ -1,0 +1,34 @@
+<script setup lang="ts">
+import type { iChannel, iMessage } from "@/types/props";
+import { chatSocket } from "@/socket";
+
+const chatStore = useChatStore();
+
+onMounted(() => {
+  chatSocket.on("channelsList", (channels: iChannel[]) => chatStore.setChannels(channels));
+  chatSocket.on( "newMessage", (message: iMessage) => {
+    chatStore.currentChatId === message.channelId &&
+    chatStore.addMessage(message)
+  });
+  chatSocket.emit("fetchChannels");
+});
+
+
+onUnmounted(() => {
+  chatSocket.removeListener("channelsList");
+  chatSocket.removeListener("newMessage");
+});
+</script>
+
+<template>
+  <main class="full card-padding overflow-hidden">
+    <ModalCreateGroupChannel />
+    <MModalSearch />
+
+    <div class="grid grid-cols-5 h-full separate">
+      <OListChatUsers />
+      <OListChatMessages />
+      <ODetailChat />
+    </div>
+  </main>
+</template>
