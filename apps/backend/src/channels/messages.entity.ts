@@ -11,7 +11,7 @@ export class MessageEntity {
   @JoinColumn({ name: "author_id", referencedColumnName: "id" })
   author: UserEntity;
 
-  @ManyToOne(() => ChannelEntity, (channel) => channel.messages)
+  @ManyToOne(() => ChannelEntity, (channel) => channel.messages, { onDelete: "CASCADE" })
   @JoinColumn({ name: "channel_id", referencedColumnName: "id" })
   channel: ChannelEntity;
 
