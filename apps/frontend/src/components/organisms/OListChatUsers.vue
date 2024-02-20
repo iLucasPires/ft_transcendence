@@ -11,7 +11,7 @@ const chatStore = useChatStore();
     <ul class="overflow-y-auto h-full flex flex-col gap-2">
       <li
         v-for="chat in chatStore.chats"
-        class="flex items-center separate cursor-pointer border-card hover:border-primary"
+        class="flex items-center separate cursor-pointer border-card hover:bg-base-200"
         :class="chatStore.currentChatId === chat.id && 'border-primary'"
         @click="chatStore.setCurrentChat(chat)"
       >
