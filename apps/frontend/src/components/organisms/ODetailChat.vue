@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import { chatSocket } from "@/socket";
+import type { iUser } from "@/types/props";
 
 const chatStore = useChatStore();
 const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = storeToRefs(chatStore);
+
+const userProfile = ref<iUser | null>(null);
+
+const handleOpenProfile = (username: string) => {
+  chatSocket.emit("fetchUserProfile", username, (user: iUser) => {
+    userProfile.value = user;
+  });
+};
 
 const handleLeaveChat = () => {
   chatSocket.emit("leaveChannel", chatStore.currentChatId, () => {
@@ -13,6 +22,7 @@ const handleLeaveChat = () => {
 
 <template>
   <div v-if="currentChat" class="flex overflow-hidden flex-col items-center border-card full p-4 space-y-2">
+    <MModalProfile v-if="!!userProfile" :user="userProfile" @clickClose="userProfile = null" />
     <AChatImage class="h-16 w-16" :image-url="currentChatPhoto" />
     <h1 class="text-2xl font-bold">{{ currentChatName }}</h1>
     <div class="w-full flex flex-col overflow-hidden border-card p-4 rounded flex-1">
@@ -28,9 +38,12 @@ const handleLeaveChat = () => {
               <span class="font-bold">{{ member.username }}</span>
             </summary>
             <div class="join join-vertical w-full">
-              <AButton class="btn-sm join-iteml flex justify-start" text="Profile" icon="md-person" />
-              <AButton class="btn-sm join-iteml flex justify-start" text="Mute" icon="md-volume-off" />
-              <AButton class="btn-sm join-iteml flex justify-start" text="Remove" icon="md-trash" />
+              <AButton
+                class="btn-sm join-iteml flex justify-start"
+                text="Profile"
+                icon="md-person"
+                @click.prevent="handleOpenProfile(member.username)"
+              />
             </div>
           </details>
         </li>
