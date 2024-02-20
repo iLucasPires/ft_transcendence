@@ -303,7 +303,6 @@ export class ChannelsService {
     }
     if (channel.owner.id === user.id) {
       channel.owner = channel.members.find((member) => member.id !== channel.owner.id);
-      console.log(channel.owner);
     }
     await this.channelsRepository.save(channel);
   }
