@@ -60,6 +60,12 @@ const handleCloseCreateGroupModal = () => {
 const handleCloseModalSearch = () => {
   isSearchModalOpen.value = false;
 };
+
+const handleLeaveChat = () => {
+  chatSocket.emit("leaveChannel", currentChatId.value, () => {
+    chatSocket.emit("fetchChannels");
+  });
+};
 </script>
 
 <template>
@@ -130,8 +136,6 @@ const handleCloseModalSearch = () => {
         <div class="w-full border-card p-4 rounded flex-1">
           <span class="block text-lg font-bold mb-2">Channel Members</span>
           <ul class="overflow-y-auto h-full flex flex-col gap-2">
-            
-            
             <li v-for="member in currentChatMembers">
               <details class="rounded-md bg-base-300 overflow-hidden">
                 <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
@@ -145,8 +149,6 @@ const handleCloseModalSearch = () => {
                 </ul>
               </details>
             </li>
-
-
           </ul>
         </div>
 
@@ -154,10 +156,12 @@ const handleCloseModalSearch = () => {
           <span class="block text-lg font-bold mb-2">Channel Settings</span>
           <ul class="overflow-y-auto h-full flex flex-col gap-2">
             <li>
-              <AButton class="btn-sm w-full flex justify-start" text="Leave Channel" icon="md-exit" />
-            </li>
-            <li>
-              <AButton class="btn-sm w-full flex justify-start" text="Delete Channel" icon="md-trash" />
+              <AButton
+                class="btn-sm w-full flex justify-start"
+                text="Leave Channel"
+                icon="md-exit"
+                @click="handleLeaveChat()"
+              />
             </li>
           </ul>
         </div>

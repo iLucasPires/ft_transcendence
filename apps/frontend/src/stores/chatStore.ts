@@ -35,7 +35,7 @@ export const useChatStore = defineStore("chatStore", {
     setCurrentChat(channel: iChannel | null) {
       if (channel === null) {
         if (this.currentChatId) {
-          chatSocket.emit("leaveChannel", this.currentChatId);
+          chatSocket.emit("unfocusChannel", this.currentChatId);
         }
         this.currentChat = null;
         return;
@@ -48,7 +48,7 @@ export const useChatStore = defineStore("chatStore", {
         event === events.dm ? this.getChatName(channel) : channel.id,
         (channel: iCurrentChannel) => {
           if (this.currentChatId) {
-            chatSocket.emit("leaveChannel", this.currentChatId);
+            chatSocket.emit("unfocusChannel", this.currentChatId);
           }
           this.currentChat = channel;
         },

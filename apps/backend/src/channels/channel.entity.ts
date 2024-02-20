@@ -15,7 +15,7 @@ export class ChannelEntity {
   name?: string;
 
   @ManyToOne(() => UserEntity, { eager: true, nullable: true })
-  owner?: UserEntity;
+  owner?: Partial<UserEntity>;
 
   @Column({ type: "enum", enum: channelTypes })
   type: ChannelType;
@@ -32,10 +32,10 @@ export class ChannelEntity {
       referencedColumnName: "id",
     },
   })
-  members: Array<UserEntity>;
+  members: Array<Partial<UserEntity>>;
 
   @OneToMany(() => MessageEntity, (message) => message.channel)
-  messages: Array<MessageEntity>;
+  messages?: Array<MessageEntity>;
 
   @Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

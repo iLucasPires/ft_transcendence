@@ -114,9 +114,22 @@ export class ChatGateway implements OnGatewayConnection {
     };
   }
 
+  @SubscribeMessage("unfocusChannel")
+  async handleUnfocusChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+    client.leave(channelId);
+  }
+
   @SubscribeMessage("leaveChannel")
   async handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (channel.type === "dm") {
+      throw new WsException("Cannot leave DM channel");
+    }
     client.leave(channelId);
+    await this.channelsService.leaveGroupChannel(channel, loggedInUser);
+    return "ok";
   }
 
   @SubscribeMessage("sendMessage")

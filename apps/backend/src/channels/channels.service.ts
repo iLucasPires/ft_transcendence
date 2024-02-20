@@ -293,4 +293,18 @@ export class ChannelsService {
   async joinGroupChannel(channelId: string, userId: string) {
     await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "members").of(channelId).add(userId);
   }
+
+  async leaveGroupChannel(channel: ChannelEntity, user: UserEntity) {
+    channel.members = channel.members.filter((member) => member.id !== user.id);
+
+    if (channel.members.length === 0) {
+      await this.channelsRepository.remove(channel);
+      return;
+    }
+    if (channel.owner.id === user.id) {
+      channel.owner = channel.members.find((member) => member.id !== channel.owner.id);
+      console.log(channel.owner);
+    }
+    await this.channelsRepository.save(channel);
+  }
 }
