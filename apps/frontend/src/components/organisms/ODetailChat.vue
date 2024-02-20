@@ -21,7 +21,10 @@ const handleLeaveChat = () => {
         <li v-for="member in currentChatMembers">
           <details class="rounded-md bg-base-200 overflow-hidden">
             <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
-              <AChatImage class="h-8 w-8" :image-url="member.avatarUrl" />
+              <AChatImage
+                class="h-8 w-8"
+                :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
+              />
               <span class="font-bold">{{ member.username }}</span>
             </summary>
             <div class="join join-vertical w-full">
