@@ -10,6 +10,7 @@ onMounted(() => {
     chatStore.currentChatId === message.channelId && chatStore.addMessage(message);
   });
   chatSocket.emit("fetchChannels");
+  chatStore.setCurrentChat(chatStore.currentChat);
 });
 
 onUnmounted(() => {
