@@ -17,12 +17,17 @@ export type iUser = {
   isConnected: boolean;
 };
 
+export type iMember = Pick<iUser, "id" | "username" | "avatarUrl" | "isFriendsWith" | "isConnected"> & {
+  isChannelAdmin?: boolean;
+};
+
 export type iChannel = {
   id: string;
   name?: string;
   type: "dm" | "group";
   owner?: Pick<iUser, "id" | "username">;
-  members: Pick<iUser, "id" | "username" | "avatarUrl" | "isFriendsWith" | "isConnected">[];
+  isChannelAdmin?: boolean;
+  members: iMember[];
   createdAt: string;
   updatedAt: string;
 };

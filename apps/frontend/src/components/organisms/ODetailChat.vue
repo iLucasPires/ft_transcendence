@@ -37,6 +37,7 @@ const handleLeaveChat = () => {
                 :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
               />
               <span class="font-bold">{{ member.username }}</span>
+              <span v-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
             </summary>
             <div class="join join-vertical w-full">
               <AButton

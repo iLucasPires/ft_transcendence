@@ -17,6 +17,20 @@ export class ChannelEntity {
   @ManyToOne(() => UserEntity, { eager: true, nullable: true })
   owner?: Partial<UserEntity>;
 
+  @ManyToMany(() => UserEntity, { eager: true })
+  @JoinTable({
+    name: "channel_admins",
+    joinColumn: {
+      name: "channel_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "admin_id",
+      referencedColumnName: "id",
+    },
+  })
+  admins?: Array<Partial<UserEntity>>;
+
   @Column({ type: "enum", enum: channelTypes })
   type: ChannelType;
 

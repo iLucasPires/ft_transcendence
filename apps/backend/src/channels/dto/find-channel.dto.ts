@@ -15,6 +15,8 @@ export class FindChannelDto {
   @ApiResponseProperty({ type: [FindUserDto] })
   owner: Pick<FindUserDto, "id" | "username">;
 
+  isChannelAdmin?: boolean;
+
   @ApiResponseProperty({ type: Date, format: "date-time" })
   createdAt: Date;
 
