@@ -68,6 +68,16 @@ export class ChannelsService {
          (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
         { id: userId },
       )
+      .where(
+        `NOT EXISTS (
+          SELECT 1 FROM blocked_users bu
+          WHERE
+            (bu.blocked_id = m.id AND bu.blocker_id = :id)
+              OR
+            (bu.blocker_id = m.id AND bu.blocked_id = :id)
+        )`,
+        { id: userId },
+      )
       .groupBy("channel.id, owner.id");
   }
 
@@ -75,18 +85,7 @@ export class ChannelsService {
     const qb = this.channelsRepository.createQueryBuilder("channel");
 
     const result = await this.selectChannelsForUser(qb, user.id)
-      .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
-      .andWhere(
-        `(channel.type = 'group' OR NOT EXISTS (
-          SELECT 1 FROM blocked_users bu
-          WHERE
-            (bu.blocked_id = m.id AND bu.blocker_id = :id)
-              OR
-            (bu.blocker_id = m.id AND bu.blocked_id = :id)
-          )
-        )`,
-        { id: user.id },
-      )
+      .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
       .having("channel.type = 'group' OR COUNT(cm.member_id) = 2")
       .getRawMany<FindUserChannelsQueryResult>();
 
@@ -111,7 +110,7 @@ export class ChannelsService {
     const qb = this.channelsRepository.createQueryBuilder("channel");
 
     const result = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .where("channel.id = :channelId", { channelId })
+      .andWhere("channel.id = :channelId", { channelId })
       .getRawOne<FindUserChannelsQueryResult>();
 
     return {
@@ -135,7 +134,7 @@ export class ChannelsService {
     const qb = this.channelsRepository.createQueryBuilder("channel");
 
     const result = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .where("channel.type = 'dm'")
+      .andWhere("channel.type = 'dm'")
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)", {
         loggedInUserId: loggedInUser.id,
       })
@@ -269,7 +268,7 @@ export class ChannelsService {
 
     const qb = this.channelsRepository.createQueryBuilder("channel");
     const rawGroupChannels = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .where("channel.type = 'group'")
+      .andWhere("channel.type = 'group'")
       .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
       .getRawMany<FindUserChannelsQueryResult>();
     const groupResults = rawGroupChannels.map((channel) => {
