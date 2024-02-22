@@ -2,6 +2,7 @@
 import { chatSocket } from "@/socket";
 import type { iUser } from "@/types/props";
 
+const meStore = useMeStore();
 const chatStore = useChatStore();
 const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = storeToRefs(chatStore);
 
@@ -45,7 +46,7 @@ const handleLeaveChat = () => {
                 @click.prevent="handleOpenProfile(member.username)"
               />
               <AButton
-                v-if="currentChat?.type === 'group'"
+                v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
                 class="btn-sm join-iteml flex justify-start"
                 text="Private Message"
                 icon="md-message"
