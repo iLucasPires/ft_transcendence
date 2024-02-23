@@ -8,6 +8,13 @@ const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = s
 
 const userProfile = ref<iUser | null>(null);
 
+const handleClickBlock = (username: string) => {
+  chatSocket.emit("blockUser", username, () => {
+    chatSocket.emit("fetchChannels");
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
 const handlePrivateMessage = (username: string) => {
   chatStore.openDmChat(username);
   chatSocket.emit("fetchChannels");  
@@ -58,6 +65,12 @@ const handleLeaveChat = () => {
                 icon="md-message"
                 @click="handlePrivateMessage(member.username)"
               />
+              <AButton
+                v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
+                class="btn-sm join-iteml flex justify-start"
+                text="Block"
+                icon="md-block"
+                @click= "handleClickBlock(member.username)"              />
             </div>
           </details>
         </li>
