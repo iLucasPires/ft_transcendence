@@ -210,6 +210,11 @@ export class ChannelsService {
     await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "owner").of(result.raw[0].id).set(owner);
     await this.channelsRepository
       .createQueryBuilder()
+      .relation(ChannelEntity, "admins")
+      .of(result.raw[0].id)
+      .add(owner);
+    await this.channelsRepository
+      .createQueryBuilder()
       .relation(ChannelEntity, "members")
       .of(result.raw[0].id)
       .add([owner]);
