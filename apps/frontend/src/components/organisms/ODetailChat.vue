@@ -8,6 +8,11 @@ const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = s
 
 const userProfile = ref<iUser | null>(null);
 
+const handlePrivateMessage = (username: string) => {
+  chatStore.openDmChat(username);
+  chatSocket.emit("fetchChannels");  
+};  
+
 const handleOpenProfile = (username: string) => {
   chatSocket.emit("fetchUserProfile", username, (user: iUser) => {
     userProfile.value = user;
@@ -51,7 +56,7 @@ const handleLeaveChat = () => {
                 class="btn-sm join-iteml flex justify-start"
                 text="Private Message"
                 icon="md-message"
-                @click="chatStore.openDmChat(member.username)"
+                @click="handlePrivateMessage(member.username)"
               />
             </div>
           </details>
