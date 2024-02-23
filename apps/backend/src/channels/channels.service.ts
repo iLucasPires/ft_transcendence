@@ -4,7 +4,7 @@ import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 import { ChannelEntity, ChannelType } from "./channel.entity";
 import { FindChannelDto, MessageDto } from "./dto";
 import { SearchResultDto } from "./dto/SearchResult.dto";
@@ -48,31 +48,28 @@ export class ChannelsService {
     private usersService: UsersService,
   ) {}
 
-  private selectChannelsForUser(qb: ReturnType<Repository<ChannelEntity>["createQueryBuilder"]>, userId: string) {
-    return qb
+  private selectChannels(): SelectQueryBuilder<ChannelEntity> {
+    return this.channelsRepository
+      .createQueryBuilder("channel")
       .addSelect(["owner.id", "owner.username"])
-      .leftJoin("channel.owner", "owner")
-      .addSelect(
-        (qb) =>
-          qb
-            .select("COUNT(ca.channel_id) > 0")
-            .from("channel_admins", "ca")
-            .where("ca.channel_id = channel.id AND ca.admin_id = :id", { id: userId }),
-        "is_channel_admin",
-      )
-      .addSelect(
+      .leftJoin("channel.owner", "owner");
+  }
+
+  private selectAllChannelsMembers(qb: SelectQueryBuilder<any>, loggedInUserId: string) {
+    return qb
+      .select([
+        "cm.channel_id AS channel_id",
         `array_agg(
           json_build_object(
             'id', m.id,
             'username', m.username,
             'avatarUrl', m.avatarUrl,
             'isFriendsWith', f.friend_1_id IS NOT NULL,
-            'isChannelAdmin', EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = channel.id AND admin_id = m.id)
+            'isChannelAdmin', EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = cm.channel_id AND admin_id = m.id)
           )
-        )`,
-        "channel_members",
-      )
-      .leftJoin("channel_members", "cm", "cm.channel_id = channel.id")
+        ) AS channel_members`,
+      ])
+      .from("channel_members", "cm")
       .leftJoin("users", "m", "m.id = cm.member_id")
       .leftJoin(
         "friendships",
@@ -80,7 +77,7 @@ export class ChannelsService {
         `(f.friend_1_id = :id AND f.friend_2_id = m.id)
           OR
          (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
-        { id: userId },
+        { id: loggedInUserId },
       )
       .where(
         `NOT EXISTS (
@@ -90,17 +87,21 @@ export class ChannelsService {
               OR
             (bu.blocker_id = m.id AND bu.blocked_id = :id)
         )`,
-        { id: userId },
+        { id: loggedInUserId },
       )
-      .groupBy("channel.id, owner.id");
+      .groupBy("cm.channel_id");
   }
 
   async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
-    const qb = this.channelsRepository.createQueryBuilder("channel");
-
-    const result = await this.selectChannelsForUser(qb, user.id)
-      .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :id)", { id: user.id })
-      .having("channel.type = 'group' OR COUNT(cm.member_id) = 2")
+    const result = await this.selectChannels()
+      .addSelect(
+        `EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = channel.id AND admin_id = :loggedInUserId)`,
+        "is_channel_admin",
+      )
+      .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, user.id), "cm", "cm.channel_id = channel.id")
+      .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)")
+      .andWhere("channel.type = 'group' OR ARRAY_LENGTH(channel_members, 1) > 1")
+      .setParameter("loggedInUserId", user.id)
       .getRawMany<FindUserChannelsQueryResult>();
 
     return result.map((channel) => ({
@@ -122,10 +123,14 @@ export class ChannelsService {
   }
 
   async findChannelById(loggedInUser: UserEntity, channelId: string) {
-    const qb = this.channelsRepository.createQueryBuilder("channel");
-
-    const result = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .andWhere("channel.id = :channelId", { channelId })
+    const result = await this.selectChannels()
+      .addSelect(
+        `EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = channel.id AND admin_id = :loggedInUserId)`,
+        "is_channel_admin",
+      )
+      .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, loggedInUser.id), "cm", "cm.channel_id = channel.id")
+      .where("channel.id = :channelId", { channelId })
+      .setParameter("loggedInUserId", loggedInUser.id)
       .getRawOne<FindUserChannelsQueryResult>();
 
     return {
@@ -147,10 +152,9 @@ export class ChannelsService {
   }
 
   async findDmChannel(loggedInUser: UserEntity, dmUser: UserEntity): Promise<FindChannelWithMembersDto | null> {
-    const qb = this.channelsRepository.createQueryBuilder("channel");
-
-    const result = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .andWhere("channel.type = 'dm'")
+    const result = await this.selectChannels()
+      .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, loggedInUser.id), "cm", "cm.channel_id = channel.id")
+      .where("channel.type = 'dm'")
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)", {
         loggedInUserId: loggedInUser.id,
       })
@@ -290,9 +294,10 @@ export class ChannelsService {
       };
     });
 
-    const qb = this.channelsRepository.createQueryBuilder("channel");
-    const rawGroupChannels = await this.selectChannelsForUser(qb, loggedInUser.id)
-      .andWhere("channel.type = 'group'")
+    const rawGroupChannels = await this.selectChannels()
+      .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, loggedInUser.id), "cm", "cm.channel_id = channel.id")
+      .where("channel.type = 'group'")
+      .andWhere("channel.type = 'group' OR ARRAY_LENGTH(channel_members, 1) > 1")
       .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
       .getRawMany<FindUserChannelsQueryResult>();
     const groupResults = rawGroupChannels.map((channel) => {
