@@ -1,6 +1,7 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
 import { ChannelsService } from "@/channels/channels.service";
 import { CreateGroupChannelDto } from "@/channels/dto";
+import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { HttpExceptionFilter } from "@/http-exception.filter";
 import { UsersService } from "@/users/users.service";
 import { Inject, Logger, UseFilters, UseGuards } from "@nestjs/common";
@@ -10,9 +11,10 @@ import {
   OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from "@nestjs/websockets";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 @UseGuards(WsGuard)
 @UseFilters(HttpExceptionFilter)
@@ -23,10 +25,15 @@ import { Socket } from "socket.io";
 export class ChatGateway implements OnGatewayConnection {
   logger = new Logger("ChatGateway");
 
+  @WebSocketServer()
+  server: Server;
+
   @Inject()
   channelsService: ChannelsService;
   @Inject()
   usersService: UsersService;
+  @Inject()
+  connectionStatusService: ConnectionStatusService;
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     const { request } = client;
@@ -165,6 +172,37 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User not found: ${username}`);
     }
     await this.usersService.block(loggedInUser, user);
+    return "ok";
+  }
+
+  @SubscribeMessage("kickUser")
+  async handleKickUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { channelId: string; username: string },
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, body.channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${body.channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, body.username);
+    if (!user) {
+      throw new WsException(`User not found: ${body.username}`);
+    }
+    if (!channel.members.some((m) => m.id === user.id)) {
+      throw new WsException(`User is not a member of this channel: ${body.username}`);
+    }
+
+    await this.channelsService.leaveGroupChannel(channel, user);
+    const socketId = this.connectionStatusService.getSocketId(user.id);
+    if (socketId) {
+      this.server.to(socketId).emit("kickedFromChannel", channel.id);
+    }
     return "ok";
   }
 }
