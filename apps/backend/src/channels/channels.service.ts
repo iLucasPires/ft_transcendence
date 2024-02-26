@@ -329,14 +329,9 @@ export class ChannelsService {
       await this.channelsRepository.remove(channel);
       return;
     }
+    // TODO: update channel admins
     if (channel.owner.id === user.id) {
       channel.owner = channel.members.find((member) => member.id !== channel.owner.id);
-      if (!channel.admins.find((admin) => admin.id === channel.owner.id)) {
-        channel.admins.push(channel.owner);
-      }
-    }
-    if (channel.admins.find((admin) => admin.id === user.id)) {
-      channel.admins = channel.admins.filter((admin) => admin.id !== user.id);
     }
     await this.channelsRepository.save(channel);
   }

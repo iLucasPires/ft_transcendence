@@ -194,8 +194,18 @@ export class ChatGateway implements OnGatewayConnection {
     if (!user) {
       throw new WsException(`User not found: ${body.username}`);
     }
-    if (!channel.members.some((m) => m.id === user.id)) {
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
       throw new WsException(`User is not a member of this channel: ${body.username}`);
+    }
+
+    if (channel.owner.id === user.id) {
+      throw new WsException("Cannot kick the owner of the channel");
+    }
+    const isChannelOwner = channel.owner.id === loggedInUser.id;
+    const userIsChannelAdmin = channel.members.some((m) => m.id === loggedInUser.id && m.isChannelAdmin);
+    if (!isChannelOwner && userIsChannelAdmin) {
+      throw new WsException("You cannot kick a channel admin!");
     }
 
     await this.channelsService.leaveGroupChannel(channel, user);

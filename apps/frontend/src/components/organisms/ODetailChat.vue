@@ -31,6 +31,16 @@ const handleLeaveChat = () => {
     chatSocket.emit("fetchChannels");
   });
 };
+
+const handleKickUser = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,  
+  };
+  chatSocket.emit("kickUser", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
 </script>
 
 <template>
@@ -70,7 +80,19 @@ const handleLeaveChat = () => {
                 class="btn-sm join-iteml flex justify-start"
                 text="Block"
                 icon="md-block"
-                @click= "handleClickBlock(member.username)"              />
+                @click="handleClickBlock(member.username)"
+              />
+              <div v-if="currentChat?.isChannelAdmin">
+                <div class="divider my-0 mx-2" />
+                <div class="join join-vertical w-full">
+                  <AButton
+                    class="btn-sm join-iteml flex justify-start"
+                    text="Kick"
+                    icon="md-block"
+                    @click="handleKickUser(member.username)"
+                  />
+                </div> 
+              </div>
             </div>
           </details>
         </li>
