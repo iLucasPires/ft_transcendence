@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { chatSocket } from "@/socket";
 import type { iMember, iUser } from "@/types/props";
-import { MdRememberme } from "oh-vue-icons/icons";
 
 const meStore = useMeStore();
 const chatStore = useChatStore();
@@ -97,7 +96,8 @@ const handleKickUser = (username: string) => {
                 :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
               />
               <span class="font-bold">{{ member.username }}</span>
-              <span v-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
+              <span v-if="currentChat.owner?.id === member.id" class="badge badge-sm font-bold badge-primary">Owner</span>
+              <span v-else-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
             </summary>
             <div class="w-full">
               <AButton
