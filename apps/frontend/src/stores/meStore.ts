@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
 import { api, utils } from "@/routes/apiRouter";
-import type { iUser } from "@/types/props.js";
 import { chatSocket, socket } from "@/socket";
+import type { iUser } from "@/types/props.js";
+import { defineStore } from "pinia";
 
 export const useMeStore = defineStore("meStore", {
   state: function () {
@@ -82,7 +82,10 @@ export const useMeStore = defineStore("meStore", {
       const res = type2fa ? await api.enable2fa(totp) : await api.disable2fa(totp);
 
       if (res.ok && this.data) {
-        this.data = await res.json();
+        this.data.isTwoFactorAuthEnabled = type2fa;
+        if (type2fa) {
+          this.data.isTwoFactorAuthApproved = true;
+        }
         return `Success: ${(type2fa ? "Enable" : "Disable") + " 2FA Success!"}`;
       }
 

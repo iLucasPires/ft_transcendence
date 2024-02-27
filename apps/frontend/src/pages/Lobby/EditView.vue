@@ -1,14 +1,9 @@
 <script setup lang="ts">
-
-
-
-
 import { api } from "@/routes/apiRouter";
 import OtpInput from "@/components/OtpInput.vue";
 
 const meStore = useMeStore();
 const appStore = useAppStore();
-const totp = ref<string>("");
 const selectedFile = ref<File | null>(null);
 const modal = ref<HTMLDialogElement | null>(null);
 
@@ -16,9 +11,9 @@ const prevUsername = ref<string>("");
 const prevAvatar = ref<string>("");
 const qrCode = ref<string>("");
 
-async function handleSubmit2fa() {
+async function handleSubmit2fa(code: string) {
   const is2FA = meStore.is2FA;
-  const message = await meStore.change2FA(totp.value, !is2FA);
+  const message = await meStore.change2FA(code, !is2FA);
 
   appStore.changeMessageLog(message);
   if (message.includes("Error")) return;
@@ -150,10 +145,7 @@ function handleChangeAvatar(e: Event) {
           v-if="qrCode"
           v-bind:src="qrCode"
         />
-        <OtpInput
-          v-model:modelValue="totp"
-          v-on:submit.prevent="handleSubmit2fa"
-        />
+        <OtpInput @submit2fa="handleSubmit2fa" />
       </div>
     </dialog>
   </main>

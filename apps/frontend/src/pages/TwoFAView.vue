@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const totp = ref("");
 const meStore = useMeStore();
 const appStore = useAppStore();
 </script>
@@ -10,10 +9,9 @@ const appStore = useAppStore();
       <h1 class="title">Two Factor Authentication</h1>
       <p class="text-center">please enter your 2FA code to continue</p>
       <OtpInput
-        v-model:modelValue="totp"
-        v-on:submit.prevent="
-          async () => {
-            const message = await meStore.verify2FA(totp);
+        @submit2fa="
+          async (code: string) => {
+            const message = await meStore.verify2FA(code);
             appStore.changeMessageLog(message);
             if (!message.includes('Error')) $router.push({ name: 'lobby' });
           }

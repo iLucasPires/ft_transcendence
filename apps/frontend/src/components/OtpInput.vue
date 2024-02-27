@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineEmits(["submit2fa"]);
+
 type OtpInputEvent = InputEvent & {
   nextElementSibling?: HTMLInputElement | null;
   previousElementSibling?: HTMLInputElement | null;
@@ -21,7 +23,7 @@ const handleOtpInput = (payload: Event) => {
   <form
     class="column w-full separate items-center"
     v-on:reset="otpArray = []"
-    v-on:submit.prevent="$emit('update:modelValue', otpArray.join(''))"
+    v-on:submit.prevent="$emit('submit2fa', otpArray.join(''))"
   >
     <div class="flex gap-2" v-on:input="handleOtpInput($event)">
       <input
