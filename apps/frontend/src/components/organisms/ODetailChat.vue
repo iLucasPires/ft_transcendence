@@ -90,7 +90,7 @@ const handleKickUser = (username: string) => {
       <span class="block text-lg font-bold mb-2">Channel Members</span>
       <ul class="overflow-y-auto flex flex-col h-full gap-2">
         <li v-for="member in currentChatMembers">
-          <details class="rounded-md bg-base-200 overflow-hidden join join-vertical w-full">
+          <details class="bg-base-200 overflow-hidden join join-vertical w-full select-none cursor-pointer">
             <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
               <AChatImage
                 class="h-8 w-8"
