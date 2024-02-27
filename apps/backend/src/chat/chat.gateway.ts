@@ -102,9 +102,10 @@ export class ChatGateway implements OnGatewayConnection {
 
     await this.channelsService.joinGroupChannel(channelId, loggedInUser.id);
     client.join(channel.id);
+    const updatedChannel = await this.channelsService.findChannelById(loggedInUser, channelId);
 
     return {
-      ...channel,
+      ...updatedChannel,
       messages: await this.channelsService.findChannelMessages(channel.id),
     };
   }
