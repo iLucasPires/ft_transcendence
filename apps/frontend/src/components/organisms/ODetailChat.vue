@@ -90,7 +90,7 @@ const handleKickUser = (username: string) => {
       <span class="block text-lg font-bold mb-2">Channel Members</span>
       <ul class="overflow-y-auto flex flex-col h-full gap-2">
         <li v-for="member in currentChatMembers">
-          <details class="rounded-md bg-base-200 overflow-hidden">
+          <details class="rounded-md bg-base-200 overflow-hidden join join-vertical w-full">
             <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
               <AChatImage
                 class="h-8 w-8"
@@ -99,59 +99,57 @@ const handleKickUser = (username: string) => {
               <span class="font-bold">{{ member.username }}</span>
               <span v-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
             </summary>
-            <div class="join join-vertical w-full">
+            <div class="w-full">
               <AButton
-                class="btn-sm join-item flex justify-start"
+                class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Profile"
                 icon="md-person"
                 @click.prevent="handleOpenProfile(member.username)"
               />
               <AButton
                 v-if="member.id !== meStore.data?.id"
-                class="btn-sm join-item flex justify-start"
+                class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Invite to Game"
                 icon="md-videogameasset"
                 @click.prevent=""
               />
               <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm join-item flex justify-start"
+                class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Private Message"
                 icon="md-message"
                 @click="handlePrivateMessage(member.username)"
               />
               <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm join-item flex justify-start"
+                class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Block"
                 icon="md-block"
                 @click="handleClickBlock(member.username)"
               />
             </div>
-            <div v-if="showAdminOptions(member)">
+            <div class="flex flex-col" v-if="showAdminOptions(member)">
               <div class="divider my-0 mx-2" />
-              <div class="join join-vertical w-full">
-                <AButton
-                  v-if="!member.isChannelAdmin && currentChat?.owner?.id === meStore.data?.id"
-                  class="btn-sm join-item flex justify-start"
-                  text="Set as Admin"
-                  icon="md-adminpanelsettings"
-                  @click="handleSetAdmin(member.username)"
-                />
-                <AButton
-                  v-else-if="currentChat?.owner?.id === meStore.data?.id"
-                  class="btn-sm join-item flex justify-start"
-                  text="Unset as Admin"
-                  icon="md-adminpanelsettings"
-                  @click="handleUnsetAdmin(member.username)"
-                />
-                <AButton
-                  class="btn-sm join-item flex justify-start"
-                  text="Kick"
-                  icon="md-block"
-                  @click="handleKickUser(member.username)"
-                />
-              </div>
+              <AButton
+                v-if="!member.isChannelAdmin && currentChat?.owner?.id === meStore.data?.id"
+                class="btn-sm btn-ghost join-item justify-start"
+                text="Set as Admin"
+                icon="md-adminpanelsettings"
+                @click="handleSetAdmin(member.username)"
+              />
+              <AButton
+                v-else-if="currentChat?.owner?.id === meStore.data?.id"
+                class="btn-sm btn-ghost join-item justify-start"
+                text="Unset as Admin"
+                icon="md-adminpanelsettings"
+                @click="handleUnsetAdmin(member.username)"
+              />
+              <AButton
+                class="btn-sm btn-ghost join-item justify-start"
+                text="Kick"
+                icon="md-block"
+                @click="handleKickUser(member.username)"
+              />
             </div>
           </details>
         </li>
@@ -163,7 +161,7 @@ const handleKickUser = (username: string) => {
       <div class="join join-vertical w-full">
         <AButton
           icon="md-exit"
-          class="join-item btn-sm flex justify-start"
+          class="join-item btn-sm justify-start"
           text="Leave Channel"
           @click="() => handleLeaveChat()"
         />
