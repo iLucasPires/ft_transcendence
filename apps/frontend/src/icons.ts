@@ -2,6 +2,7 @@ import { addIcons } from "oh-vue-icons";
 
 import {
   GiPingPongBat,
+  MdAdminpanelsettings,
   MdBlock,
   MdCrisisalert,
   MdEmail,
@@ -15,16 +16,17 @@ import {
   MdModenight,
   MdPerson,
   MdPersonaddalt1,
+  MdSearch,
   MdSettings,
   MdSunny,
   MdSupervisoraccount,
   MdVideogameasset,
-  MdSearch,
   MdWorkhistoryRound,
   Si42,
 } from "oh-vue-icons/icons";
 
 addIcons(
+  MdAdminpanelsettings,
   MdPersonaddalt1,
   MdSettings,
   MdPerson,

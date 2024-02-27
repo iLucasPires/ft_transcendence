@@ -335,4 +335,12 @@ export class ChannelsService {
     }
     await this.channelsRepository.save(channel);
   }
+
+  async addChannelAdmin(channelId: string, userId: string) {
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "admins").of(channelId).add(userId);
+  }
+
+  async removeChannelAdmin(channelId: string, userId: string) {
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "admins").of(channelId).remove(userId);
+  }
 }

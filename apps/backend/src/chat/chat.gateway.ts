@@ -1,6 +1,6 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
 import { ChannelsService } from "@/channels/channels.service";
-import { CreateGroupChannelDto } from "@/channels/dto";
+import { AdminActionDto, CreateGroupChannelDto } from "@/channels/dto";
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { HttpExceptionFilter } from "@/http-exception.filter";
 import { UsersService } from "@/users/users.service";
@@ -175,28 +175,77 @@ export class ChatGateway implements OnGatewayConnection {
     return "ok";
   }
 
-  @SubscribeMessage("kickUser")
-  async handleKickUser(
+  @SubscribeMessage("addChannelAdmin")
+  async handleAddChannelAdmin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { channelId: string; username: string },
+    @MessageBody() { channelId, username }: AdminActionDto,
   ) {
     const loggedInUser = client.request.user;
-    const channel = await this.channelsService.findChannelById(loggedInUser, body.channelId);
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
 
     if (!channel) {
-      throw new WsException(`Channel not found: ${body.channelId}`);
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
+      throw new WsException(`User is not a member of this channel: ${username}`);
+    }
+    await this.channelsService.addChannelAdmin(channelId, user.id);
+    return "ok";
+  }
+
+  @SubscribeMessage("removeChannelAdmin")
+  async handleRemoveChannelAdmin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, username }: AdminActionDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
+      throw new WsException(`User is not a member of this channel: ${username}`);
+    }
+    await this.channelsService.removeChannelAdmin(channelId, user.id);
+    return "ok";
+  }
+
+  @SubscribeMessage("kickUser")
+  async handleKickUser(@ConnectedSocket() client: Socket, @MessageBody() { channelId, username }: AdminActionDto) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
     }
     if (!channel.isChannelAdmin) {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, body.username);
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
     if (!user) {
-      throw new WsException(`User not found: ${body.username}`);
+      throw new WsException(`User not found: ${username}`);
     }
     const userIsChannelMember = channel.members.some((m) => m.id === user.id);
     if (!userIsChannelMember) {
-      throw new WsException(`User is not a member of this channel: ${body.username}`);
+      throw new WsException(`User is not a member of this channel: ${username}`);
     }
 
     if (channel.owner.id === user.id) {

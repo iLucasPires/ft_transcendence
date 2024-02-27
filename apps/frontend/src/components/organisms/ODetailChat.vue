@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { chatSocket } from "@/socket";
-import type { iUser } from "@/types/props";
+import type { iMember, iUser } from "@/types/props";
+import { MdRememberme } from "oh-vue-icons/icons";
 
 const meStore = useMeStore();
 const chatStore = useChatStore();
@@ -17,8 +18,8 @@ const handleClickBlock = (username: string) => {
 
 const handlePrivateMessage = (username: string) => {
   chatStore.openDmChat(username);
-  chatSocket.emit("fetchChannels");  
-};  
+  chatSocket.emit("fetchChannels");
+};
 
 const handleOpenProfile = (username: string) => {
   chatSocket.emit("fetchUserProfile", username, (user: iUser) => {
@@ -32,10 +33,47 @@ const handleLeaveChat = () => {
   });
 };
 
+const showAdminOptions = (member: iMember) => {
+  if (chatStore.currentChat?.type !== "group") {
+    return false;
+  }
+
+  const ownerId = chatStore.currentChat?.owner?.id;
+  const isOwnUser = member.id === meStore.data?.id;
+
+  if (ownerId === meStore.data?.id) {
+    return !isOwnUser;
+  }
+  if (chatStore.currentChat?.isChannelAdmin) {
+    return !isOwnUser && member.id !== ownerId;
+  }
+  return false;
+};
+
+const handleSetAdmin = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("addChannelAdmin", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
+const handleUnsetAdmin = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("removeChannelAdmin", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
 const handleKickUser = (username: string) => {
   const data = {
     channelId: chatStore.currentChatId,
-    username,  
+    username,
   };
   chatSocket.emit("kickUser", data, () => {
     chatStore.setCurrentChat(chatStore.currentChat);
@@ -63,35 +101,49 @@ const handleKickUser = (username: string) => {
             </summary>
             <div class="join join-vertical w-full">
               <AButton
-                class="btn-sm join-iteml flex justify-start"
+                class="btn-sm join-item flex justify-start"
                 text="Profile"
                 icon="md-person"
                 @click.prevent="handleOpenProfile(member.username)"
               />
               <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm join-iteml flex justify-start"
+                class="btn-sm join-item flex justify-start"
                 text="Private Message"
                 icon="md-message"
                 @click="handlePrivateMessage(member.username)"
               />
               <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm join-iteml flex justify-start"
+                class="btn-sm join-item flex justify-start"
                 text="Block"
                 icon="md-block"
                 @click="handleClickBlock(member.username)"
               />
-              <div v-if="currentChat?.isChannelAdmin">
-                <div class="divider my-0 mx-2" />
-                <div class="join join-vertical w-full">
-                  <AButton
-                    class="btn-sm join-iteml flex justify-start"
-                    text="Kick"
-                    icon="md-block"
-                    @click="handleKickUser(member.username)"
-                  />
-                </div> 
+            </div>
+            <div v-if="showAdminOptions(member)">
+              <div class="divider my-0 mx-2" />
+              <div class="join join-vertical w-full">
+                <AButton
+                  v-if="!member.isChannelAdmin && currentChat?.owner?.id === meStore.data?.id"
+                  class="btn-sm join-item flex justify-start"
+                  text="Set as Admin"
+                  icon="md-adminpanelsettings"
+                  @click="handleSetAdmin(member.username)"
+                />
+                <AButton
+                  v-else-if="currentChat?.owner?.id === meStore.data?.id"
+                  class="btn-sm join-item flex justify-start"
+                  text="Unset as Admin"
+                  icon="md-adminpanelsettings"
+                  @click="handleUnsetAdmin(member.username)"
+                />
+                <AButton
+                  class="btn-sm join-item flex justify-start"
+                  text="Kick"
+                  icon="md-block"
+                  @click="handleKickUser(member.username)"
+                />
               </div>
             </div>
           </details>
