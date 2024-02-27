@@ -107,6 +107,13 @@ const handleKickUser = (username: string) => {
                 @click.prevent="handleOpenProfile(member.username)"
               />
               <AButton
+                v-if="member.id !== meStore.data?.id"
+                class="btn-sm join-item flex justify-start"
+                text="Invite to Game"
+                icon="md-videogameasset"
+                @click.prevent=""
+              />
+              <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
                 class="btn-sm join-item flex justify-start"
                 text="Private Message"
