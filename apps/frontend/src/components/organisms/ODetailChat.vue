@@ -146,15 +146,15 @@ const handleKickUser = (username: string) => {
                 :disabled="member.isBlocked"
                 @click.prevent=""
               />
-              <AButton
-                v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm btn-ghost join-item justify-start w-full disabled:cursor-not-allowed"
-                text="Private Message"
-                icon="md-message"
-                :disabled="member.isBlocked"
-                @click="handlePrivateMessage(member.username)"
-              />
               <template v-if="member.id !== meStore.data?.id">
+                <AButton
+                  v-if="currentChat?.type === 'group'"
+                  class="btn-sm btn-ghost join-item justify-start w-full disabled:cursor-not-allowed"
+                  text="Private Message"
+                  icon="md-message"
+                  :disabled="member.isBlocked"
+                  @click="handlePrivateMessage(member.username)"
+                />
                 <AButton
                   v-if="!member.isBlocked"
                   class="btn-sm btn-ghost join-item justify-start w-full"
