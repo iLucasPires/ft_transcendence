@@ -211,7 +211,7 @@ export class ChatGateway implements OnGatewayConnection {
     if (!channel.isChannelAdmin) {
       throw new WsException("You are not an admin of this channel");
     }
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -237,7 +237,7 @@ export class ChatGateway implements OnGatewayConnection {
     if (!channel.isChannelAdmin) {
       throw new WsException("You are not an admin of this channel");
     }
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -261,7 +261,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -301,7 +301,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -341,7 +341,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -378,7 +378,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
@@ -419,7 +419,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("You are not an admin of this channel");
     }
 
-    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       throw new WsException(`User not found: ${username}`);
     }
