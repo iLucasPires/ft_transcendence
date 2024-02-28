@@ -3,6 +3,8 @@ import { ApiResponseProperty } from "@nestjs/swagger";
 import { ChannelType, channelTypes } from "../channel.entity";
 
 export class ChannelMemberDto extends FindUserDto {
+  isBlocked: boolean;
+  isBlockedBy: boolean;
   isChannelAdmin?: boolean;
   isMuted?: boolean;
 }

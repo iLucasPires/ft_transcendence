@@ -18,6 +18,8 @@ export type iUser = {
 };
 
 export type iMember = Pick<iUser, "id" | "username" | "avatarUrl" | "isFriendsWith" | "isConnected"> & {
+  isBlocked: boolean;
+  isBlockedBy: boolean;
   isChannelAdmin?: boolean;
   isMuted?: boolean;
 };

@@ -180,6 +180,18 @@ export class ChatGateway implements OnGatewayConnection {
     return "ok";
   }
 
+  @SubscribeMessage("unblockUser")
+  async handleUnblockUser(@ConnectedSocket() client: Socket, @MessageBody() username: string) {
+    const loggedInUser = client.request.user;
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    await this.usersService.unblock(loggedInUser, user);
+    return "ok";
+  }
+
   @SubscribeMessage("addChannelAdmin")
   async handleAddChannelAdmin(
     @ConnectedSocket() client: Socket,

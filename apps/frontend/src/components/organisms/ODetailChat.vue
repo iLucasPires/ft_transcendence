@@ -15,6 +15,13 @@ const handleClickBlock = (username: string) => {
   });
 };
 
+const handleClickUnblock = (username: string) => {
+  chatSocket.emit("unblockUser", username, () => {
+    chatSocket.emit("fetchChannels");
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
 const handlePrivateMessage = (username: string) => {
   chatStore.openDmChat(username);
   chatSocket.emit("fetchChannels");
@@ -109,8 +116,11 @@ const handleKickUser = (username: string) => {
       <span class="block text-lg font-bold mb-2">Channel Members</span>
       <ul class="overflow-y-auto flex flex-col h-full gap-2">
         <li v-for="member in currentChatMembers">
-          <details class="bg-base-200 overflow-hidden join join-vertical w-full select-none cursor-pointer">
-            <summary class="list-none p-2 flex items-center gap-2 bg-base-200">
+          <details class="bg-base-200 overflow-hidden join join-vertical w-full select-none">
+            <summary
+              class="list-none p-2 flex items-center gap-2 bg-base-200"
+              :class="(currentChat?.isChannelAdmin || !member.isBlockedBy) && 'cursor-pointer'"
+            >
               <AChatImage
                 class="h-8 w-8"
                 :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
@@ -121,7 +131,7 @@ const handleKickUser = (username: string) => {
               >
               <span v-else-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
             </summary>
-            <div class="w-full">
+            <div v-if="!member.isBlockedBy" class="w-full">
               <AButton
                 class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Profile"
@@ -137,21 +147,31 @@ const handleKickUser = (username: string) => {
               />
               <AButton
                 v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm btn-ghost join-item justify-start w-full"
+                class="btn-sm btn-ghost join-item justify-start w-full disabled:cursor-not-allowed"
                 text="Private Message"
                 icon="md-message"
+                :disabled="member.isBlocked"
                 @click="handlePrivateMessage(member.username)"
               />
-              <AButton
-                v-if="currentChat?.type === 'group' && member.id !== meStore.data?.id"
-                class="btn-sm btn-ghost join-item justify-start w-full"
-                text="Block"
-                icon="md-block"
-                @click="handleClickBlock(member.username)"
-              />
+              <template v-if="member.id !== meStore.data?.id">
+                <AButton
+                  v-if="!member.isBlocked"
+                  class="btn-sm btn-ghost join-item justify-start w-full"
+                  text="Block"
+                  icon="md-block"
+                  @click="handleClickBlock(member.username)"
+                />
+                <AButton
+                  v-else
+                  class="btn-sm btn-ghost join-item justify-start w-full"
+                  text="Unblock"
+                  icon="md-block"
+                  @click="handleClickUnblock(member.username)"
+                />
+              </template>
             </div>
             <div class="flex flex-col" v-if="showAdminOptions(member)">
-              <div class="divider my-0 mx-2" />
+              <div v-if="!member.isBlockedBy" class="divider my-0 mx-2" />
               <AButton
                 v-if="!member.isChannelAdmin && currentChat?.owner?.id === meStore.data?.id"
                 class="btn-sm btn-ghost join-item justify-start"

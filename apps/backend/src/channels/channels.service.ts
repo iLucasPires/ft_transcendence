@@ -61,7 +61,9 @@ export class ChannelsService {
             'username', m.username,
             'avatarUrl', m.avatarUrl,
             'isFriendsWith', f.friend_1_id IS NOT NULL,
-            'isChannelAdmin', EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = cm.channel_id AND admin_id = m.id)
+            'isChannelAdmin', EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = cm.channel_id AND admin_id = m.id),
+            'isBlocked', m.id = block.blocked_id,
+            'isBlockedBy', m.id = block.blocker_id
           )
         ) AS channel_members`,
       ])
@@ -75,14 +77,10 @@ export class ChannelsService {
          (f.friend_1_id = m.id AND f.friend_2_id = :id)`,
         { id: loggedInUserId },
       )
-      .where(
-        `NOT EXISTS (
-          SELECT 1 FROM blocked_users bu
-          WHERE
-            (bu.blocked_id = m.id AND bu.blocker_id = :id)
-              OR
-            (bu.blocker_id = m.id AND bu.blocked_id = :id)
-        )`,
+      .leftJoin(
+        "blocked_users",
+        "block",
+        `(block.blocked_id = cm.member_id AND block.blocker_id = :id) OR (block.blocker_id = cm.member_id AND block.blocked_id = :id)`,
         { id: loggedInUserId },
       )
       .groupBy("cm.channel_id");
@@ -96,7 +94,22 @@ export class ChannelsService {
       )
       .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, user.id), "cm", "cm.channel_id = channel.id")
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)")
-      .andWhere("channel.type = 'group' OR ARRAY_LENGTH(channel_members, 1) > 1")
+      .andWhere(
+        `channel.type = 'group' OR channel.id NOT IN (
+          SELECT
+            cm.channel_id
+          FROM
+            channel_members cm
+            INNER JOIN blocked_users block ON (
+              block.blocked_id = cm.member_id
+              AND block.blocker_id = :loggedInUserId
+              OR block.blocker_id = cm.member_id
+              AND block.blocked_id = :loggedInUserId
+            )
+          WHERE
+            cm.member_id != :loggedInUserId
+        )`,
+      )
       .setParameter("loggedInUserId", user.id)
       .getRawMany<FindUserChannelsQueryResult>();
 
