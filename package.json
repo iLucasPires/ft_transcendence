@@ -15,6 +15,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "preview": "turbo run build && turbo run preview",
     "start": "node apps/backend/dist/main",
     "deploy": "npm run build && npm run start"
   },

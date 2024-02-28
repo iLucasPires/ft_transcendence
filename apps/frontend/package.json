@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
+    "build": "vite build",
+    "preview": "vite preview --port 5173"
   },
   "dependencies": {
     "@types/p5": "^1.7.3",
