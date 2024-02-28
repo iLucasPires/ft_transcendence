@@ -43,6 +43,7 @@ export class ChatGateway implements OnGatewayConnection {
       client.disconnect(true);
       return;
     }
+    client.join(request.user.id);
   }
 
   @SubscribeMessage("fetchChannels")
@@ -259,9 +260,8 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     await this.channelsService.leaveGroupChannel(channel, user);
-    const socketId = this.connectionStatusService.getSocketId(user.id);
-    if (socketId) {
-      this.server.to(socketId).emit("kickedFromChannel", channel.id);
+    if (this.connectionStatusService.isConnected(user.id)) {
+      this.server.to(user.id).emit("kickedFromChannel", channel.id);
     }
     return "ok";
   }

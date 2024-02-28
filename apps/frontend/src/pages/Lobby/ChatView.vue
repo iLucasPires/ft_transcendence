@@ -9,6 +9,13 @@ onMounted(() => {
   chatSocket.on("newMessage", (message: iMessage) => {
     chatStore.currentChatId === message.channelId && chatStore.addMessage(message);
   });
+  chatSocket.on("kickedFromChannel", (channelId: string) => {
+    const appStore = useAppStore();
+    const channel = chatStore.chats.find((c) => c.id === channelId);
+
+    appStore.changeMessageLog(`You have been kicked from the channel ${channel?.name}`);
+    chatSocket.emit("fetchChannels");
+  });
   chatSocket.emit("fetchChannels");
   chatStore.setCurrentChat(chatStore.currentChat);
 });

@@ -331,6 +331,7 @@ export class ChannelsService {
     }
     if (channel.owner.id === user.id) {
       channel.owner = channel.members.find((member) => member.id !== channel.owner.id);
+      this.addChannelAdmin(channel.id, channel.owner.id);
     }
     const isChannelAdmin = await this.channelsRepository.manager
       .createQueryBuilder()
@@ -339,11 +340,7 @@ export class ChannelsService {
       .where("ca.channel_id = :channelId AND ca.admin_id = :userId", { channelId: channel.id, userId: user.id })
       .getExists();
     if (isChannelAdmin) {
-      await this.channelsRepository
-        .createQueryBuilder()
-        .relation(ChannelEntity, "admins")
-        .of(channel.id)
-        .remove(user.id);
+      this.removeChannelAdmin(channel.id, user.id);
     }
     await this.channelsRepository.save(channel);
   }
