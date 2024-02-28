@@ -105,6 +105,16 @@ const handleKickUser = (username: string) => {
     chatStore.setCurrentChat(chatStore.currentChat);
   });
 };
+
+const handleBanUser = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("banChannelMember", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
 </script>
 
 <template>
@@ -204,8 +214,14 @@ const handleKickUser = (username: string) => {
               <AButton
                 class="btn-sm btn-ghost join-item justify-start"
                 text="Kick"
-                icon="md-block"
+                icon="bi-wind"
                 @click="handleKickUser(member.username)"
+              />
+              <AButton
+                class="btn-sm btn-ghost join-item justify-start"
+                text="Ban"
+                icon="md-block"
+                @click="handleBanUser(member.username)"
               />
             </div>
           </details>

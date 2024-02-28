@@ -51,6 +51,20 @@ export class ChannelEntity {
   @OneToMany(() => MessageEntity, (message) => message.channel)
   messages?: Array<MessageEntity>;
 
+  @ManyToMany(() => UserEntity)
+  @JoinTable({
+    name: "channel_bans",
+    joinColumn: {
+      name: "channel_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "banned_id",
+      referencedColumnName: "id",
+    },
+  })
+  bans?: Array<Partial<UserEntity>>;
+
   @Column({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
 

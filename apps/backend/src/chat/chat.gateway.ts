@@ -100,6 +100,11 @@ export class ChatGateway implements OnGatewayConnection {
   async handleJoinGroupChat(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
     const loggedInUser = client.request.user;
     const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+    const isBanned = await this.channelsService.memberIsBanned(channelId, loggedInUser.id);
+
+    if (isBanned) {
+      throw new WsException("You are banned from this channel D:");
+    }
 
     await this.channelsService.joinGroupChannel(channelId, loggedInUser.id);
     client.join(channel.id);
@@ -355,6 +360,74 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     this.channelsService.unmuteChannelMember(channelId, user.id);
+    return "ok";
+  }
+
+  @SubscribeMessage("banChannelMember")
+  async handleBanChannelMember(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, username }: AdminActionDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
+      throw new WsException(`User is not a member of this channel: ${username}`);
+    }
+
+    if (channel.owner.id === user.id) {
+      throw new WsException("Cannot ban the owner of the channel");
+    }
+    const isChannelOwner = channel.owner.id === loggedInUser.id;
+    const userIsChannelAdmin = channel.members.some((m) => m.id === loggedInUser.id && m.isChannelAdmin);
+    if (!isChannelOwner && userIsChannelAdmin) {
+      throw new WsException("You cannot ban a channel admin!");
+    }
+
+    await this.channelsService.leaveGroupChannel(channel, user);
+    await this.channelsService.banChannelMember(channelId, user.id);
+    if (this.connectionStatusService.isConnected(user.id)) {
+      this.server.to(user.id).emit("bannedFromChannel", channel.id);
+    }
+    return "ok";
+  }
+
+  @SubscribeMessage("unbanChannelMember")
+  async handleUnbanChannelMember(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, username }: AdminActionDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const isBanned = await this.channelsService.memberIsBanned(channelId, user.id);
+    if (!isBanned) {
+      throw new WsException("User is not banned from channel");
+    }
+    await this.channelsService.unbanChannelMember(channelId, user.id);
     return "ok";
   }
 }

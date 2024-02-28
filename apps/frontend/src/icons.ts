@@ -1,6 +1,7 @@
 import { addIcons } from "oh-vue-icons";
 
 import {
+  BiWind,
   GiPingPongBat,
   MdAdminpanelsettings,
   MdBlock,
@@ -28,6 +29,7 @@ import {
 } from "oh-vue-icons/icons";
 
 addIcons(
+  BiWind,
   GiPingPongBat,
   MdAdminpanelsettings,
   MdBlock,

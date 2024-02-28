@@ -419,4 +419,19 @@ export class ChannelsService {
       delete this.mutedChannelMembers[channelId][userId];
     }
   }
+
+  async memberIsBanned(channelId: string, userId: string) {
+    return await this.channelsRepository.exists({
+      where: { id: channelId, bans: { id: userId } },
+      relations: ["bans"],
+    });
+  }
+
+  async banChannelMember(channelId: string, userId: string) {
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "bans").of(channelId).add(userId);
+  }
+
+  async unbanChannelMember(channelId: string, userId: string) {
+    await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "bans").of(channelId).remove(userId);
+  }
 }
