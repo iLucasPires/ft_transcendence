@@ -4,6 +4,7 @@ export const useAppStore = defineStore("appStore", {
   state: function () {
     return {
       log: [] as string[],
+      logTimeout: null as NodeJS.Timeout | null,
       tab: "all",
       theme: "dark",
       gameP5Instance: null as any,
@@ -40,7 +41,10 @@ export const useAppStore = defineStore("appStore", {
     changeMessageLog(messagesLog: string | string[]) {
       const messagesLogIsArray = Array.isArray(messagesLog);
       messagesLogIsArray ? this.log.push(...messagesLog) : this.log.push(messagesLog);
-      setTimeout(() => (messagesLogIsArray ? this.log.splice(0, messagesLog.length) : this.log.shift()), 3000);
+      if (this.logTimeout) {
+        clearInterval(this.logTimeout);
+      }
+      this.logTimeout = setTimeout(() => (this.log = []), 3000);
     },
 
     changeTab(tab: string) {
