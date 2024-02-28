@@ -1,19 +1,13 @@
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
-import { FindUserDto } from "@/users/dto";
 import { UserEntity } from "@/users/user.entity";
 import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, SelectQueryBuilder } from "typeorm";
 import { ChannelEntity, ChannelType } from "./channel.entity";
-import { FindChannelDto, MessageDto } from "./dto";
+import { ChannelMemberDto, FindChannelWithMembersDto, MessageDto } from "./dto";
 import { SearchResultDto } from "./dto/SearchResult.dto";
-import { FindChannelWithMembersDto } from "./dto/find-channel.dto";
 import { MessageEntity } from "./messages.entity";
-
-interface ChannelMember extends FindUserDto {
-  isChannelAdmin: boolean;
-}
 
 interface FindUserChannelsQueryResult {
   channel_id: string;
@@ -24,7 +18,7 @@ interface FindUserChannelsQueryResult {
   is_channel_admin: boolean;
   channel_created_at: Date;
   channel_updated_at: Date;
-  channel_members: Array<ChannelMember>;
+  channel_members: Array<ChannelMemberDto>;
 }
 
 interface FindMessageQueryResult {
@@ -47,6 +41,8 @@ export class ChannelsService {
     private connectionStatusService: ConnectionStatusService,
     private usersService: UsersService,
   ) {}
+
+  private mutedChannelMembers: Record<string, Record<string, Date>> = {};
 
   private selectChannels(): SelectQueryBuilder<ChannelEntity> {
     return this.channelsRepository
@@ -92,7 +88,7 @@ export class ChannelsService {
       .groupBy("cm.channel_id");
   }
 
-  async findUserChannels(user: UserEntity): Promise<FindChannelDto[]> {
+  async findUserChannels(user: UserEntity): Promise<FindChannelWithMembersDto[]> {
     const result = await this.selectChannels()
       .addSelect(
         `EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = channel.id AND admin_id = :loggedInUserId)`,
@@ -116,13 +112,14 @@ export class ChannelsService {
       members: channel.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),
+        isMuted: this.memberIsMuted(channel.channel_id, member.id),
       })),
       createdAt: channel.channel_created_at,
       updatedAt: channel.channel_updated_at,
     }));
   }
 
-  async findChannelById(loggedInUser: UserEntity, channelId: string) {
+  async findChannelById(loggedInUser: UserEntity, channelId: string): Promise<FindChannelWithMembersDto | null> {
     const result = await this.selectChannels()
       .addSelect(
         `EXISTS (SELECT 1 FROM channel_admins WHERE channel_id = channel.id AND admin_id = :loggedInUserId)`,
@@ -145,6 +142,7 @@ export class ChannelsService {
       members: result.channel_members.map((member) => ({
         ...member,
         isConnected: this.connectionStatusService.isConnected(member.id),
+        isMuted: this.memberIsMuted(result.channel_id, member.id),
       })),
       createdAt: result.channel_created_at,
       updatedAt: result.channel_updated_at,
@@ -203,7 +201,7 @@ export class ChannelsService {
     return this.findDmChannel(loggedInUser, dmUser);
   }
 
-  async createGroupChannel(name: string, owner: UserEntity): Promise<FindChannelDto> {
+  async createGroupChannel(name: string, owner: UserEntity): Promise<FindChannelWithMembersDto> {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .insert()
@@ -351,5 +349,29 @@ export class ChannelsService {
 
   async removeChannelAdmin(channelId: string, userId: string) {
     await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "admins").of(channelId).remove(userId);
+  }
+
+  memberIsMuted(channelId: string, userId: string) {
+    if (!this.mutedChannelMembers[channelId]) {
+      return false;
+    }
+    const isMuted = this.mutedChannelMembers[channelId][userId] > new Date();
+    if (!isMuted) {
+      this.unmuteChannelMember(channelId, userId);
+    }
+    return isMuted;
+  }
+
+  muteChannelMember(channelId: string, userId: string) {
+    if (!this.mutedChannelMembers[channelId]) {
+      this.mutedChannelMembers[channelId] = {};
+    }
+    this.mutedChannelMembers[channelId][userId] = new Date(Date.now() + 15 * 60 * 1000);
+  }
+
+  unmuteChannelMember(channelId: string, userId: string) {
+    if (this.mutedChannelMembers[channelId]) {
+      delete this.mutedChannelMembers[channelId][userId];
+    }
   }
 }

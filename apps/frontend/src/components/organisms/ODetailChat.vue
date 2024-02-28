@@ -69,6 +69,26 @@ const handleUnsetAdmin = (username: string) => {
   });
 };
 
+const handleMuteChannelMember = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("muteChannelMember", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
+const handleUnmuteChannelMember = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("unmuteChannelMember", data, () => {
+    chatStore.setCurrentChat(chatStore.currentChat);
+  });
+};
+
 const handleKickUser = (username: string) => {
   const data = {
     channelId: chatStore.currentChatId,
@@ -96,7 +116,9 @@ const handleKickUser = (username: string) => {
                 :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
               />
               <span class="font-bold">{{ member.username }}</span>
-              <span v-if="currentChat.owner?.id === member.id" class="badge badge-sm font-bold badge-primary">Owner</span>
+              <span v-if="currentChat.owner?.id === member.id" class="badge badge-sm font-bold badge-primary"
+                >Owner</span
+              >
               <span v-else-if="member?.isChannelAdmin" class="badge badge-sm font-bold badge-primary">Admin</span>
             </summary>
             <div class="w-full">
@@ -143,6 +165,20 @@ const handleKickUser = (username: string) => {
                 text="Unset as Admin"
                 icon="md-adminpanelsettings"
                 @click="handleUnsetAdmin(member.username)"
+              />
+              <AButton
+                v-if="!member.isMuted"
+                class="btn-sm btn-ghost join-item justify-start w-full"
+                text="Mute"
+                icon="md-volumeoff-round"
+                @click.prevent="handleMuteChannelMember(member.username)"
+              />
+              <AButton
+                v-else
+                class="btn-sm btn-ghost join-item justify-start w-full"
+                text="Unmute"
+                icon="md-volumeup-round"
+                @click.prevent="handleUnmuteChannelMember(member.username)"
               />
               <AButton
                 class="btn-sm btn-ghost join-item justify-start"

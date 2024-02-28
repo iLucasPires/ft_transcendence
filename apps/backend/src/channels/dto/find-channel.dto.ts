@@ -2,6 +2,11 @@ import { FindUserDto } from "@/users/dto";
 import { ApiResponseProperty } from "@nestjs/swagger";
 import { ChannelType, channelTypes } from "../channel.entity";
 
+export class ChannelMemberDto extends FindUserDto {
+  isChannelAdmin?: boolean;
+  isMuted?: boolean;
+}
+
 export class FindChannelDto {
   @ApiResponseProperty({ type: String, format: "uuid" })
   id: string;
@@ -26,5 +31,5 @@ export class FindChannelDto {
 
 export class FindChannelWithMembersDto extends FindChannelDto {
   @ApiResponseProperty({ type: [FindUserDto] })
-  members: Array<FindUserDto>;
+  members: Array<ChannelMemberDto>;
 }

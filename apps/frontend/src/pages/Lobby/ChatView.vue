@@ -9,6 +9,12 @@ onMounted(() => {
   chatSocket.on("newMessage", (message: iMessage) => {
     chatStore.currentChatId === message.channelId && chatStore.addMessage(message);
   });
+  chatSocket.on("mutedFromChannel", (channelId: string) => {
+    const appStore = useAppStore();
+    const channel = chatStore.chats.find((c) => c.id === channelId);
+
+    appStore.changeMessageLog(`You have been muted on channel ${channel?.name} for 15 minutes`);
+  });
   chatSocket.on("kickedFromChannel", (channelId: string) => {
     const appStore = useAppStore();
     const channel = chatStore.chats.find((c) => c.id === channelId);

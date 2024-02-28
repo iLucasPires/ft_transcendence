@@ -149,6 +149,9 @@ export class ChatGateway implements OnGatewayConnection {
     const author = client.request.user;
     const { channelId, content } = data;
 
+    if (this.channelsService.memberIsMuted(channelId, author.id)) {
+      throw new WsException("You are muted in this channel");
+    }
     const message = await this.channelsService.sendMessage(channelId, author.id, content);
     client.to(channelId).emit("newMessage", message);
     return message;
@@ -263,6 +266,83 @@ export class ChatGateway implements OnGatewayConnection {
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("kickedFromChannel", channel.id);
     }
+    return "ok";
+  }
+
+  @SubscribeMessage("muteChannelMember")
+  async handleMuteChannelMember(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, username }: AdminActionDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
+      throw new WsException(`User is not a member of this channel: ${username}`);
+    }
+
+    if (channel.owner.id === user.id) {
+      throw new WsException("Cannot mute the owner of the channel");
+    }
+    const isChannelOwner = channel.owner.id === loggedInUser.id;
+    const userIsChannelAdmin = channel.members.some((m) => m.id === loggedInUser.id && m.isChannelAdmin);
+    if (!isChannelOwner && userIsChannelAdmin) {
+      throw new WsException("You cannot mute a channel admin!");
+    }
+
+    this.channelsService.muteChannelMember(channelId, user.id);
+    if (this.connectionStatusService.isConnected(user.id)) {
+      this.server.to(user.id).emit("mutedInChannel", channel.id);
+    }
+    return "ok";
+  }
+
+  @SubscribeMessage("unmuteChannelMember")
+  async handleUnmuteChannelMember(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, username }: AdminActionDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel");
+    }
+
+    const user = await this.usersService.findOneByUsernameForUser(loggedInUser, username);
+    if (!user) {
+      throw new WsException(`User not found: ${username}`);
+    }
+    const userIsChannelMember = channel.members.some((m) => m.id === user.id);
+    if (!userIsChannelMember) {
+      throw new WsException(`User is not a member of this channel: ${username}`);
+    }
+
+    if (channel.owner.id === user.id) {
+      throw new WsException("Cannot unmute the owner of the channel");
+    }
+    const isChannelOwner = channel.owner.id === loggedInUser.id;
+    const userIsChannelAdmin = channel.members.some((m) => m.id === loggedInUser.id && m.isChannelAdmin);
+    if (!isChannelOwner && userIsChannelAdmin) {
+      throw new WsException("You cannot unmute a channel admin!");
+    }
+
+    this.channelsService.unmuteChannelMember(channelId, user.id);
     return "ok";
   }
 }
