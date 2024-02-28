@@ -143,6 +143,7 @@ const handleKickUser = (username: string) => {
                 class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Invite to Game"
                 icon="md-videogameasset"
+                :disabled="member.isBlocked"
                 @click.prevent=""
               />
               <AButton
