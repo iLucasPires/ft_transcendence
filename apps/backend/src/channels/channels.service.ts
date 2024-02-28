@@ -95,7 +95,7 @@ export class ChannelsService {
       .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, user.id), "cm", "cm.channel_id = channel.id")
       .where("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :loggedInUserId)")
       .andWhere(
-        `channel.type = 'group' OR channel.id NOT IN (
+        `(channel.type = 'group' OR channel.id NOT IN (
           SELECT
             cm.channel_id
           FROM
@@ -108,7 +108,7 @@ export class ChannelsService {
             )
           WHERE
             cm.member_id != :loggedInUserId
-        )`,
+        ))`,
       )
       .setParameter("loggedInUserId", user.id)
       .getRawMany<FindUserChannelsQueryResult>();
