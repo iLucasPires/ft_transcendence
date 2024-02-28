@@ -13,7 +13,7 @@ onMounted(() => {
     const appStore = useAppStore();
     const channel = chatStore.chats.find((c) => c.id === channelId);
 
-    appStore.changeMessageLog(`You have been muted on channel ${channel?.name} for 15 minutes`);
+    appStore.changeMessageLog(`Warning: you have been muted on channel ${channel?.name} for 15 minutes`);
   });
   chatSocket.on("kickedFromChannel", (channelId: string) => {
     const appStore = useAppStore();
