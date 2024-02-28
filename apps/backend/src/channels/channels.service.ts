@@ -140,6 +140,22 @@ export class ChannelsService {
       )
       .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, loggedInUser.id), "cm", "cm.channel_id = channel.id")
       .where("channel.id = :channelId", { channelId })
+      .andWhere(
+        `(channel.type = 'group' OR channel.id NOT IN (
+          SELECT
+            cm.channel_id
+          FROM
+            channel_members cm
+            INNER JOIN blocked_users block ON (
+              block.blocked_id = cm.member_id
+              AND block.blocker_id = :loggedInUserId
+              OR block.blocker_id = cm.member_id
+              AND block.blocked_id = :loggedInUserId
+            )
+          WHERE
+            cm.member_id != :loggedInUserId
+        ))`,
+      )
       .setParameter("loggedInUserId", loggedInUser.id)
       .getRawOne<FindUserChannelsQueryResult>();
 
@@ -172,6 +188,22 @@ export class ChannelsService {
       .andWhere("channel.id IN (SELECT channel_id FROM channel_members WHERE member_id = :dmUserId)", {
         dmUserId: dmUser.id,
       })
+      .andWhere(
+        `channel.id NOT IN (
+          SELECT
+            cm.channel_id
+          FROM
+            channel_members cm
+            INNER JOIN blocked_users block ON (
+              block.blocked_id = cm.member_id
+              AND block.blocker_id = :loggedInUserId
+              OR block.blocker_id = cm.member_id
+              AND block.blocked_id = :loggedInUserId
+            )
+          WHERE
+            cm.member_id != :loggedInUserId
+        )`,
+      )
       .getRawOne<FindUserChannelsQueryResult>();
 
     if (!result) {
