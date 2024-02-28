@@ -316,7 +316,7 @@ export class ChatGateway implements OnGatewayConnection {
 
     this.channelsService.muteChannelMember(channelId, user.id);
     if (this.connectionStatusService.isConnected(user.id)) {
-      this.server.to(user.id).emit("mutedInChannel", channel.id);
+      this.server.to(user.id).emit("mutedFromChannel", channel.id);
     }
     return "ok";
   }
