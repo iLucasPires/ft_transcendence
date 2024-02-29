@@ -47,12 +47,19 @@ export const useChatStore = defineStore("chatStore", {
         event,
         event === events.dm ? this.getChatName(channel) : channel.id,
         (channel: iCurrentChannel) => {
-          if (this.currentChatId) {
+          if (this.currentChatId && this.currentChatId !== channel.id) {
             chatSocket.emit("unfocusChannel", this.currentChatId);
           }
           this.currentChat = channel;
         },
       );
+    },
+
+    updateCurrentChat() {
+      if (!this.currentChatId) {
+        return;
+      }
+      this.setCurrentChat(this.currentChat);
     },
 
     getChatName(channel: iChannel): string | undefined {

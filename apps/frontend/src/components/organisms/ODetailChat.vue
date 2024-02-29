@@ -11,14 +11,16 @@ const userProfile = ref<iUser | null>(null);
 const handleClickBlock = (username: string) => {
   chatSocket.emit("blockUser", username, () => {
     chatSocket.emit("fetchChannels");
-    chatStore.setCurrentChat(chatStore.currentChat);
+    if (chatStore.currentChat?.type === "group") {
+      chatStore.updateCurrentChat();
+    }
   });
 };
 
 const handleClickUnblock = (username: string) => {
   chatSocket.emit("unblockUser", username, () => {
     chatSocket.emit("fetchChannels");
-    chatStore.setCurrentChat(chatStore.currentChat);
+    chatStore.updateCurrentChat();
   });
 };
 
@@ -61,9 +63,7 @@ const handleSetAdmin = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("addChannelAdmin", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("addChannelAdmin", data, () => chatStore.updateCurrentChat());
 };
 
 const handleUnsetAdmin = (username: string) => {
@@ -71,9 +71,7 @@ const handleUnsetAdmin = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("removeChannelAdmin", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("removeChannelAdmin", data, () => chatStore.updateCurrentChat());
 };
 
 const handleMuteChannelMember = (username: string) => {
@@ -81,9 +79,7 @@ const handleMuteChannelMember = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("muteChannelMember", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("muteChannelMember", data, () => chatStore.updateCurrentChat());
 };
 
 const handleUnmuteChannelMember = (username: string) => {
@@ -91,9 +87,7 @@ const handleUnmuteChannelMember = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("unmuteChannelMember", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("unmuteChannelMember", data, () => chatStore.updateCurrentChat());
 };
 
 const handleKickUser = (username: string) => {
@@ -101,9 +95,7 @@ const handleKickUser = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("kickUser", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("kickUser", data, () => chatStore.updateCurrentChat());
 };
 
 const handleBanUser = (username: string) => {
@@ -111,9 +103,7 @@ const handleBanUser = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("banChannelMember", data, () => {
-    chatStore.setCurrentChat(chatStore.currentChat);
-  });
+  chatSocket.emit("banChannelMember", data, () => chatStore.updateCurrentChat());
 };
 </script>
 

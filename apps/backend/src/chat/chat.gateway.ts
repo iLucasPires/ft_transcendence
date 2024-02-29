@@ -72,6 +72,9 @@ export class ChatGateway implements OnGatewayConnection {
     let channel = await this.channelsService.findDmChannel(loggedInUser, dmUser);
     if (!channel) {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
+      if (this.connectionStatusService.isConnected(dmUser.id)) {
+        this.server.to(dmUser.id).emit("hasUpdates");
+      }
     }
     client.join(channel.id);
     return {
@@ -108,8 +111,9 @@ export class ChatGateway implements OnGatewayConnection {
 
     await this.channelsService.joinGroupChannel(channelId, loggedInUser.id);
     client.join(channel.id);
-    const updatedChannel = await this.channelsService.findChannelById(loggedInUser, channelId);
+    this.server.to(channelId).emit("hasUpdates");
 
+    const updatedChannel = await this.channelsService.findChannelById(loggedInUser, channelId);
     return {
       ...updatedChannel,
       messages: await this.channelsService.findChannelMessages(channel.id),
@@ -143,6 +147,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
     client.leave(channelId);
     await this.channelsService.leaveGroupChannel(channel, loggedInUser);
+    this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
 
@@ -182,6 +187,9 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User not found: ${username}`);
     }
     await this.usersService.block(loggedInUser, user);
+    if (this.connectionStatusService.isConnected(user.id)) {
+      this.server.to(user.id).emit("hasUpdates");
+    }
     return "ok";
   }
 
@@ -194,6 +202,9 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User not found: ${username}`);
     }
     await this.usersService.unblock(loggedInUser, user);
+    if (this.connectionStatusService.isConnected(user.id)) {
+      this.server.to(user.id).emit("hasUpdates");
+    }
     return "ok";
   }
 
@@ -220,6 +231,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User is not a member of this channel: ${username}`);
     }
     await this.channelsService.addChannelAdmin(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
 
@@ -246,6 +258,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User is not a member of this channel: ${username}`);
     }
     await this.channelsService.removeChannelAdmin(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
 
@@ -280,6 +293,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     await this.channelsService.leaveGroupChannel(channel, user);
+    this.server.to(channelId).emit("hasUpdates");
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("kickedFromChannel", channel.id);
     }
@@ -398,6 +412,7 @@ export class ChatGateway implements OnGatewayConnection {
 
     await this.channelsService.leaveGroupChannel(channel, user);
     await this.channelsService.banChannelMember(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("bannedFromChannel", channel.id);
     }

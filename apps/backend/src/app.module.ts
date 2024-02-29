@@ -7,13 +7,13 @@ import { TwoFactorAuthModule } from "./2fa/2fa.module";
 import { AppController } from "./app.controller";
 import { AppGateway } from "./app.gateway";
 import { AuthModule } from "./auth/auth.module";
+import { ChannelsModule } from "./channels/channels.module";
+import { ChatModule } from "./chat/chat.module";
 import { ConnectionStatusModule } from "./connection-status/connection-status.module";
 import { FilesModule } from "./files/files.module";
 import { MeController } from "./me/me.controller";
 import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
-import { ChatModule } from "./chat/chat.module";
-import { ChannelsModule } from "./channels/channels.module";
 
 const OrmModule = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
