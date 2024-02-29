@@ -10,7 +10,7 @@ const selectedOption = ref<iChannelSearchResult | null>(null);
 const { modalSearch } = storeToRefs(appStore);
 
 const useDebounce = () => {
-  let timeout: number | null = null;
+  let timeout: NodeJS.Timeout | null = null;
   return function (fnc: Function, delayMs: number = 500) {
     if (timeout !== null) {
       clearTimeout(timeout);
