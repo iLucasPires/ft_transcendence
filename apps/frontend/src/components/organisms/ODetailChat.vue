@@ -4,9 +4,10 @@ import type { iMember, iUser } from "@/types/props";
 
 const meStore = useMeStore();
 const chatStore = useChatStore();
-const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = storeToRefs(chatStore);
+const { currentChat, currentChatId, currentChatPhoto, currentChatName, currentChatMembers } = storeToRefs(chatStore);
 
 const userProfile = ref<iUser | null>(null);
+const bannedUsers = ref<iUser[] | null>(null);
 
 const handleClickBlock = (username: string) => {
   chatSocket.emit("blockUser", username);
@@ -94,11 +95,33 @@ const handleBanUser = (username: string) => {
   };
   chatSocket.emit("banChannelMember", data);
 };
+
+const handleUnbanUser = (username: string) => {
+  const data = {
+    channelId: chatStore.currentChatId,
+    username,
+  };
+  chatSocket.emit("unbanChannelMember", data, () => {
+    bannedUsers.value = bannedUsers.value?.filter((user) => user.username !== username) ?? null;
+  });
+};
+
+const handleGetChannelBans = () => {
+  chatSocket.emit("fetchChannelBans", currentChatId.value, (users: iUser[]) => {
+    bannedUsers.value = users;
+  });
+};
+
+const handleCloseBansModal = () => {
+  bannedUsers.value = null;
+};
 </script>
 
 <template>
   <div v-if="currentChat" class="flex overflow-hidden flex-col items-center border-card full p-4 space-y-2">
     <MModalProfile v-if="!!userProfile" :user="userProfile" @clickClose="userProfile = null" />
+    <MModalBans v-model="bannedUsers" @handleUnban="handleUnbanUser" @handleCloseModal="handleCloseBansModal" />
+
     <AChatImage class="h-16 w-16" :image-url="currentChatPhoto" />
     <h1 class="text-2xl font-bold">{{ currentChatName }}</h1>
     <div class="w-full flex flex-col overflow-hidden border-card p-4 rounded flex-1">
@@ -213,10 +236,17 @@ const handleBanUser = (username: string) => {
       <span class="block text-lg font-bold mb-2">Channel Settings</span>
       <div class="join join-vertical w-full">
         <AButton
-          icon="md-exit"
+          v-if="currentChat?.isChannelAdmin"
+          icon="md-shield-twotone"
+          class="join-item btn-sm justify-start"
+          text="Channel Bans"
+          @click.prevent="handleGetChannelBans()"
+        />
+        <AButton
+          icon="md-exittoapp-round"
           class="join-item btn-sm justify-start"
           text="Leave Channel"
-          @click="() => handleLeaveChat()"
+          @click.prevent="handleLeaveChat()"
         />
       </div>
     </div>

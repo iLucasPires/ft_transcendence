@@ -442,4 +442,19 @@ export class ChatGateway implements OnGatewayConnection {
     this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
+
+  @SubscribeMessage("fetchChannelBans")
+  async handleFetchChannelBans(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("User not is ADM");
+    }
+
+    return await this.channelsService.fetchChannelBans(channelId);
+  }
 }

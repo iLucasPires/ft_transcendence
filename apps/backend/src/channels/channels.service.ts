@@ -31,6 +31,12 @@ interface FindMessageQueryResult {
   author_avatar_url: string;
 }
 
+interface FindChannelBansResult {
+  u_id: string;
+  u_username: string;
+  u_avatar_url: string;
+}
+
 @Injectable()
 export class ChannelsService {
   constructor(
@@ -433,5 +439,21 @@ export class ChannelsService {
 
   async unbanChannelMember(channelId: string, userId: string) {
     await this.channelsRepository.createQueryBuilder().relation(ChannelEntity, "bans").of(channelId).remove(userId);
+  }
+
+  async fetchChannelBans(channelId: string) {
+    const result = await this.channelsRepository.manager
+      .createQueryBuilder()
+      .select(["u.id", "u.username", "u.avatarUrl"])
+      .from("channel_bans", "cb")
+      .leftJoin("users", "u", "u.id = cb.banned_id")
+      .where("cb.channel_id = :channelId", { channelId })
+      .getRawMany<FindChannelBansResult>();
+
+    return result.map((user) => ({
+      id: user.u_id,
+      username: user.u_username,
+      avatarUrl: user.u_avatar_url,
+    }));
   }
 }
