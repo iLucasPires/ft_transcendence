@@ -59,6 +59,10 @@ export const useChatStore = defineStore("chatStore", {
       if (!this.currentChatId) {
         return;
       }
+      if (!this.chats.find(({ id }) => id === this.currentChatId)) {
+        this.setCurrentChat(null);
+        return;
+      }
       this.setCurrentChat(this.currentChat);
     },
 

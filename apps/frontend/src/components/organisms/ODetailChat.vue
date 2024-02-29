@@ -9,24 +9,15 @@ const { currentChat, currentChatPhoto, currentChatName, currentChatMembers } = s
 const userProfile = ref<iUser | null>(null);
 
 const handleClickBlock = (username: string) => {
-  chatSocket.emit("blockUser", username, () => {
-    chatSocket.emit("fetchChannels");
-    if (chatStore.currentChat?.type === "group") {
-      chatStore.updateCurrentChat();
-    }
-  });
+  chatSocket.emit("blockUser", username);
 };
 
 const handleClickUnblock = (username: string) => {
-  chatSocket.emit("unblockUser", username, () => {
-    chatSocket.emit("fetchChannels");
-    chatStore.updateCurrentChat();
-  });
+  chatSocket.emit("unblockUser", username);
 };
 
 const handlePrivateMessage = (username: string) => {
   chatStore.openDmChat(username);
-  chatSocket.emit("fetchChannels");
 };
 
 const handleOpenProfile = (username: string) => {
@@ -36,9 +27,7 @@ const handleOpenProfile = (username: string) => {
 };
 
 const handleLeaveChat = () => {
-  chatSocket.emit("leaveChannel", chatStore.currentChatId, () => {
-    chatSocket.emit("fetchChannels");
-  });
+  chatSocket.emit("leaveChannel", chatStore.currentChatId);
 };
 
 const showAdminOptions = (member: iMember) => {
@@ -63,7 +52,7 @@ const handleSetAdmin = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("addChannelAdmin", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("addChannelAdmin", data);
 };
 
 const handleUnsetAdmin = (username: string) => {
@@ -71,7 +60,7 @@ const handleUnsetAdmin = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("removeChannelAdmin", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("removeChannelAdmin", data);
 };
 
 const handleMuteChannelMember = (username: string) => {
@@ -79,7 +68,7 @@ const handleMuteChannelMember = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("muteChannelMember", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("muteChannelMember", data);
 };
 
 const handleUnmuteChannelMember = (username: string) => {
@@ -87,7 +76,7 @@ const handleUnmuteChannelMember = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("unmuteChannelMember", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("unmuteChannelMember", data);
 };
 
 const handleKickUser = (username: string) => {
@@ -95,7 +84,7 @@ const handleKickUser = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("kickUser", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("kickUser", data);
 };
 
 const handleBanUser = (username: string) => {
@@ -103,7 +92,7 @@ const handleBanUser = (username: string) => {
     channelId: chatStore.currentChatId,
     username,
   };
-  chatSocket.emit("banChannelMember", data, () => chatStore.updateCurrentChat());
+  chatSocket.emit("banChannelMember", data);
 };
 </script>
 
@@ -126,6 +115,7 @@ const handleBanUser = (username: string) => {
                 :image-url="member.avatarUrl || `https://robohash.org/${member.username}.png`"
               />
               <span class="font-bold">{{ member.username }}</span>
+              <Icon v-if="member?.isMuted" name="md-volumeoff-round" />
               <span v-if="currentChat.owner?.id === member.id" class="badge badge-sm font-bold badge-primary"
                 >Owner</span
               >

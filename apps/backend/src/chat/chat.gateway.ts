@@ -73,7 +73,7 @@ export class ChatGateway implements OnGatewayConnection {
     if (!channel) {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
       if (this.connectionStatusService.isConnected(dmUser.id)) {
-        this.server.to(dmUser.id).emit("hasUpdates");
+        this.server.to([loggedInUser.id, dmUser.id]).emit("hasUpdates");
       }
     }
     client.join(channel.id);
@@ -147,7 +147,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
     client.leave(channelId);
     await this.channelsService.leaveGroupChannel(channel, loggedInUser);
-    this.server.to(channelId).emit("hasUpdates");
+    this.server.to([loggedInUser.id, channelId]).emit("hasUpdates");
     return "ok";
   }
 
@@ -188,7 +188,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
     await this.usersService.block(loggedInUser, user);
     if (this.connectionStatusService.isConnected(user.id)) {
-      this.server.to(user.id).emit("hasUpdates");
+      this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
     }
     return "ok";
   }
@@ -203,7 +203,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
     await this.usersService.unblock(loggedInUser, user);
     if (this.connectionStatusService.isConnected(user.id)) {
-      this.server.to(user.id).emit("hasUpdates");
+      this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
     }
     return "ok";
   }
@@ -293,10 +293,10 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     await this.channelsService.leaveGroupChannel(channel, user);
-    this.server.to(channelId).emit("hasUpdates");
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("kickedFromChannel", channel.id);
     }
+    this.server.to([channelId, user.id]).emit("hasUpdates");
     return "ok";
   }
 
@@ -334,6 +334,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     this.channelsService.muteChannelMember(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("mutedFromChannel", channel.id);
     }
@@ -374,6 +375,7 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     this.channelsService.unmuteChannelMember(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
 
@@ -412,10 +414,10 @@ export class ChatGateway implements OnGatewayConnection {
 
     await this.channelsService.leaveGroupChannel(channel, user);
     await this.channelsService.banChannelMember(channelId, user.id);
-    this.server.to(channelId).emit("hasUpdates");
     if (this.connectionStatusService.isConnected(user.id)) {
       this.server.to(user.id).emit("bannedFromChannel", channel.id);
     }
+    this.server.to([channelId, user.id]).emit("hasUpdates");
     return "ok";
   }
 
@@ -443,6 +445,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException("User is not banned from channel");
     }
     await this.channelsService.unbanChannelMember(channelId, user.id);
+    this.server.to(channelId).emit("hasUpdates");
     return "ok";
   }
 }

@@ -5,14 +5,14 @@ import { chatSocket } from "@/socket";
 const chatStore = useChatStore();
 
 onMounted(() => {
-  chatSocket.on("channelsList", (channels: iChannel[]) => chatStore.setChannels(channels));
+  chatSocket.on("channelsList", (channels: iChannel[]) => {
+    chatStore.setChannels(channels);
+    chatStore.updateCurrentChat();
+  });
   chatSocket.on("newMessage", (message: iMessage) => {
     chatStore.currentChatId === message.channelId && chatStore.addMessage(message);
   });
-  chatSocket.on("hasUpdates", () => {
-    chatSocket.emit("fetchChannels");
-    chatStore.updateCurrentChat();
-  });
+  chatSocket.on("hasUpdates", () => chatSocket.emit("fetchChannels"));
   chatSocket.on("mutedFromChannel", (channelId: string) => {
     const appStore = useAppStore();
     const channel = chatStore.chats.find((c) => c.id === channelId);
@@ -24,14 +24,12 @@ onMounted(() => {
     const channel = chatStore.chats.find((c) => c.id === channelId);
 
     appStore.changeMessageLog(`You have been kicked from the channel ${channel?.name}`);
-    chatSocket.emit("fetchChannels");
   });
   chatSocket.on("bannedFromChannel", (channelId: string) => {
     const appStore = useAppStore();
     const channel = chatStore.chats.find((c) => c.id === channelId);
 
     appStore.changeMessageLog(`You have been banned from the channel ${channel?.name}`);
-    chatSocket.emit("fetchChannels");
   });
   chatSocket.emit("fetchChannels");
   chatStore.updateCurrentChat();
