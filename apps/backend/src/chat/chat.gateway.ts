@@ -72,9 +72,7 @@ export class ChatGateway implements OnGatewayConnection {
     let channel = await this.channelsService.findDmChannel(loggedInUser, dmUser);
     if (!channel) {
       channel = await this.channelsService.createDmChannel(loggedInUser, dmUser);
-      if (this.connectionStatusService.isConnected(dmUser.id)) {
-        this.server.to([loggedInUser.id, dmUser.id]).emit("hasUpdates");
-      }
+      this.server.to([loggedInUser.id, dmUser.id]).emit("hasUpdates");
     }
     client.join(channel.id);
     return {
@@ -187,9 +185,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User not found: ${username}`);
     }
     await this.usersService.block(loggedInUser, user);
-    if (this.connectionStatusService.isConnected(user.id)) {
-      this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
-    }
+    this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
     return "ok";
   }
 
@@ -202,9 +198,7 @@ export class ChatGateway implements OnGatewayConnection {
       throw new WsException(`User not found: ${username}`);
     }
     await this.usersService.unblock(loggedInUser, user);
-    if (this.connectionStatusService.isConnected(user.id)) {
-      this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
-    }
+    this.server.to([loggedInUser.id, user.id]).emit("hasUpdates");
     return "ok";
   }
 
