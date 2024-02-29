@@ -346,7 +346,7 @@ export class ChannelsService {
     const rawGroupChannels = await this.selectChannels()
       .leftJoinAndSelect((qb) => this.selectAllChannelsMembers(qb, loggedInUser.id), "cm", "cm.channel_id = channel.id")
       .where("channel.type = 'group'")
-      .andWhere("channel.type = 'group' OR ARRAY_LENGTH(channel_members, 1) > 1")
+      .andWhere("channel.type = 'group'")
       .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
       .getRawMany<FindUserChannelsQueryResult>();
     const groupResults = rawGroupChannels.map((channel) => {
