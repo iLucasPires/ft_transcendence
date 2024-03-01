@@ -19,6 +19,7 @@ declare module 'vue' {
     MCardUser: typeof import('./src/components/molecules/MCardUser.vue')['default']
     MDropDownChat: typeof import('./src/components/molecules/MDropDownChat.vue')['default']
     MModalBans: typeof import('./src/components/molecules/MModalBans.vue')['default']
+    MModalChannelPassword: typeof import('./src/components/molecules/MModalChannelPassword.vue')['default']
     MModalProfile: typeof import('./src/components/molecules/MModalProfile.vue')['default']
     MModalSearch: typeof import('./src/components/molecules/MModalSearch.vue')['default']
     ModalCreateGroupChannel: typeof import('./src/components/ModalCreateGroupChannel.vue')['default']

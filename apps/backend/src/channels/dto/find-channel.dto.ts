@@ -1,6 +1,6 @@
 import { FindUserDto } from "@/users/dto";
 import { ApiResponseProperty } from "@nestjs/swagger";
-import { ChannelType, channelTypes } from "../channel.entity";
+import { ChannelType, ChannelVisibility, channelTypes, channelVisibility } from "../channel.entity";
 
 export class ChannelMemberDto extends FindUserDto {
   isBlocked: boolean;
@@ -18,6 +18,9 @@ export class FindChannelDto {
 
   @ApiResponseProperty({ type: String, enum: channelTypes, example: "dm" })
   type: ChannelType;
+
+  @ApiResponseProperty({ type: String, enum: channelVisibility, example: "dm" })
+  visibility: ChannelVisibility;
 
   @ApiResponseProperty({ type: [FindUserDto] })
   owner: Pick<FindUserDto, "id" | "username">;

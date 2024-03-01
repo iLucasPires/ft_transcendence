@@ -4,7 +4,7 @@ import { UsersService } from "@/users/users.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, SelectQueryBuilder } from "typeorm";
-import { ChannelEntity, ChannelType } from "./channel.entity";
+import { ChannelEntity, ChannelType, ChannelVisibility } from "./channel.entity";
 import { ChannelMemberDto, FindChannelWithMembersDto, MessageDto } from "./dto";
 import { SearchResultDto } from "./dto/SearchResult.dto";
 import { MessageEntity } from "./messages.entity";
@@ -13,6 +13,7 @@ interface FindUserChannelsQueryResult {
   channel_id: string;
   channel_name?: string;
   channel_type: ChannelType;
+  channel_visibility: ChannelVisibility;
   owner_id?: string;
   owner_username?: string;
   is_channel_admin: boolean;
@@ -123,6 +124,7 @@ export class ChannelsService {
       id: channel.channel_id,
       name: channel.channel_name,
       type: channel.channel_type,
+      visibility: channel.channel_visibility,
       owner: channel.owner_id && {
         id: channel.owner_id,
         username: channel.owner_username,
@@ -169,6 +171,7 @@ export class ChannelsService {
       id: result.channel_id,
       name: result.channel_name,
       type: result.channel_type,
+      visibility: result.channel_visibility,
       owner: result.owner_id && {
         id: result.owner_id,
         username: result.owner_username,
@@ -220,6 +223,7 @@ export class ChannelsService {
       id: result.channel_id,
       name: result.channel_name,
       type: result.channel_type,
+      visibility: result.channel_visibility,
       owner: result.owner_id && {
         id: result.owner_id,
         username: result.owner_username,
@@ -239,7 +243,7 @@ export class ChannelsService {
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .insert()
-      .values({ type: "dm" })
+      .values({ type: "dm", visibility: "dm" })
       .returning("id")
       .execute();
 
@@ -252,11 +256,25 @@ export class ChannelsService {
     return this.findDmChannel(loggedInUser, dmUser);
   }
 
-  async createGroupChannel(name: string, owner: UserEntity): Promise<FindChannelWithMembersDto> {
+  async createGroupChannel(
+    name: string,
+    owner: UserEntity,
+    hashedPassword?: string,
+  ): Promise<FindChannelWithMembersDto> {
+    const isPrivate = !!hashedPassword;
+    const values: Record<string, any> = {
+      name,
+      type: "group",
+      visibility: "public",
+    };
+    if (isPrivate) {
+      values.visibility = "private";
+      values.hashedPassword = hashedPassword;
+    }
     const result = await this.channelsRepository
       .createQueryBuilder("channel")
       .insert()
-      .values({ name, type: "group" })
+      .values(values)
       .returning("id")
       .execute();
 
@@ -273,6 +291,15 @@ export class ChannelsService {
       .add([owner]);
 
     return await this.findChannelById(owner, result.raw[0].id);
+  }
+
+  async getChannelPassword(channelId: string) {
+    const result = await this.channelsRepository
+      .createQueryBuilder("channel")
+      .select("channel.hashedPassword")
+      .where("channel.id = :id", { id: channelId })
+      .getRawOne();
+    return result?.channel_hashedPassword;
   }
 
   private selectMessages(qb: ReturnType<Repository<MessageEntity>["createQueryBuilder"]>) {
@@ -350,7 +377,7 @@ export class ChannelsService {
       .andWhere("channel.name ILIKE :query", { query: `%${query}%` })
       .getRawMany<FindUserChannelsQueryResult>();
     const groupResults = rawGroupChannels.map((channel) => {
-      const tags = ["group", `owner: ${channel.owner_username}`];
+      const tags = ["group", channel.channel_visibility, `owner: ${channel.owner_username}`];
       const isMember = channel.channel_members.some((member) => member.id === loggedInUser.id);
       if (isMember) {
         tags.push("member");

@@ -1,6 +1,6 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
 import { ChannelsService } from "@/channels/channels.service";
-import { AdminActionDto, CreateGroupChannelDto } from "@/channels/dto";
+import { AdminActionDto, CreateGroupChannelDto, JoinGroupChannelDto } from "@/channels/dto";
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { HttpExceptionFilter } from "@/http-exception.filter";
 import { UsersService } from "@/users/users.service";
@@ -14,6 +14,7 @@ import {
   WebSocketServer,
   WsException,
 } from "@nestjs/websockets";
+import * as bcrypt from "bcrypt";
 import { Server, Socket } from "socket.io";
 
 @UseGuards(WsGuard)
@@ -82,14 +83,20 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage("createGroupChat")
-  async handleCreateGroupChat(@ConnectedSocket() client: Socket, @MessageBody() data: CreateGroupChannelDto) {
+  async handleCreateGroupChat(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { name, password }: CreateGroupChannelDto,
+  ) {
     const loggedInUser = client.request.user;
-    const { name } = data;
 
     if (!name) {
       throw new WsException("Group name cannot be empty");
     }
-    const channel = await this.channelsService.createGroupChannel(name, loggedInUser);
+    let hashedPassword = undefined;
+    if (!!password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+    const channel = await this.channelsService.createGroupChannel(name, loggedInUser, hashedPassword);
 
     return {
       ...channel,
@@ -98,11 +105,21 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage("joinGroupChat")
-  async handleJoinGroupChat(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+  async handleJoinGroupChat(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, password }: JoinGroupChannelDto,
+  ) {
     const loggedInUser = client.request.user;
     const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
     const isBanned = await this.channelsService.memberIsBanned(channelId, loggedInUser.id);
 
+    if (!!password) {
+      const channelPassword = await this.channelsService.getChannelPassword(channelId);
+      const passwordMatch = await bcrypt.compare(password, channelPassword);
+      if (!passwordMatch) {
+        throw new WsException("Invalid password");
+      }
+    }
     if (isBanned) {
       throw new WsException("You are banned from this channel D:");
     }

@@ -6,6 +6,10 @@ export const channelTypes = ["dm", "group"] as const;
 
 export type ChannelType = (typeof channelTypes)[number];
 
+export const channelVisibility = ["dm", "public", "private"] as const;
+
+export type ChannelVisibility = (typeof channelVisibility)[number];
+
 @Entity({ name: "channels" })
 export class ChannelEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -33,6 +37,12 @@ export class ChannelEntity {
 
   @Column({ type: "enum", enum: channelTypes })
   type: ChannelType;
+
+  @Column({ type: "enum", enum: channelVisibility })
+  visibility: ChannelVisibility;
+
+  @Column({ type: String, nullable: true, select: false })
+  hashedPassword?: string;
 
   @ManyToMany(() => UserEntity, (user) => user.channels, { eager: true })
   @JoinTable({
