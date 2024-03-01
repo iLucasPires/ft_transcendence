@@ -1,5 +1,14 @@
 import { UserEntity } from "@/users/user.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { MessageEntity } from "./messages.entity";
 
 export const channelTypes = ["dm", "group"] as const;
@@ -19,6 +28,7 @@ export class ChannelEntity {
   name?: string;
 
   @ManyToOne(() => UserEntity, { eager: true, nullable: true })
+  @JoinColumn({ name: "owner_id" })
   owner?: Partial<UserEntity>;
 
   @ManyToMany(() => UserEntity, { eager: true })
@@ -41,7 +51,7 @@ export class ChannelEntity {
   @Column({ type: "enum", enum: channelVisibility })
   visibility: ChannelVisibility;
 
-  @Column({ type: String, nullable: true, select: false })
+  @Column({ name: "hashed_password", type: String, nullable: true, select: false })
   hashedPassword?: string;
 
   @ManyToMany(() => UserEntity, (user) => user.channels, { eager: true })

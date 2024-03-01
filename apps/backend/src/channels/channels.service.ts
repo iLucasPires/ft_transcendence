@@ -299,7 +299,7 @@ export class ChannelsService {
       .select("channel.hashedPassword")
       .where("channel.id = :id", { id: channelId })
       .getRawOne();
-    return result?.channel_hashedPassword;
+    return result?.channel_hashed_password;
   }
 
   private selectMessages(qb: ReturnType<Repository<MessageEntity>["createQueryBuilder"]>) {
