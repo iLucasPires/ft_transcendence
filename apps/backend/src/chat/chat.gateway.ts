@@ -118,7 +118,10 @@ export class ChatGateway implements OnGatewayConnection {
     const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
     const isBanned = await this.channelsService.memberIsBanned(channelId, loggedInUser.id);
 
-    if (!!password) {
+    if (channel.visibility === "private") {
+      if (!password) {
+        throw new WsException("Channel is password protected");
+      }
       const channelPassword = await this.channelsService.getChannelPassword(channelId);
       const passwordMatch = await bcrypt.compare(password, channelPassword);
       if (!passwordMatch) {
