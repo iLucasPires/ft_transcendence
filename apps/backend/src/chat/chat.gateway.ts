@@ -1,6 +1,8 @@
 import { WsGuard } from "@/auth/guards/ws.guard";
 import { ChannelsService } from "@/channels/channels.service";
 import { AdminActionDto, CreateGroupChannelDto, JoinGroupChannelDto } from "@/channels/dto";
+import { RemoveChannelPasswordDto } from "@/channels/dto/remove-channel-password.dto";
+import { SetChannelPasswordDto } from "@/channels/dto/set-channel-password.dto";
 import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { HttpExceptionFilter } from "@/http-exception.filter";
 import { UsersService } from "@/users/users.service";
@@ -473,5 +475,60 @@ export class ChatGateway implements OnGatewayConnection {
     }
 
     return await this.channelsService.fetchChannelBans(channelId);
+  }
+
+  @SubscribeMessage("setChannelPassword")
+  async handleSetChannelPassword(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, currentPassword, newPassword }: SetChannelPasswordDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel!");
+    }
+    if (channel.visibility === "private") {
+      const channelPassword = await this.channelsService.getChannelPassword(channelId);
+      const passwordMatch = await bcrypt.compare(currentPassword ?? "", channelPassword);
+      if (!passwordMatch) {
+        throw new WsException("Invalid current password");
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.channelsService.setChannelPassword(channelId, hashedPassword);
+    this.server.to(channelId).emit("hasUpdates");
+    return "ok";
+  }
+
+  @SubscribeMessage("removeChannelPassword")
+  async handleRemoveChannelPassword(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { channelId, password }: RemoveChannelPasswordDto,
+  ) {
+    const loggedInUser = client.request.user;
+    const channel = await this.channelsService.findChannelById(loggedInUser, channelId);
+
+    if (!channel) {
+      throw new WsException(`Channel not found: ${channelId}`);
+    }
+    if (!channel.isChannelAdmin) {
+      throw new WsException("You are not an admin of this channel!");
+    }
+    if (channel.visibility !== "private") {
+      throw new WsException("Channel is not private");
+    }
+    const channelPassword = await this.channelsService.getChannelPassword(channelId);
+    const passwordMatch = await bcrypt.compare(password, channelPassword);
+    if (!passwordMatch) {
+      throw new WsException("Invalid password");
+    }
+    await this.channelsService.removeChannelPassword(channelId);
+    this.server.to(channelId).emit("hasUpdates");
+    return "ok";
   }
 }

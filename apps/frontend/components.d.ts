@@ -22,6 +22,7 @@ declare module 'vue' {
     MModalChannelPassword: typeof import('./src/components/molecules/MModalChannelPassword.vue')['default']
     MModalProfile: typeof import('./src/components/molecules/MModalProfile.vue')['default']
     MModalSearch: typeof import('./src/components/molecules/MModalSearch.vue')['default']
+    MModalSetChannelPassword: typeof import('./src/components/molecules/MModalSetChannelPassword.vue')['default']
     ModalCreateGroupChannel: typeof import('./src/components/ModalCreateGroupChannel.vue')['default']
     ModalLeaveGame: typeof import('./src/components/ModalLeaveGame.vue')['default']
     ModalWelcome: typeof import('./src/components/ModalWelcome.vue')['default']

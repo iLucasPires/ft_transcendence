@@ -483,4 +483,12 @@ export class ChannelsService {
       avatarUrl: user.u_avatar_url,
     }));
   }
+
+  async setChannelPassword(channelId: string, hashedPassword: string) {
+    await this.channelsRepository.update(channelId, { visibility: "private", hashedPassword });
+  }
+
+  async removeChannelPassword(channelId: string) {
+    await this.channelsRepository.update(channelId, { visibility: "public", hashedPassword: null });
+  }
 }

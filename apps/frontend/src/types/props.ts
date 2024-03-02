@@ -28,6 +28,7 @@ export type iChannel = {
   id: string;
   name?: string;
   type: "dm" | "group";
+  visibility: "dm" | "public" | "private";
   owner?: Pick<iUser, "id" | "username">;
   isChannelAdmin?: boolean;
   members: iMember[];

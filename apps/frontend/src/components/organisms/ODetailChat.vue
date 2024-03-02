@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { chatSocket } from "@/socket";
-import type { iMember, iUser } from "@/types/props";
+import type { iChannel, iMember, iUser } from "@/types/props";
 
 const meStore = useMeStore();
 const chatStore = useChatStore();
@@ -8,6 +8,7 @@ const { currentChat, currentChatId, currentChatPhoto, currentChatName, currentCh
 
 const userProfile = ref<iUser | null>(null);
 const bannedUsers = ref<iUser[] | null>(null);
+const channelForPasswordChange = ref<iChannel | null>(null);
 
 const handleClickBlock = (username: string) => {
   chatSocket.emit("blockUser", username);
@@ -115,12 +116,21 @@ const handleGetChannelBans = () => {
 const handleCloseBansModal = () => {
   bannedUsers.value = null;
 };
+
+const handleOpenChangePasswordModal = () => {
+  channelForPasswordChange.value = currentChat.value;
+};
+
+const handleCloseChangePasswordModal = () => {
+  channelForPasswordChange.value = null;
+};
 </script>
 
 <template>
   <div v-if="currentChat" class="flex overflow-hidden flex-col items-center border-card full p-4 space-y-2">
     <MModalProfile v-if="!!userProfile" :user="userProfile" @clickClose="userProfile = null" />
     <MModalBans v-model="bannedUsers" @handleUnban="handleUnbanUser" @handleCloseModal="handleCloseBansModal" />
+    <MModalSetChannelPassword v-model="channelForPasswordChange" @handle-close="handleCloseChangePasswordModal" />
 
     <AChatImage class="h-16 w-16" :image-url="currentChatPhoto" />
     <h1 class="text-2xl font-bold">{{ currentChatName }}</h1>
@@ -235,13 +245,28 @@ const handleCloseBansModal = () => {
     <div v-if="currentChat?.type === 'group'" class="w-full border-card p-4 rounded">
       <span class="block text-lg font-bold mb-2">Channel Settings</span>
       <div class="join join-vertical w-full">
-        <AButton
-          v-if="currentChat?.isChannelAdmin"
-          icon="md-shield-twotone"
-          class="join-item btn-sm justify-start"
-          text="Channel Bans"
-          @click.prevent="handleGetChannelBans()"
-        />
+        <template v-if="currentChat?.isChannelAdmin">
+          <AButton
+            v-if="currentChat?.visibility === 'public'"
+            icon="md-key"
+            class="join-item btn-sm justify-start"
+            text="Set Channel Password"
+            @click.prevent="handleOpenChangePasswordModal"
+          />
+          <AButton
+            v-else
+            icon="md-key"
+            class="join-item btn-sm justify-start"
+            text="Change Channel Password"
+            @click.prevent="handleOpenChangePasswordModal"
+          />
+          <AButton
+            icon="md-shield-twotone"
+            class="join-item btn-sm justify-start"
+            text="Channel Bans"
+            @click.prevent="handleGetChannelBans()"
+          />
+        </template>
         <AButton
           icon="md-exittoapp-round"
           class="join-item btn-sm justify-start"
