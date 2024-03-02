@@ -94,8 +94,11 @@ export class ChatGateway implements OnGatewayConnection {
     if (!name) {
       throw new WsException("Group name cannot be empty");
     }
-    let hashedPassword = undefined;
+    let hashedPassword: string;
     if (!!password) {
+      if (password.length < 6) {
+        throw new WsException("Password must be at least 6 characters long");
+      }
       hashedPassword = await bcrypt.hash(password, 10);
     }
     const channel = await this.channelsService.createGroupChannel(name, loggedInUser, hashedPassword);
@@ -497,6 +500,9 @@ export class ChatGateway implements OnGatewayConnection {
       if (!passwordMatch) {
         throw new WsException("Invalid current password");
       }
+    }
+    if (newPassword.length < 6) {
+      throw new WsException("Password must be at least 6 characters long");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
