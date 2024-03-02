@@ -50,23 +50,24 @@ const handleClick = () => {
     appStore.changeModalSearch();
     return;
   }
-  const isPrivate = channel.tags.includes("private");
-  if (isPrivate) {
-    channelPendingPassword.value = channel;
-    return;
-  }
   const isMember = !isDm && channel.tags.includes("member");
   if (isMember) {
     chatSocket.emit("enterGroupChat", channel.id, (channel: iCurrentChannel) => {
       chatStore.currentChat = channel;
       chatSocket.emit("fetchChannels");
     });
-  } else {
-    chatSocket.emit("joinGroupChat", { channelId: channel.id }, (channel: iCurrentChannel) => {
-      chatStore.currentChat = channel;
-      chatSocket.emit("fetchChannels");
-    });
+    appStore.changeModalSearch();
+    return;
   }
+  const isPrivate = channel.tags.includes("private");
+  if (isPrivate) {
+    channelPendingPassword.value = channel;
+    return;
+  }
+  chatSocket.emit("joinGroupChat", { channelId: channel.id }, (channel: iCurrentChannel) => {
+    chatStore.currentChat = channel;
+    chatSocket.emit("fetchChannels");
+  });
   appStore.changeModalSearch();
 };
 
