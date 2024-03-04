@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { join } from "path";
@@ -11,6 +12,7 @@ import { ChannelsModule } from "./channels/channels.module";
 import { ChatModule } from "./chat/chat.module";
 import { ConnectionStatusModule } from "./connection-status/connection-status.module";
 import { FilesModule } from "./files/files.module";
+import { GamesModule } from "./games/games.module";
 import { MeController } from "./me/me.controller";
 import { MeModule } from "./me/me.module";
 import { UsersModule } from "./users/users.module";
@@ -42,11 +44,13 @@ const OrmModule = TypeOrmModule.forRootAsync({
     MeModule,
     TwoFactorAuthModule,
     ConnectionStatusModule,
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "../..", "frontend", "dist"),
     }),
     ChatModule,
     ChannelsModule,
+    GamesModule,
   ],
   controllers: [AppController, MeController],
   providers: [AppGateway],

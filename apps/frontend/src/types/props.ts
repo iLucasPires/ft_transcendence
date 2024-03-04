@@ -60,3 +60,12 @@ export type iChatException = {
   status: string;
   message: string;
 };
+
+export type iGame = {
+  id: string;
+  leftPlayer: Pick<iUser, "id" | "username" | "avatarUrl">;
+  rightPlayer: Pick<iUser, "id" | "username" | "avatarUrl">;
+  winner?: Pick<iUser, "id" | "username" | "avatarUrl">;
+  createdAt: string;
+  updatedAt: string;
+};

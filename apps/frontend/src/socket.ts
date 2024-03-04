@@ -11,6 +11,11 @@ export const chatSocket = io("/chat", {
   withCredentials: true,
 });
 
+export const gameSocket = io("/game", {
+  path: "/api/socket.io",
+  withCredentials: true,
+});
+
 chatSocket.on("exception", ({ message }: iChatException) => {
   const appStore = useAppStore();
   appStore.changeMessageLog(`Error: ${message}`);
