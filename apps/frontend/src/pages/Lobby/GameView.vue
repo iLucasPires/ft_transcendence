@@ -35,18 +35,16 @@ onMounted(() => {
   <div class="full card-padding">
     <div class="md:border-card full column separate justify-center">
       <div class="center bg-base-300 w-full h-[94%] rounded">
-        <template v-if="status === 'idle'">
-          <AButton class="btn-primary" text="Find Game" @click="handleClickFindGame()" />
-        </template>
-        <template v-else-if="status === 'in-queue'">
-          <div class="flex flex-col gap-4 items-center">
-            <h2 class="text-primary">Looking for an opponent...</h2>
-            <AButton class="btn-sm w-[5rem]" text="Leave" @click="handleClickLeaveQueue()" />
-          </div>
-        </template>
-        <template v-else-if="status === 'in-game'">
-          <h2 class="text-primary text-center">Not implemented</h2>
-        </template>
+        <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
+          <button class="btn btn-primary" :disabled="status !== 'idle'" @click="handleClickFindGame()">
+            <span v-if="status === 'in-queue'" class="loading loading-sm" />
+            <template v-if="status === 'idle'">Find Game</template>
+            <template v-else>Looking for an opponent</template>
+          </button>
+          <template v-if="status === 'in-queue'">
+            <AButton class="btn-sm btn-secondary" text="Leave Queue" @click="handleClickLeaveQueue()" />
+          </template>
+        </div>
       </div>
     </div>
   </div>
