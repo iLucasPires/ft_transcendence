@@ -24,7 +24,7 @@ onMounted(() => {
     status.value = "idle";
     appStore.changeMessageLog("Warning: couldn't find an opponent, you were removed from the queue.");
   });
-  gameSocket.on("gameFound", (game: iGame) => {
+  gameSocket.on("matchFound", (game: iGame) => {
     status.value = "in-game";
     console.log(`Game found: ${game.id}`);
   });
@@ -52,6 +52,7 @@ onUnmounted(() => {
             <AButton class="btn-sm btn-secondary" text="Leave Queue" @click="handleClickLeaveQueue()" />
           </template>
         </div>
+        <template v-else>Not implemented</template>
       </div>
     </div>
   </div>
