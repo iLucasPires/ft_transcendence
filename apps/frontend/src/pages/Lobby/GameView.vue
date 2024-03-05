@@ -37,7 +37,7 @@ onMounted(() => {
       <div class="center bg-base-300 w-full h-[94%] rounded">
         <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
           <button class="btn btn-primary" :disabled="status !== 'idle'" @click="handleClickFindGame()">
-            <span v-if="status === 'in-queue'" class="loading loading-sm" />
+            <span v-if="status === 'in-queue'" class="loading loading-sm text-primary" />
             <template v-if="status === 'idle'">Find Game</template>
             <template v-else>Looking for an opponent</template>
           </button>
