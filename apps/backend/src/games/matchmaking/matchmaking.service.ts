@@ -40,8 +40,8 @@ export class MatchmakingService {
     const hasBlockingRelationResults = await Promise.all(
       opponents.map(
         async (opponent) =>
-          this.usersService.isBlockedBy(loggedInUser, opponent) ||
-          this.usersService.isBlockedBy(opponent, loggedInUser),
+          (await this.usersService.isBlockedBy(loggedInUser, opponent)) ||
+          (await this.usersService.isBlockedBy(opponent, loggedInUser)),
       ),
     );
     return opponents.find((_, index) => !hasBlockingRelationResults[index]);
