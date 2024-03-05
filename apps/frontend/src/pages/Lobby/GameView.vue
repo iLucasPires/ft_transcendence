@@ -29,6 +29,13 @@ onMounted(() => {
     console.log(`Game found: ${game.id}`);
   });
 });
+
+onUnmounted(() => {
+  gameSocket.removeAllListeners();
+  if (status.value === "in-queue") {
+    gameSocket.emit("leaveQueue");
+  }
+});
 </script>
 
 <template>
