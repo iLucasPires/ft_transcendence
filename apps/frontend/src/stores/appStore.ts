@@ -7,7 +7,6 @@ export const useAppStore = defineStore("appStore", {
       logTimeout: null as NodeJS.Timeout | null,
       tab: "all",
       theme: "dark",
-      gameP5Instance: null as any,
       modalLeaveGame: false,
       modalProfile: false,
       modalSearch: false,

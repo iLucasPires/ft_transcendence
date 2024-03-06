@@ -12,17 +12,12 @@ const menuList = [
 
 <template>
   <aside class="separate column w-16 transition-all duration-300 bg-base-300 md:w-24 md:hover:w-64">
-    <ALogo @click="meStore.status.isGame ? appStore.changeModalLeaveGame() : $router.push({ name: 'lobby' })" />
+    <ALogo @click="$router.push({ name: 'lobby' })" />
 
     <nav class="column full justify-between">
       <menu class="column gap-2">
         <li v-for="item in menuList">
-          <AButton
-            class="btn-nav"
-            :icon="item.icon"
-            :text="item.text"
-            @click="meStore.status.isGame ? appStore.changeModalLeaveGame() : $router.push(item.url)"
-          />
+          <AButton class="btn-nav" :icon="item.icon" :text="item.text" @click="$router.push(item.url)" />
         </li>
       </menu>
 

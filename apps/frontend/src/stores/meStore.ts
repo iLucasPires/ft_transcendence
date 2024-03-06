@@ -7,7 +7,7 @@ export const useMeStore = defineStore("meStore", {
   state: function () {
     return {
       data: null as iUser | null,
-      status: { isGame: false, isOnline: false },
+      status: { inGame: false },
     };
   },
 
@@ -30,8 +30,7 @@ export const useMeStore = defineStore("meStore", {
       }
       if (this.data) {
         this.data = null;
-        this.status.isGame = false;
-        this.status.isOnline = false;
+        this.status.inGame = false;
         socket.disconnect();
         chatSocket.disconnect();
       }
@@ -93,11 +92,7 @@ export const useMeStore = defineStore("meStore", {
     },
 
     changeStatusGame() {
-      this.status.isGame = !this.status.isGame;
-    },
-
-    changeStatusOnline() {
-      this.status.isOnline = !this.status.isOnline;
+      this.status.inGame = !this.status.inGame;
     },
 
     async verify2FA(totp: string) {

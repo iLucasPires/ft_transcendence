@@ -1,7 +1,4 @@
 <script setup lang="ts">
-
-
-
 const meStore = useMeStore();
 const appStore = useAppStore();
 </script>
@@ -16,8 +13,7 @@ const appStore = useAppStore();
         <button
           class="btn-full btn-secondary"
           v-on:click="
-            meStore.status.isGame = false;
-            appStore.gameP5Instance?.remove();
+            meStore.status.inGame = false;
             appStore.changeModalLeaveGame();
           "
         >

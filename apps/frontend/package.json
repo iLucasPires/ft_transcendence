@@ -8,10 +8,8 @@
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
-    "@types/p5": "^1.7.3",
     "js-cookie": "^3.0.5",
     "oh-vue-icons": "^1.0.0-rc3",
-    "p5": "^1.8.0",
     "pinia": "^2.1.7",
     "socket.io-client": "^4.7.4",
     "ts-node": "^10.9.2",

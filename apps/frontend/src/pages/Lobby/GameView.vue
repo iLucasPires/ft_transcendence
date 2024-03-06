@@ -5,6 +5,7 @@ import type { iGame } from "@/types/props";
 const appStore = useAppStore();
 
 const status = ref<"idle" | "in-queue" | "in-game">("idle");
+const game = ref<iGame | null>(null);
 
 const handleClickFindGame = () => {
   gameSocket.emit("findGame");
@@ -24,9 +25,9 @@ onMounted(() => {
     status.value = "idle";
     appStore.changeMessageLog("Warning: couldn't find an opponent, you were removed from the queue.");
   });
-  gameSocket.on("matchFound", (game: iGame) => {
+  gameSocket.on("matchFound", (match: iGame) => {
     status.value = "in-game";
-    console.log(`Game found: ${game.id}`);
+    game.value = match;
   });
 });
 
@@ -41,7 +42,7 @@ onUnmounted(() => {
 <template>
   <div class="full card-padding">
     <div class="md:border-card full column separate justify-center">
-      <div class="center bg-base-300 w-full h-[94%] rounded">
+      <div class="center bg-base-300 size-full rounded">
         <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
           <button class="btn btn-primary" :disabled="status !== 'idle'" @click="handleClickFindGame()">
             <span v-if="status === 'in-queue'" class="loading loading-sm text-primary" />
@@ -52,7 +53,7 @@ onUnmounted(() => {
             <AButton class="btn-sm btn-secondary" text="Leave Queue" @click="handleClickLeaveQueue()" />
           </template>
         </div>
-        <template v-else>Not implemented</template>
+        <OGameCanvas v-if="status === 'in-game' && !!game" :game="game" />
       </div>
     </div>
   </div>

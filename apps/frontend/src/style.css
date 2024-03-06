@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --canvas-width: min(100%, (100vh - 7.75rem) * 4 / 3);
+}
+
 #app {
   @apply w-full h-screen;
 }

@@ -1,9 +1,16 @@
-import type { Config } from "tailwindcss";
 import daisyuiCss from "daisyui";
+import type { Config } from "tailwindcss";
 
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   plugins: [daisyuiCss],
+  theme: {
+    extend: {
+      aspectRatio: {
+        "4/3": "4 / 3",
+      },
+    },
+  },
   daisyui: {
     themes: [
       {
