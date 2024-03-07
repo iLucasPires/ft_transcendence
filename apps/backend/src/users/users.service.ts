@@ -220,6 +220,7 @@ export class UsersService {
       id,
       username,
       avatarUrl,
+      isFriendsWith: true,
       isConnected: this.connectionStatusService.isConnected(id),
     }));
   }

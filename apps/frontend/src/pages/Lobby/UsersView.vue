@@ -31,7 +31,7 @@ async function handleClickBlock(username: string) {
 
   if (res?.ok) {
     users.value = users.value.filter((user) => user.username !== username);
-    appStore.changeMessageLog(`Successsize-fully ${message} ${username}`);
+    appStore.changeMessageLog(`Successfully ${message} ${username}`);
   } else {
     appStore.changeMessageLog(`Failed to ${message} ${username}`);
   }
@@ -53,9 +53,13 @@ async function handleClickFriendshipAction(user: iUser) {
       return;
     }
   }
-  appStore.changeMessageLog(`Successsize-fully ${message} ${user.username}`);
+  appStore.changeMessageLog(`Successfully ${message} ${user.username}`);
   const index = users.value.findIndex((u) => u.username === user.username);
-  users.value[index].isFriendsWith = !user.isFriendsWith;
+  if (appStore.tab === "friends") {
+    users.value = users.value.filter((u) => u.username !== user.username);
+  } else {
+    users.value[index].isFriendsWith = !user.isFriendsWith;
+  }
 }
 
 async function handleTabChange() {

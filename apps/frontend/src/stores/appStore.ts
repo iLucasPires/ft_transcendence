@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 
+type UserViewTabs = "all" | "friends" | "blocked";
+
 export const useAppStore = defineStore("appStore", {
   state: function () {
     return {
       log: [] as string[],
       logTimeout: null as NodeJS.Timeout | null,
-      tab: "all",
+      tab: "all" as UserViewTabs,
       theme: "dark",
       modalLeaveGame: false,
       modalProfile: false,
@@ -46,7 +48,7 @@ export const useAppStore = defineStore("appStore", {
       this.logTimeout = setTimeout(() => (this.log = []), 3000);
     },
 
-    changeTab(tab: string) {
+    changeTab(tab: UserViewTabs) {
       this.tab = tab;
     },
 
