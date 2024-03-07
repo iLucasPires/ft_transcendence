@@ -12,7 +12,7 @@ const menuList = [
 
 <template>
   <aside
-    class="fixed z-50 h-full left-0 separate column w-16 transition-all duration-300 bg-base-300 md:w-24 md:hover:w-64"
+    class="md:fixed z-50 h-full left-0 separate column w-16 transition-all duration-300 bg-base-300 md:w-24 md:hover:w-64"
   >
     <ALogo @click="$router.push({ name: 'lobby' })" />
 
