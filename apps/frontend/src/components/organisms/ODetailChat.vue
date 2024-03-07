@@ -127,7 +127,7 @@ const handleCloseChangePasswordModal = () => {
 </script>
 
 <template>
-  <div v-if="currentChat" class="flex overflow-hidden flex-col items-center border-card full p-4 space-y-2">
+  <div v-if="currentChat" class="flex overflow-hidden flex-col items-center border-card size-full p-4 space-y-2">
     <MModalProfile v-if="!!userProfile" :user="userProfile" @clickClose="userProfile = null" />
     <MModalBans v-model="bannedUsers" @handleUnban="handleUnbanUser" @handleCloseModal="handleCloseBansModal" />
     <MModalSetChannelPassword v-model="channelForPasswordChange" @handle-close="handleCloseChangePasswordModal" />

@@ -42,7 +42,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="full card-padding overflow-hidden">
+  <main class="size-full card-padding overflow-hidden">
     <ModalCreateGroupChannel />
     <MModalSearch />
 

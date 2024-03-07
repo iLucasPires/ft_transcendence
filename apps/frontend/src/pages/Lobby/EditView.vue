@@ -65,10 +65,10 @@ function handleChangeAvatar(e: Event) {
 </script>
 
 <template>
-  <main class="full card-padding">
+  <main class="size-full card-padding">
     <div class="md:border-card column h-full separate center">
       <form
-        class="gap-4 full center flex-col max-w-md"
+        class="gap-4 size-full center flex-col max-w-md"
         v-on:submit.prevent="handleSubmit"
         v-on:reset="handleReset"
       >
@@ -76,11 +76,7 @@ function handleChangeAvatar(e: Event) {
         <div className="avatar">
           <div className="w-32 rounded-full bg-base-300">
             <img
-              v-bind:src="
-                prevAvatar ||
-                meStore.data?.avatarUrl ||
-                `https://robohash.org/${meStore.data?.username}.png`
-              "
+              v-bind:src="prevAvatar || meStore.data?.avatarUrl || `https://robohash.org/${meStore.data?.username}.png`"
               v-bind:alt="`avatar of ${meStore.data?.username}`"
             />
           </div>
@@ -100,17 +96,9 @@ function handleChangeAvatar(e: Event) {
           v-on:change="handleChangeAvatar"
         />
         <div class="flex w-full gap-2">
-          <button
-            type="submit"
-            class="btn-full btn-primary"
-            v-text="'Confirm'"
-          />
+          <button type="submit" class="btn-full btn-primary" v-text="'Confirm'" />
 
-          <button
-            type="reset"
-            class="btn-full btn-secondary"
-            v-text="'Cancel'"
-          />
+          <button type="reset" class="btn-full btn-secondary" v-text="'Cancel'" />
         </div>
         <span className="divider divider-primary" v-text="'2FA'" />
         <div class="w-full">
@@ -127,24 +115,14 @@ function handleChangeAvatar(e: Event) {
     <!--  Modal 2FA  -->
     <dialog class="modal" ref="modal">
       <div class="modal-box column items-center gap-4">
-        <h2
-          class="title"
-          v-text="meStore.is2FA ? 'Disable 2FA' : 'Enable 2FA'"
-        />
+        <h2 class="title" v-text="meStore.is2FA ? 'Disable 2FA' : 'Enable 2FA'" />
         <p
           class="text-center"
           v-text="
-            meStore.is2FA
-              ? 'Please enter your 2FA code to disable 2FA'
-              : 'Please scan the QR code below to enable 2FA'
+            meStore.is2FA ? 'Please enter your 2FA code to disable 2FA' : 'Please scan the QR code below to enable 2FA'
           "
         />
-        <img
-          alt="loading"
-          class="border border-primary rounded-lg h-full"
-          v-if="qrCode"
-          v-bind:src="qrCode"
-        />
+        <img alt="loading" class="border border-primary rounded-lg h-full" v-if="qrCode" v-bind:src="qrCode" />
         <OtpInput @submit2fa="handleSubmit2fa" />
       </div>
     </dialog>

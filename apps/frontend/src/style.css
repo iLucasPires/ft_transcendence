@@ -11,10 +11,6 @@
 }
 
 @layer components {
-  .full {
-    @apply w-full h-full;
-  }
-
   .column {
     @apply flex flex-col;
   }

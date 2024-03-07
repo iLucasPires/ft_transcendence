@@ -31,7 +31,7 @@ async function handleClickBlock(username: string) {
 
   if (res?.ok) {
     users.value = users.value.filter((user) => user.username !== username);
-    appStore.changeMessageLog(`Successfully ${message} ${username}`);
+    appStore.changeMessageLog(`Successsize-fully ${message} ${username}`);
   } else {
     appStore.changeMessageLog(`Failed to ${message} ${username}`);
   }
@@ -53,7 +53,7 @@ async function handleClickFriendshipAction(user: iUser) {
       return;
     }
   }
-  appStore.changeMessageLog(`Successfully ${message} ${user.username}`);
+  appStore.changeMessageLog(`Successsize-fully ${message} ${user.username}`);
   const index = users.value.findIndex((u) => u.username === user.username);
   users.value[index].isFriendsWith = !user.isFriendsWith;
 }
@@ -66,8 +66,8 @@ onMounted(handleTabChange);
 </script>
 
 <template>
-  <div class="full card-padding">
-    <div class="full column separate md:border-card">
+  <div class="size-full card-padding">
+    <div class="size-full column separate md:border-card">
       <MTabSelectUsers @clickTab="handleTabChange" />
       <MModalProfile v-if="detailProfile.username" :user="detailProfile" @clickClose="detailProfile = {} as iUser" />
       <ul class="overflow-y-auto grid gap-2 md:grid-cols-1 lg:grid-cols-3">

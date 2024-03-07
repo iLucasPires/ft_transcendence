@@ -12,8 +12,8 @@ const infos = computed(() => {
 </script>
 
 <template>
-  <main class="full card-padding">
-    <div class="full column separate md:border-card">
+  <main class="size-full card-padding">
+    <div class="size-full column separate md:border-card">
       <div class="column separate rounded relative border-card">
         <button
           class="btn btn-primary btn-sm absolute top-4 right-4"
@@ -26,10 +26,7 @@ const infos = computed(() => {
           <div className="avatar">
             <div className="w-24 rounded-full bg-base-300">
               <img
-                v-bind:src="
-                  meStore.data?.avatarUrl ||
-                  `https://robohash.org/${meStore.data?.username}.png`
-                "
+                v-bind:src="meStore.data?.avatarUrl || `https://robohash.org/${meStore.data?.username}.png`"
                 v-bind:alt="'profile picture'"
               />
             </div>
@@ -38,20 +35,14 @@ const infos = computed(() => {
           <h2 class="text-3xl font-bold" v-text="meStore.data?.username" />
         </div>
         <ul class="wrap gap-2">
-          <button
-            v-for="item in infos"
-            v-bind:key="item.name"
-            className="btn btn-sm"
-          >
+          <button v-for="item in infos" v-bind:key="item.name" className="btn btn-sm">
             <span v-text="item.name" />
             <div className="badge badge-primary" v-text="item.value" />
           </button>
         </ul>
       </div>
 
-      <div
-        class="column h-full separate rounded relative items-center md:flex-row border-card"
-      ></div>
+      <div class="column h-full separate rounded relative items-center md:flex-row border-card"></div>
     </div>
   </main>
 </template>

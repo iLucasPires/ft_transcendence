@@ -4,7 +4,7 @@ const appStore = useAppStore();
 </script>
 
 <template>
-  <main class="full hero card-padding">
+  <main class="size-full hero card-padding">
     <div class="column separate max-w-md hero-content bg-base-200 rounded-md">
       <h1 class="title">Two Factor Authentication</h1>
       <p class="text-center">please enter your 2FA code to continue</p>
