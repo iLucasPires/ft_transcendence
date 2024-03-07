@@ -43,7 +43,7 @@ onUnmounted(() => {
   <div class="size-full card-padding">
     <div class="md:border-card size-full column separate justify-center">
       <div class="center bg-base-300 size-full rounded">
-        <!-- <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
+        <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
           <button class="btn btn-primary" :disabled="status !== 'idle'" @click="handleClickFindGame()">
             <span v-if="status === 'in-queue'" class="loading loading-sm text-primary" />
             <template v-if="status === 'idle'">Find Game</template>
@@ -53,8 +53,7 @@ onUnmounted(() => {
             <AButton class="btn-sm btn-secondary" text="Leave Queue" @click="handleClickLeaveQueue()" />
           </template>
         </div>
-        <OGameCanvas v-if="status === 'in-game' && !!game" :game="game" /> -->
-        <OGameCanvas :game="{} as iGame" />
+        <OGameCanvas v-if="status === 'in-game' && !!game" :game="game" />
       </div>
     </div>
   </div>
