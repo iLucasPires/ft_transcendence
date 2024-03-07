@@ -7,7 +7,7 @@
 }
 
 #app {
-  @apply w-full h-screen;
+  @apply w-full h-screen md:pl-24;
 }
 
 @layer components {
