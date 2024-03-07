@@ -42,7 +42,7 @@ onUnmounted(() => {
 <template>
   <div class="size-full card-padding">
     <div class="md:border-card size-full column separate justify-center">
-      <div class="center bg-base-300 size-full rounded">
+      <div class="center bg-base-300/60 size-full rounded">
         <div v-if="status !== 'in-game'" class="flex flex-col gap-4 items-center">
           <button class="btn btn-primary" :disabled="status !== 'idle'" @click="handleClickFindGame()">
             <span v-if="status === 'in-queue'" class="loading loading-sm text-primary" />
