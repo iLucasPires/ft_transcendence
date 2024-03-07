@@ -39,7 +39,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="aspect-4/3 bg-base-200 relative w-[var(--canvas-width)]">
-    <canvas id="pong" ref="canvasRef" class="absolute size-full"></canvas>
+  <div ref="wrapperRef" class="aspect-4/3 bg-base-200 w-[var(--canvas-width)]">
+    <canvas id="pong" ref="canvasRef" class="size-full"></canvas>
   </div>
 </template>
