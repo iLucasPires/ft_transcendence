@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { scaleCanvas, updateGameCanvas } from "@/lib/gameCanvas";
-import type { iGame } from "@/types/props";
+import { gameSocket } from "@/socket";
+import type { iGame, iGameState } from "@/types/props";
 
 defineProps<{ game: iGame }>();
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const wrapperRef = ref<HTMLDivElement | null>(null);
 const canvasCtx = computed(() => canvasRef.value?.getContext("2d"));
+let gameState = reactive({
+  score: { leftPlayer: 0, rightPlayer: 0 },
+  leftPlayerY: 270,
+  rightPlayerY: 270,
+  ballPosition: { x: 400, y: 300 },
+} as iGameState);
 
 const handleResize = () => {
   const ctx = canvasCtx.value;
@@ -17,7 +24,7 @@ const handleResize = () => {
     return;
   }
   scaleCanvas(canvas, wrapper);
-  updateGameCanvas(ctx);
+  updateGameCanvas(ctx, gameState);
 };
 
 onMounted(() => {
@@ -29,12 +36,19 @@ onMounted(() => {
   }
   const ctx = canvasCtx.value!;
   scaleCanvas(canvas, wrapper);
-  updateGameCanvas(ctx);
+  updateGameCanvas(ctx, gameState);
   window.addEventListener("resize", handleResize);
+
+  gameSocket.on("gameTick", (state: iGameState) => {
+    gameState = state;
+    updateGameCanvas(ctx, state);
+  });
+  gameSocket.emit("playerReady");
 });
 
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
+  gameSocket.removeListener("gameTick");
 });
 </script>
 

@@ -69,3 +69,13 @@ export type iGame = {
   createdAt: string;
   updatedAt: string;
 };
+
+type Score = { leftPlayer: number; rightPlayer: number };
+type Coordinates = { x: number; y: number };
+
+export type iGameState = {
+  score: Score;
+  leftPlayerY: number;
+  rightPlayerY: number;
+  ballPosition: Coordinates;
+};
