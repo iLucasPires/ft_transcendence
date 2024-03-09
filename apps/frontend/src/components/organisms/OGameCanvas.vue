@@ -27,6 +27,18 @@ const handleResize = () => {
   updateGameCanvas(ctx, gameState);
 };
 
+const handleKeyPress = (e: KeyboardEvent) => {
+  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+    gameSocket.emit("keyPress", e.code);
+  }
+};
+
+const handleKeyRelease = (e: KeyboardEvent) => {
+  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+    gameSocket.emit("keyRelease", e.code);
+  }
+};
+
 onMounted(() => {
   const canvas = canvasRef.value;
   const wrapper = wrapperRef.value;
@@ -38,7 +50,8 @@ onMounted(() => {
   scaleCanvas(canvas, wrapper);
   updateGameCanvas(ctx, gameState);
   window.addEventListener("resize", handleResize);
-
+  window.addEventListener("keydown", handleKeyPress);
+  window.addEventListener("keyup", handleKeyRelease);
   gameSocket.on("gameTick", (state: iGameState) => {
     gameState = state;
     updateGameCanvas(ctx, state);
@@ -48,6 +61,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
+  window.removeEventListener("keydown", handleKeyPress);
+  window.removeEventListener("keyup", handleKeyRelease);
   gameSocket.removeListener("gameTick");
 });
 </script>

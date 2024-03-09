@@ -6,12 +6,13 @@ import { Repository } from "typeorm";
 import { GameEntity } from "./game.entity";
 
 const BALL_RADIUS = 8;
-const PADDLE_WIDTH = 8;
+const PADDLE_WIDTH = 16;
 const PADDLE_HEIGHT = 60;
 const LEFT_PADDLE_X = 25;
 const RIGHT_PADDLE_X = 775;
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
+const PADDLE_SPEED = 12;
 
 const randomNumber = (min: number, max: number) => {
   return Math.round(Math.random() * (max - min + 1) + min);
@@ -43,8 +44,8 @@ class GameState {
 
   constructor() {
     this.ballSpeed = {
-      x: Math.round(Math.random()) ? 10 : -10,
-      y: randomNumber(-10, 10),
+      x: Math.round(Math.random()) ? 6 : -6,
+      y: randomNumber(-6, 6),
     };
   }
 }
@@ -132,8 +133,8 @@ export class GamesService {
       this.schedulerRegistry.deleteInterval(`game-${gameId}`);
       return;
     }
-    this.handleBallCollision(room.state);
     this.handleMovement(room.state);
+    this.handleBallCollision(room.state);
 
     socket.emit("gameTick", state);
   }
@@ -157,18 +158,22 @@ export class GamesService {
       state.ballSpeed.y *= -1.1;
       return;
     }
-    const leftPaddleX = LEFT_PADDLE_X + PADDLE_WIDTH;
-    const rightPaddleX = RIGHT_PADDLE_X - PADDLE_WIDTH;
-    const leftPaddleMaxY = state.leftPlayerY + PADDLE_HEIGHT;
-    const rightPaddleMaxY = state.rightPlayerY + PADDLE_HEIGHT;
     if (
-      (ballX - BALL_RADIUS < leftPaddleX && ballY > state.leftPlayerY && leftPaddleMaxY > ballY) ||
-      (ballX + BALL_RADIUS > rightPaddleX && ballY > state.rightPlayerY && rightPaddleMaxY > ballY)
+      this.checkCollisionWithPaddle(ballX, ballY, LEFT_PADDLE_X + PADDLE_WIDTH, state.leftPlayerY) ||
+      this.checkCollisionWithPaddle(ballX, ballY, RIGHT_PADDLE_X, state.rightPlayerY)
     ) {
       state.ballSpeed.x *= -1.1;
       state.ballSpeed.y *= 1.1;
     }
   };
+
+  private checkCollisionWithPaddle(ballX: number, ballY: number, paddleX: number, paddleY: number) {
+    if (ballY - BALL_RADIUS > paddleY + PADDLE_HEIGHT || ballY + BALL_RADIUS < paddleY) {
+      return false;
+    }
+    const distanceFromPaddle = Math.abs(ballX - paddleX);
+    return distanceFromPaddle <= BALL_RADIUS;
+  }
 
   private handleScore(state: GameState) {
     const { x: ballX } = state.ballPosition;
@@ -185,13 +190,23 @@ export class GamesService {
     state.ballPosition.x = CANVAS_WIDTH / 2;
     state.ballPosition.y = CANVAS_HEIGHT / 2;
     state.ballSpeed = {
-      x: Math.round(Math.random()) ? 10 : -10,
-      y: randomNumber(-10, 10),
+      x: Math.round(Math.random()) ? 6 : -6,
+      y: randomNumber(-6, 6),
     };
   }
 
   private handleMovement(state: GameState) {
     state.ballPosition.x += state.ballSpeed.x;
     state.ballPosition.y += state.ballSpeed.y;
+    if (state.leftPlayerMovement === "up" && state.leftPlayerY > 0) {
+      state.leftPlayerY -= PADDLE_SPEED;
+    } else if (state.leftPlayerMovement === "down" && state.leftPlayerY + PADDLE_HEIGHT < CANVAS_HEIGHT) {
+      state.leftPlayerY += PADDLE_SPEED;
+    }
+    if (state.rightPlayerMovement === "up" && state.rightPlayerY > 0) {
+      state.rightPlayerY -= PADDLE_SPEED;
+    } else if (state.rightPlayerMovement === "down" && state.rightPlayerY + PADDLE_HEIGHT < CANVAS_HEIGHT) {
+      state.rightPlayerY += PADDLE_SPEED;
+    }
   }
 }
