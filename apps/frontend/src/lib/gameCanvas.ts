@@ -1,7 +1,7 @@
 import type { iGameState } from "@/types/props";
 
 const LEFT_PADDLE_X = 25;
-const RIGHT_PADDLE_X = 775;
+const RIGHT_PADDLE_X = 775 - 16;
 const PADDLE_WIDTH = 16;
 const PADDLE_HEIGHT = 60;
 const BALL_RADIUS = 8;

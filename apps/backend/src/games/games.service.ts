@@ -9,7 +9,7 @@ const BALL_RADIUS = 8;
 const PADDLE_WIDTH = 16;
 const PADDLE_HEIGHT = 60;
 const LEFT_PADDLE_X = 25;
-const RIGHT_PADDLE_X = 775;
+const RIGHT_PADDLE_X = 775 - 16;
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 const PADDLE_SPEED = 12;
@@ -33,7 +33,7 @@ type PaddleMovement = "up" | "down" | "idle";
 class GameState {
   started: boolean = false;
   score: Score = { leftPlayer: 0, rightPlayer: 0 };
-  leftPlayerY: number = 270;
+  leftPlayerY: number = 540;
   rightPlayerY: number = 270;
   leftPlayerMovement: PaddleMovement = "idle";
   rightPlayerMovement: PaddleMovement = "idle";
@@ -44,8 +44,8 @@ class GameState {
 
   constructor() {
     this.ballSpeed = {
-      x: Math.round(Math.random()) ? 6 : -6,
-      y: randomNumber(-6, 6),
+      x: Math.round(Math.random()) ? 5 : -5,
+      y: randomNumber(-5, 5),
     };
   }
 }
@@ -150,29 +150,59 @@ export class GamesService {
     }
   }
 
-  private handleBallCollision = (state: GameState) => {
-    const { x: ballX, y: ballY } = state.ballPosition;
+  private setBallSpeed(state: GameState, ballSpeedX: number, ballSpeedY: number) {
+    const xDirection = ballSpeedX < 0 ? -1 : 1;
+    const yDirection = ballSpeedY < 0 ? -1 : 1;
 
-    if (ballY - 8 < 0 || ballY + 8 > CANVAS_HEIGHT) {
-      state.ballSpeed.x *= 1.1;
-      state.ballSpeed.y *= -1.1;
-      return;
+    state.ballSpeed = {
+      x: Math.min(Math.abs(ballSpeedX), 10) * xDirection,
+      y: Math.min(Math.abs(ballSpeedY), 10) * yDirection,
+    };
+  }
+
+  private handleBallCollision = (state: GameState) => {
+    const { y: ballY } = state.ballPosition;
+    const { x: ballSpeedX, y: ballSpeedY } = state.ballSpeed;
+
+    if (ballY - BALL_RADIUS < 0 || ballY + BALL_RADIUS > CANVAS_HEIGHT) {
+      this.setBallSpeed(state, 1.1 * ballSpeedX, -1.1 * ballSpeedY);
     }
-    if (
-      this.checkCollisionWithPaddle(ballX, ballY, LEFT_PADDLE_X + PADDLE_WIDTH, state.leftPlayerY) ||
-      this.checkCollisionWithPaddle(ballX, ballY, RIGHT_PADDLE_X, state.rightPlayerY)
-    ) {
-      state.ballSpeed.x *= -1.1;
-      state.ballSpeed.y *= 1.1;
+    const collidesWithLeftPlayer = this.checkCollisionWithPaddle(
+      state.ballPosition,
+      state.ballSpeed,
+      LEFT_PADDLE_X + PADDLE_WIDTH,
+      state.leftPlayerY,
+    );
+    const collidesWithRightPlayer = this.checkCollisionWithPaddle(
+      state.ballPosition,
+      state.ballSpeed,
+      RIGHT_PADDLE_X,
+      state.rightPlayerY,
+    );
+    if (collidesWithLeftPlayer) {
+      const movementFactor = state.leftPlayerMovement === "up" ? -1 : state.leftPlayerMovement === "down" ? 1 : 0;
+      this.setBallSpeed(state, -1.1 * ballSpeedX, 1.1 * ballSpeedY + movementFactor * 0.5);
+    }
+    if (collidesWithRightPlayer) {
+      const movementFactor = state.rightPlayerMovement === "up" ? -1 : state.rightPlayerMovement === "down" ? 1 : 0;
+      this.setBallSpeed(state, -1.1 * ballSpeedX, 1.1 * ballSpeedY + movementFactor * 0.5);
     }
   };
 
-  private checkCollisionWithPaddle(ballX: number, ballY: number, paddleX: number, paddleY: number) {
+  private checkCollisionWithPaddle(
+    ballPosition: Coordinates,
+    ballSpeed: Coordinates,
+    paddleX: number,
+    paddleY: number,
+  ) {
+    const { x: ballX, y: ballY } = ballPosition;
+    const { x: ballSpeedX } = ballSpeed;
     if (ballY - BALL_RADIUS > paddleY + PADDLE_HEIGHT || ballY + BALL_RADIUS < paddleY) {
       return false;
     }
     const distanceFromPaddle = Math.abs(ballX - paddleX);
-    return distanceFromPaddle <= BALL_RADIUS;
+    const isMovingTowardsPaddle = ballSpeedX < 0 ? ballX > paddleX : ballX < paddleX;
+    return distanceFromPaddle <= BALL_RADIUS && isMovingTowardsPaddle;
   }
 
   private handleScore(state: GameState) {
@@ -190,8 +220,8 @@ export class GamesService {
     state.ballPosition.x = CANVAS_WIDTH / 2;
     state.ballPosition.y = CANVAS_HEIGHT / 2;
     state.ballSpeed = {
-      x: Math.round(Math.random()) ? 6 : -6,
-      y: randomNumber(-6, 6),
+      x: Math.round(Math.random()) ? 5 : -5,
+      y: randomNumber(-5, 5),
     };
   }
 
@@ -200,13 +230,17 @@ export class GamesService {
     state.ballPosition.y += state.ballSpeed.y;
     if (state.leftPlayerMovement === "up" && state.leftPlayerY > 0) {
       state.leftPlayerY -= PADDLE_SPEED;
+      if (state.leftPlayerY < 0) state.leftPlayerY = 0;
     } else if (state.leftPlayerMovement === "down" && state.leftPlayerY + PADDLE_HEIGHT < CANVAS_HEIGHT) {
       state.leftPlayerY += PADDLE_SPEED;
+      if (state.leftPlayerY > CANVAS_HEIGHT) state.leftPlayerY = CANVAS_HEIGHT;
     }
     if (state.rightPlayerMovement === "up" && state.rightPlayerY > 0) {
       state.rightPlayerY -= PADDLE_SPEED;
+      if (state.rightPlayerY < 0) state.rightPlayerY = 0;
     } else if (state.rightPlayerMovement === "down" && state.rightPlayerY + PADDLE_HEIGHT < CANVAS_HEIGHT) {
       state.rightPlayerY += PADDLE_SPEED;
+      if (state.rightPlayerY > CANVAS_HEIGHT) state.rightPlayerY = CANVAS_HEIGHT;
     }
   }
 }
