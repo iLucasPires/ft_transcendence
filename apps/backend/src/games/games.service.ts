@@ -5,6 +5,14 @@ import { Server } from "socket.io";
 import { Repository } from "typeorm";
 import { GameEntity } from "./game.entity";
 
+const BALL_RADIUS = 8;
+const PADDLE_WIDTH = 8;
+const PADDLE_HEIGHT = 60;
+const LEFT_PADDLE_X = 25;
+const RIGHT_PADDLE_X = 775;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+
 const randomNumber = (min: number, max: number) => {
   return Math.round(Math.random() * (max - min + 1) + min);
 };
@@ -119,13 +127,12 @@ export class GamesService {
     if (!!winnerId) {
       const loserId = winnerId === leftPlayerId ? leftPlayerId : rightPlayerId;
       await this.setGameWinner(gameId, winnerId);
-      server.to(winnerId).emit("victory");
-      server.to(loserId).emit("defeat");
+      server.to([winnerId, loserId]).emit("endOfGame", { winnerId });
       delete this.games[room.gameId];
       this.schedulerRegistry.deleteInterval(`game-${gameId}`);
       return;
     }
-    this.handleCollisions(room.state);
+    this.handleBallCollision(room.state);
     this.handleMovement(room.state);
 
     socket.emit("gameTick", state);
@@ -142,21 +149,21 @@ export class GamesService {
     }
   }
 
-  private handleCollisions = (state: GameState) => {
+  private handleBallCollision = (state: GameState) => {
     const { x: ballX, y: ballY } = state.ballPosition;
 
-    if (ballY - 8 < 0 || ballY + 8 > 600) {
+    if (ballY - 8 < 0 || ballY + 8 > CANVAS_HEIGHT) {
       state.ballSpeed.x *= 1.1;
       state.ballSpeed.y *= -1.1;
       return;
     }
-    const leftPaddleX = 25 + 8;
-    const rightPaddleX = 775 - 8;
-    const leftPaddleMaxY = state.leftPlayerY + 60;
-    const rightPaddleMaxY = state.rightPlayerY + 60;
+    const leftPaddleX = LEFT_PADDLE_X + PADDLE_WIDTH;
+    const rightPaddleX = RIGHT_PADDLE_X - PADDLE_WIDTH;
+    const leftPaddleMaxY = state.leftPlayerY + PADDLE_HEIGHT;
+    const rightPaddleMaxY = state.rightPlayerY + PADDLE_HEIGHT;
     if (
-      (ballX - 8 < leftPaddleX && ballY > state.leftPlayerY && leftPaddleMaxY > ballY) ||
-      (ballX + 8 > rightPaddleX && ballY > state.rightPlayerY && rightPaddleMaxY > ballY)
+      (ballX - BALL_RADIUS < leftPaddleX && ballY > state.leftPlayerY && leftPaddleMaxY > ballY) ||
+      (ballX + BALL_RADIUS > rightPaddleX && ballY > state.rightPlayerY && rightPaddleMaxY > ballY)
     ) {
       state.ballSpeed.x *= -1.1;
       state.ballSpeed.y *= 1.1;
@@ -168,15 +175,15 @@ export class GamesService {
     if (ballX - 8 < 0) {
       state.score.leftPlayer += 1;
       this.resetBall(state);
-    } else if (ballX + 8 > 800) {
+    } else if (ballX + 8 > CANVAS_WIDTH) {
       state.score.rightPlayer += 1;
       this.resetBall(state);
     }
   }
 
   private resetBall(state: GameState) {
-    state.ballPosition.x = 400;
-    state.ballPosition.y = 300;
+    state.ballPosition.x = CANVAS_WIDTH / 2;
+    state.ballPosition.y = CANVAS_HEIGHT / 2;
     state.ballSpeed = {
       x: Math.round(Math.random()) ? 10 : -10,
       y: randomNumber(-10, 10),

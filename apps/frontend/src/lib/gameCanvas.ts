@@ -5,12 +5,14 @@ const RIGHT_PADDLE_X = 775;
 const PADDLE_WIDTH = 8;
 const PADDLE_HEIGHT = 60;
 const BALL_RADIUS = 8;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
 
 const scaleForCanvas = (canvas: HTMLCanvasElement) => {
   const { width, height } = canvas;
   return {
-    x: (x: number) => (x / 800) * width,
-    y: (y: number) => (y / 600) * height,
+    x: (x: number) => (x / CANVAS_WIDTH) * width,
+    y: (y: number) => (y / CANVAS_HEIGHT) * height,
   };
 };
 
