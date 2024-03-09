@@ -33,7 +33,7 @@ type PaddleMovement = "up" | "down" | "idle";
 class GameState {
   started: boolean = false;
   score: Score = { leftPlayer: 0, rightPlayer: 0 };
-  leftPlayerY: number = 540;
+  leftPlayerY: number = 270;
   rightPlayerY: number = 270;
   leftPlayerMovement: PaddleMovement = "idle";
   rightPlayerMovement: PaddleMovement = "idle";
@@ -164,7 +164,8 @@ export class GamesService {
     const { y: ballY } = state.ballPosition;
     const { x: ballSpeedX, y: ballSpeedY } = state.ballSpeed;
 
-    if (ballY - BALL_RADIUS < 0 || ballY + BALL_RADIUS > CANVAS_HEIGHT) {
+    const isMovingTowardsWall = ballSpeedY < 0 ? ballY - BALL_RADIUS < 0 : ballY + BALL_RADIUS > CANVAS_HEIGHT;
+    if (isMovingTowardsWall && (ballY - BALL_RADIUS < 0 || ballY + BALL_RADIUS > CANVAS_HEIGHT)) {
       this.setBallSpeed(state, 1.1 * ballSpeedX, -1.1 * ballSpeedY);
     }
     const collidesWithLeftPlayer = this.checkCollisionWithPaddle(
