@@ -38,6 +38,18 @@ const drawBall = (ctx: CanvasRenderingContext2D, ballX: number, ballY: number) =
   ctx.closePath();
 };
 
+const drawMiddleLine = (ctx: CanvasRenderingContext2D) => {
+  const { x, y } = scaleForCanvas(ctx.canvas);
+
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x(CANVAS_WIDTH / 2), 0);
+  ctx.lineTo(x(CANVAS_WIDTH / 2), y(CANVAS_HEIGHT));
+  ctx.strokeStyle = "#8979F2";
+  ctx.stroke();
+  ctx.closePath();
+};
+
 export const scaleCanvas = (canvas: HTMLCanvasElement, wrapper: HTMLDivElement) => {
   canvas.width = wrapper.clientWidth;
   canvas.height = wrapper.clientHeight;
@@ -47,6 +59,7 @@ export const updateGameCanvas = (ctx: CanvasRenderingContext2D, state: iGameStat
   const { leftPlayerY, rightPlayerY, ballPosition } = state;
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  drawMiddleLine(ctx);
   drawLeftPaddle(ctx, leftPlayerY);
   drawRightPaddle(ctx, rightPlayerY);
   drawBall(ctx, ballPosition.x, ballPosition.y);
