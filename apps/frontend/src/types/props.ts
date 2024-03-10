@@ -71,6 +71,7 @@ export type iGame = {
 };
 
 type Score = { leftPlayer: number; rightPlayer: number };
+
 type Coordinates = { x: number; y: number };
 
 export type iGameState = {
@@ -78,4 +79,9 @@ export type iGameState = {
   leftPlayerY: number;
   rightPlayerY: number;
   ballPosition: Coordinates;
+};
+
+export type iGameResult = {
+  score: Score;
+  winnerId: string;
 };

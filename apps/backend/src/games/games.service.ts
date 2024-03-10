@@ -133,7 +133,7 @@ export class GamesService {
     if (!!winnerId) {
       await this.setGameWinner(gameId, winnerId);
       socket.emit("gameTick", state);
-      socket.emit("endOfGame", { winnerId });
+      socket.emit("endOfGame", { winnerId, score: state.score });
       this.terminateGame(gameId);
       return;
     }
