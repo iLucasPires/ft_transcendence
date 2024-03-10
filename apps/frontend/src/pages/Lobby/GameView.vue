@@ -25,6 +25,7 @@ const reset = () => {
   game.value = null;
   gameResult.value = null;
   gameScore.value = null;
+  meStore.status.inGame = false;
 };
 
 onMounted(() => {
@@ -36,10 +37,12 @@ onMounted(() => {
     appStore.changeMessageLog("Warning: couldn't find an opponent, you were removed from the queue.");
   });
   gameSocket.on("matchFound", (match: iGame) => {
-    status.value = "in-game";
     game.value = match;
+    status.value = "in-game";
+    meStore.status.inGame = true;
   });
   gameSocket.on("matchTerminated", ({ reason }: { reason: string }) => {
+    meStore.status.inGame = false;
     appStore.changeMessageLog(`Warning! Match terminated: ${reason}`);
     setTimeout(() => {
       game.value = null;
@@ -47,8 +50,9 @@ onMounted(() => {
     }, 2000);
   });
   gameSocket.on("endOfGame", ({ winnerId, score }: iGameResult) => {
-    status.value = "post-game";
     gameScore.value = score;
+    status.value = "post-game";
+    meStore.status.inGame = false;
     if (winnerId === meStore.data!.id) {
       gameResult.value = "Victory";
     } else {
