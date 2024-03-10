@@ -8,12 +8,12 @@ defineProps<{ game: iGame }>();
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const wrapperRef = ref<HTMLDivElement | null>(null);
 const canvasCtx = computed(() => canvasRef.value?.getContext("2d"));
-let gameState = reactive({
+const gameState = ref<iGameState>({
   score: { leftPlayer: 0, rightPlayer: 0 },
   leftPlayerY: 270,
   rightPlayerY: 270,
   ballPosition: { x: 400, y: 300 },
-} as iGameState);
+});
 
 const handleResize = () => {
   const ctx = canvasCtx.value;
@@ -24,7 +24,7 @@ const handleResize = () => {
     return;
   }
   scaleCanvas(canvas, wrapper);
-  updateGameCanvas(ctx, gameState);
+  updateGameCanvas(ctx, gameState.value);
 };
 
 const handleKeyPress = (e: KeyboardEvent) => {
@@ -48,12 +48,12 @@ onMounted(() => {
   }
   const ctx = canvasCtx.value!;
   scaleCanvas(canvas, wrapper);
-  updateGameCanvas(ctx, gameState);
+  updateGameCanvas(ctx, gameState.value);
   window.addEventListener("resize", handleResize);
   window.addEventListener("keydown", handleKeyPress);
   window.addEventListener("keyup", handleKeyRelease);
   gameSocket.on("gameTick", (state: iGameState) => {
-    gameState = state;
+    gameState.value = state;
     updateGameCanvas(ctx, state);
   });
   gameSocket.emit("playerReady");
