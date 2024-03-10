@@ -68,7 +68,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="aspect-4/3 bg-base-200 w-[var(--canvas-width)]">
+  <div ref="wrapperRef" class="aspect-4/3 relative bg-base-200 w-[var(--canvas-width)]">
+    <div class="absolute z-40 top-0 left-0 p-4 flex items-center justify-around w-full">
+      <div class="flex flex-1 items-center gap-4">
+        <AAvatar isConnected size="10" :username="game.leftPlayer.username" :avatarUrl="game.leftPlayer.avatarUrl" />
+        <span class="font-bold text-lg text-primary">{{ game.leftPlayer.username }}</span>
+      </div>
+      <span class="font-bold text-2xl">{{ gameState.score.leftPlayer }}</span>
+      <span class="w-16" />
+      <span class="font-bold text-2xl">{{ gameState.score.rightPlayer }}</span>
+      <div class="flex flex-1 justify-end items-center gap-4">
+        <span class="font-bold text-lg text-primary">{{ game.rightPlayer.username }}</span>
+        <AAvatar
+          isConnected
+          size="10"
+          class="w-10"
+          :username="game.rightPlayer.username"
+          :avatarUrl="game.rightPlayer.avatarUrl"
+        />
+      </div>
+    </div>
     <canvas id="pong" ref="canvasRef" class="size-full"></canvas>
   </div>
 </template>
