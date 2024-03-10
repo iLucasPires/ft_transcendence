@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import router from "@/routes/vueRouter";
 import { gameSocket } from "@/socket";
 import type { iGame } from "@/types/props";
 
 const appStore = useAppStore();
-
 const status = ref<"idle" | "in-queue" | "in-game">("idle");
 const game = ref<iGame | null>(null);
 
@@ -29,6 +29,13 @@ onMounted(() => {
     status.value = "in-game";
     game.value = match;
   });
+  gameSocket.on("matchTerminated", ({ reason }: { reason: string }) => {
+    appStore.changeMessageLog(`Warning! Match terminated: ${reason}`);
+    setTimeout(() => {
+      game.value = null;
+      status.value = "idle";
+    }, 2000);
+  });
 });
 
 onUnmounted(() => {
@@ -53,7 +60,7 @@ onUnmounted(() => {
             <AButton class="btn-sm btn-secondary" text="Leave Queue" @click="handleClickLeaveQueue()" />
           </template>
         </div>
-        <OGameCanvas v-if="status === 'in-game' && !!game" :game="game" />
+        <OGameCanvas v-else-if="!!game" :game="game" />
       </div>
     </div>
   </div>

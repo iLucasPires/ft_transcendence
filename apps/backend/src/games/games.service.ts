@@ -119,6 +119,11 @@ export class GamesService {
     this.schedulerRegistry.addInterval(`game-${gameId}`, interval);
   }
 
+  terminateGame(gameId: string) {
+    delete this.games[gameId];
+    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
+  }
+
   async gameLoop(server: Server, room: GameRoom) {
     const { gameId, state, leftPlayerId, rightPlayerId } = room;
     const socket = server.to([leftPlayerId, rightPlayerId]);
@@ -126,11 +131,10 @@ export class GamesService {
     this.handleScore(room.state);
     const winnerId = this.getWinnerId(room);
     if (!!winnerId) {
-      const loserId = winnerId === leftPlayerId ? leftPlayerId : rightPlayerId;
       await this.setGameWinner(gameId, winnerId);
-      server.to([winnerId, loserId]).emit("endOfGame", { winnerId });
-      delete this.games[room.gameId];
-      this.schedulerRegistry.deleteInterval(`game-${gameId}`);
+      socket.emit("gameTick", state);
+      socket.emit("endOfGame", { winnerId });
+      this.terminateGame(gameId);
       return;
     }
     this.handleMovement(room.state);

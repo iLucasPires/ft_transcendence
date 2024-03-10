@@ -3,6 +3,7 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -15,7 +16,7 @@ import { GamesService } from "./games.service";
   namespace: "game",
   path: "/api/socket.io",
 })
-export class GamesGateway implements OnGatewayConnection {
+export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
@@ -30,6 +31,26 @@ export class GamesGateway implements OnGatewayConnection {
       return;
     }
     client.join(loggedInUser.id);
+  }
+
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    const loggedInUser = client.request.user;
+
+    if (!loggedInUser) {
+      return;
+    }
+    let opponentId: string;
+    const room = this.gamesService.findRoomByPlayer(loggedInUser.id);
+    if (!room) {
+      return;
+    }
+    if (room.leftPlayerId === loggedInUser.id) {
+      opponentId = room.rightPlayerId;
+    } else {
+      opponentId = room.leftPlayerId;
+    }
+    this.server.to(opponentId).emit("matchTerminated", { reason: "The opposing player has left the game" });
+    this.gamesService.terminateGame(room.gameId);
   }
 
   @SubscribeMessage("playerReady")
