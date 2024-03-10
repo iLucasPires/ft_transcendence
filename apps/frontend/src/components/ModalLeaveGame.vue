@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import router from "@/routes/vueRouter";
+import { gameSocket } from "@/socket";
+
 const meStore = useMeStore();
 const appStore = useAppStore();
 </script>
@@ -13,8 +16,10 @@ const appStore = useAppStore();
         <button
           class="btn-full btn-secondary"
           v-on:click="
+            gameSocket.emit('leaveGame');
             meStore.status.inGame = false;
             appStore.changeModalLeaveGame();
+            router.push({ name: appStore.leaveGameTo });
           "
         >
           Leave game

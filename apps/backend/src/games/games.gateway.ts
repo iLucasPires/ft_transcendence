@@ -117,4 +117,17 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       room.state.rightPlayerMovement = "idle";
     }
   }
+
+  @SubscribeMessage("leaveGame")
+  handleForfeitGame(@ConnectedSocket() client: Socket) {
+    const loggedInUser = client.request.user;
+    const room = this.gamesService.findRoomByPlayer(loggedInUser.id);
+
+    if (!room) {
+      throw new WsException("Player is not in an existing room");
+    }
+    const opponentId = loggedInUser.id === room.leftPlayerId ? room.rightPlayerId : room.leftPlayerId;
+    this.server.to(opponentId).emit("matchTerminated", { reason: "The opposing player has left the game" });
+    this.gamesService.terminateGame(room.gameId);
+  }
 }

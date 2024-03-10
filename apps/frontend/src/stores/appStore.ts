@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { RouteRecordName } from "vue-router";
 
 type UserViewTabs = "all" | "friends" | "blocked";
 
@@ -9,6 +10,7 @@ export const useAppStore = defineStore("appStore", {
       logTimeout: null as NodeJS.Timeout | null,
       tab: "all" as UserViewTabs,
       theme: "dark",
+      leaveGameTo: undefined as RouteRecordName | undefined,
       modalLeaveGame: false,
       modalProfile: false,
       modalSearch: false,
@@ -23,7 +25,10 @@ export const useAppStore = defineStore("appStore", {
       document.documentElement.setAttribute("data-theme", this.theme);
     },
 
-    changeModalLeaveGame() {
+    changeModalLeaveGame(to?: RouteRecordName) {
+      if (!!to) {
+        this.leaveGameTo = to;
+      }
       this.modalLeaveGame = !this.modalLeaveGame;
     },
 

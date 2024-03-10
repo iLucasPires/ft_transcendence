@@ -5,6 +5,8 @@ import type { iGame, iGameState } from "@/types/props";
 
 defineProps<{ game: iGame }>();
 
+const meStore = useMeStore();
+
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const wrapperRef = ref<HTMLDivElement | null>(null);
 const canvasCtx = computed(() => canvasRef.value?.getContext("2d"));
@@ -57,6 +59,7 @@ onMounted(() => {
     updateGameCanvas(ctx, state);
   });
   gameSocket.emit("playerReady");
+  meStore.status.inGame = true;
 });
 
 onUnmounted(() => {

@@ -1,12 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-
-
+import ChatView from "@/pages/Lobby/ChatView.vue";
+import EditView from "@/pages/Lobby/EditView.vue";
 import GameView from "@/pages/Lobby/GameView.vue";
 import ProfileView from "@/pages/Lobby/ProfileView.vue";
 import UsersView from "@/pages/Lobby/UsersView.vue";
-import EditView from "@/pages/Lobby/EditView.vue";
-import ChatView from "@/pages/Lobby/ChatView.vue";
 
 const routes = [
   { path: "/2fa", name: "2fa", component: () => import("@/pages/TwoFAView.vue") },
@@ -45,11 +43,16 @@ router.beforeEach(async (to, from, next) => {
   }
   if (session) {
     if (!meStore.data) appStore.changeMessageLog(await meStore.setMe());
-    if (!meStore.is2FA && to.name === "2fa") return next({ name: "lobby" });
 
+    if (!meStore.is2FA && to.name === "2fa") return next({ name: "lobby" });
     if (meStore.is2FA) {
       if (meStore.isApproved && to.name === "2fa") return next({ name: "lobby" });
       if (!meStore.isApproved && to.name !== "2fa") return next({ name: "2fa" });
+    }
+
+    if (from.name === "game" && meStore.status.inGame) {
+      appStore.changeModalLeaveGame(to.name ?? undefined);
+      return;
     }
   }
 
