@@ -202,7 +202,7 @@ export class GamesService {
       return false;
     }
     const distanceFromPaddle = Math.abs(ballX - paddleX);
-    const isMovingTowardsPaddle = ballSpeedX < 0 ? ballX > paddleX : ballX < paddleX;
+    const isMovingTowardsPaddle = ballSpeedX < 0 ? paddleX < CANVAS_WIDTH / 2 : paddleX > CANVAS_WIDTH / 2;
     return distanceFromPaddle <= BALL_RADIUS && isMovingTowardsPaddle;
   }
 
