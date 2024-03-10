@@ -208,11 +208,11 @@ export class GamesService {
 
   private handleScore(state: GameState) {
     const { x: ballX } = state.ballPosition;
-    if (ballX - 8 < 0) {
-      state.score.leftPlayer += 1;
-      this.resetBall(state);
-    } else if (ballX + 8 > CANVAS_WIDTH) {
+    if (ballX - BALL_RADIUS <= 0) {
       state.score.rightPlayer += 1;
+      this.resetBall(state);
+    } else if (ballX + BALL_RADIUS >= CANVAS_WIDTH) {
+      state.score.leftPlayer += 1;
       this.resetBall(state);
     }
   }
