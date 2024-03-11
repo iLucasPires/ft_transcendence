@@ -34,7 +34,7 @@ onMounted(async () => {
       </ul>
       <button @click="$emit('clickClose')" class="btn btn-sm absolute top-5 right-5">&times;</button>
       <div class="overflow-auto w-full">
-        <OGamesHistory :games="games" />
+        <OGamesHistory :username="user.username" :games="games" />
       </div>
     </div>
   </dialog>

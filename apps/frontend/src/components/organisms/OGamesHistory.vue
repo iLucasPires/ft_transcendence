@@ -1,24 +1,22 @@
 <script setup lang="ts">
 import type { iGame } from "@/types/props";
 
-defineProps<{ games: iGame[] }>();
-
-const meStore = useMeStore();
+const props = defineProps<{ username: string; games: iGame[] }>();
 
 const getOpponentUsername = (game: iGame) => {
-  if (game.leftPlayer.username === meStore.data!.username) {
+  if (game.leftPlayer.username === props.username) {
     return game.rightPlayer.username;
   }
-  if (game.rightPlayer.username === meStore.data!.username) {
+  if (game.rightPlayer.username === props.username) {
     return game.leftPlayer.username;
   }
 };
 
 const getOpponentAvatar = (game: iGame) => {
-  if (game.leftPlayer.username === meStore.data!.username) {
+  if (game.leftPlayer.username === props.username) {
     return game.rightPlayer.avatarUrl ?? `https://robohash.org/${game.rightPlayer.username}.png`;
   }
-  if (game.rightPlayer.username === meStore.data!.username) {
+  if (game.rightPlayer.username === props.username) {
     return game.leftPlayer.avatarUrl ?? `https://robohash.org/${game.leftPlayer.username}.png`;
   }
 };

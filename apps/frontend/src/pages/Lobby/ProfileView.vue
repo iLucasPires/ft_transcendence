@@ -56,7 +56,7 @@ onMounted(async () => {
       </div>
 
       <div class="border-card overflow-x-auto h-full">
-        <OGamesHistory :games="games" />
+        <OGamesHistory :username="meStore.data!.username" :games="games" />
       </div>
     </div>
   </main>
