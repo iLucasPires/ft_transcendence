@@ -3,7 +3,8 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Server } from "socket.io";
 import { Repository } from "typeorm";
-import { GameEntity } from "./game.entity";
+import { FindGameDto } from "./dto";
+import { GameEntity, StatusType } from "./game.entity";
 
 const BALL_RADIUS = 8;
 const PADDLE_WIDTH = 16;
@@ -57,6 +58,26 @@ type GameRoom = {
   rightPlayerId: string;
 };
 
+interface FindUserGamesQueryResult {
+  game_id: string;
+  game_status: StatusType;
+  game_score: Score;
+  leftPlayer_id: string;
+  leftPlayer_username: string;
+  leftPlayer_avatar_url: string;
+  rightPlayer_id: string;
+  rightPlayer_username: string;
+  rightPlayer_avatar_url: string;
+  result: "Victory" | "Defeat";
+  winner_id: string;
+  winner_username: string;
+  winner_avatar_url: string;
+  game_started_at: Date;
+  game_ended_at: Date;
+  game_created_at: Date;
+  game_updated_at: Date;
+}
+
 @Injectable()
 export class GamesService {
   private games: Record<string, GameRoom> = {};
@@ -86,10 +107,52 @@ export class GamesService {
     return game;
   }
 
-  async setGameWinner(gameId: string, winnerId) {
-    await this.gamesRepository.update(gameId, {
-      winner: { id: winnerId },
-    });
+  async findUserGames(userId: string): Promise<FindGameDto[]> {
+    const result = await this.selectGames()
+      .addSelect(
+        `CASE
+          WHEN game.status = 'terminated'
+          THEN 'Terminated'
+          WHEN winner.id = :id
+          THEN 'Victory'
+          ELSE 'Defeat'
+        END`,
+        "result",
+      )
+      .leftJoinAndSelect("game.winner", "winner")
+      .where("leftPlayer.id = :id OR rightPlayer.id = :id")
+      .andWhere("game.status IN ('finished', 'terminated')")
+      .orderBy("game.startedAt", "DESC")
+      .setParameter("id", userId)
+      .getRawMany<FindUserGamesQueryResult>();
+
+    return result.map((game) => ({
+      id: game.game_id,
+      status: game.game_status,
+      score: game.game_score,
+      leftPlayer: {
+        id: game.leftPlayer_id,
+        username: game.leftPlayer_username,
+        avatarUrl: game.leftPlayer_avatar_url,
+      },
+      rightPlayer: {
+        id: game.rightPlayer_id,
+        username: game.rightPlayer_username,
+        avatarUrl: game.rightPlayer_avatar_url,
+      },
+      result: game.result,
+      winner: game.winner_id
+        ? {
+            id: game.winner_id,
+            username: game.winner_username,
+            avatarUrl: game.winner_avatar_url,
+          }
+        : null,
+      startedAt: game.game_started_at,
+      endedAt: game.game_ended_at,
+      createdAt: game.game_created_at,
+      updatedAt: game.game_updated_at,
+    }));
   }
 
   private selectGames() {
@@ -113,14 +176,31 @@ export class GamesService {
     );
   }
 
-  startGame(server: Server, gameId: string) {
+  async startGame(server: Server, gameId: string) {
     this.games[gameId].state.started = true;
+    await this.gamesRepository.update(gameId, { status: "in_progress", startedAt: new Date(Date.now()) });
     const interval = setInterval(() => this.gameLoop(server, this.games[gameId]), 1000 / 30);
     this.schedulerRegistry.addInterval(`game-${gameId}`, interval);
   }
 
-  terminateGame(gameId: string) {
+  async finishGame(gameId: string, winnerId: string, score: Score) {
     delete this.games[gameId];
+    await this.gamesRepository.update(gameId, {
+      winner: { id: winnerId },
+      score,
+      status: "finished",
+      endedAt: new Date(Date.now()),
+    });
+    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
+  }
+
+  async terminateGame(gameId: string, score: Score) {
+    delete this.games[gameId];
+    await this.gamesRepository.update(gameId, {
+      score,
+      status: "terminated",
+      endedAt: new Date(Date.now()),
+    });
     this.schedulerRegistry.deleteInterval(`game-${gameId}`);
   }
 
@@ -131,10 +211,9 @@ export class GamesService {
     this.handleScore(room.state);
     const winnerId = this.getWinnerId(room);
     if (!!winnerId) {
-      await this.setGameWinner(gameId, winnerId);
       socket.emit("gameTick", state);
       socket.emit("endOfGame", { winnerId, score: state.score });
-      this.terminateGame(gameId);
+      await this.finishGame(gameId, winnerId, state.score);
       return;
     }
     this.handleMovement(room.state);

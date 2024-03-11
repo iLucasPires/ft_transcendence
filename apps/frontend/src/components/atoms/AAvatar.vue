@@ -7,11 +7,12 @@ const props = defineProps<{
 }>();
 
 const getAvatar = () => props.avatarUrl || `https://robohash.org/${props.username}.png`;
+const getAvatarSize = () => `w-${props.size ?? "24"}`;
 </script>
 
 <template>
-  <div :class="`avatar w-${size ?? '24'} ${isConnected ? 'online' : 'offline'}`">
-    <div class="rounded-full bg-base-200">
+  <div :class="`avatar ${isConnected ? 'online' : 'offline'} ${getAvatarSize()}`">
+    <div :class="`rounded-full bg-base-200`">
       <img :src="getAvatar()" :alt="`avatar of ${username}`" />
     </div>
   </div>

@@ -33,7 +33,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(loggedInUser.id);
   }
 
-  handleDisconnect(@ConnectedSocket() client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
     const loggedInUser = client.request.user;
 
     if (!loggedInUser) {
@@ -50,11 +50,11 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       opponentId = room.leftPlayerId;
     }
     this.server.to(opponentId).emit("matchTerminated", { reason: "The opposing player has left the game" });
-    this.gamesService.terminateGame(room.gameId);
+    await this.gamesService.terminateGame(room.gameId, room.state.score);
   }
 
   @SubscribeMessage("playerReady")
-  handleStartGame(@ConnectedSocket() client: Socket) {
+  async handleStartGame(@ConnectedSocket() client: Socket) {
     const loggedInUser = client.request.user;
     const room = this.gamesService.findRoomByPlayer(loggedInUser.id);
 
@@ -70,7 +70,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       room.state.rightPlayerReady = true;
     }
     if (room.state.leftPlayerReady && room.state.rightPlayerReady) {
-      this.gamesService.startGame(this.server, room.gameId);
+      await this.gamesService.startGame(this.server, room.gameId);
     }
   }
 
@@ -119,7 +119,7 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("leaveGame")
-  handleForfeitGame(@ConnectedSocket() client: Socket) {
+  async handleForfeitGame(@ConnectedSocket() client: Socket) {
     const loggedInUser = client.request.user;
     const room = this.gamesService.findRoomByPlayer(loggedInUser.id);
 
@@ -128,6 +128,6 @@ export class GamesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     const opponentId = loggedInUser.id === room.leftPlayerId ? room.rightPlayerId : room.leftPlayerId;
     this.server.to(opponentId).emit("matchTerminated", { reason: "The opposing player has left the game" });
-    this.gamesService.terminateGame(room.gameId);
+    await this.gamesService.terminateGame(room.gameId, room.state.score);
   }
 }

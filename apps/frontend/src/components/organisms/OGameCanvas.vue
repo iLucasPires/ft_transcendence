@@ -74,7 +74,11 @@ onUnmounted(() => {
   <div ref="wrapperRef" class="aspect-4/3 relative bg-base-200 w-[var(--canvas-width)]">
     <div class="absolute z-40 top-0 left-0 p-4 flex items-center justify-around w-full select-none">
       <div class="flex flex-1 items-center gap-4">
-        <AAvatar isConnected size="10" :username="game.leftPlayer.username" :avatarUrl="game.leftPlayer.avatarUrl" />
+        <img
+          class="w-10 rounded-full bg-base-200"
+          :src="game.leftPlayer.avatarUrl ?? `https://robohash.org/${game.leftPlayer.username}.png`"
+          :alt="`avatar of ${game.leftPlayer.username}`"
+        />
         <span class="font-bold text-lg text-primary">{{ game.leftPlayer.username }}</span>
       </div>
       <span class="font-bold text-2xl">{{ gameState.score.leftPlayer }}</span>
@@ -82,7 +86,11 @@ onUnmounted(() => {
       <span class="font-bold text-2xl">{{ gameState.score.rightPlayer }}</span>
       <div class="flex flex-1 justify-end items-center gap-4">
         <span class="font-bold text-lg text-primary">{{ game.rightPlayer.username }}</span>
-        <AAvatar isConnected size="10" :username="game.rightPlayer.username" :avatarUrl="game.rightPlayer.avatarUrl" />
+        <img
+          class="w-10 rounded-full bg-base-200"
+          :src="game.rightPlayer.avatarUrl ?? `https://robohash.org/${game.rightPlayer.username}.png`"
+          :alt="`avatar of ${game.rightPlayer.username}`"
+        />
       </div>
     </div>
     <canvas id="pong" ref="canvasRef" class="size-full"></canvas>
