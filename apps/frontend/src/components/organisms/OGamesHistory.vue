@@ -38,7 +38,7 @@ const getOpponentAvatar = (game: iGame) => {
         <th>{{ idx + 1 }}</th>
         <td class="flex items-center gap-2">
           <img
-            class="w-8 rounded-full bg-base-200"
+            class="size-8 rounded-full bg-base-200"
             :src="getOpponentAvatar(game)"
             :alt="`avatar of ${getOpponentUsername(game)}`"
           />

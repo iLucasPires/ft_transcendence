@@ -75,7 +75,7 @@ onUnmounted(() => {
     <div class="absolute z-40 top-0 left-0 p-4 flex items-center justify-around w-full select-none">
       <div class="flex flex-1 items-center gap-4">
         <img
-          class="w-10 rounded-full bg-base-200"
+          class="size-10 rounded-full bg-base-200"
           :src="game.leftPlayer.avatarUrl ?? `https://robohash.org/${game.leftPlayer.username}.png`"
           :alt="`avatar of ${game.leftPlayer.username}`"
         />
@@ -87,7 +87,7 @@ onUnmounted(() => {
       <div class="flex flex-1 justify-end items-center gap-4">
         <span class="font-bold text-lg text-primary">{{ game.rightPlayer.username }}</span>
         <img
-          class="w-10 rounded-full bg-base-200"
+          class="size-10 rounded-full bg-base-200"
           :src="game.rightPlayer.avatarUrl ?? `https://robohash.org/${game.rightPlayer.username}.png`"
           :alt="`avatar of ${game.rightPlayer.username}`"
         />
