@@ -127,4 +127,8 @@ export const api = {
     const res = await utils.safeFetch("auth/2fa/verify", "POST", JSON.stringify({ code }), JSON_HEADER);
     return res;
   },
+
+  async getUserGames(username: string) {
+    return await utils.safeFetch(`games/${username}`);
+  },
 };

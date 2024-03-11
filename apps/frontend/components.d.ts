@@ -28,6 +28,7 @@ declare module 'vue' {
     MTabSelectUsers: typeof import('./src/components/molecules/MTabSelectUsers.vue')['default']
     ODetailChat: typeof import('./src/components/organisms/ODetailChat.vue')['default']
     OGameCanvas: typeof import('./src/components/organisms/OGameCanvas.vue')['default']
+    OGamesHistory: typeof import('./src/components/organisms/OGamesHistory.vue')['default']
     OListChatMessages: typeof import('./src/components/organisms/OListChatMessages.vue')['default']
     OListChatUsers: typeof import('./src/components/organisms/OListChatUsers.vue')['default']
     OtpInput: typeof import('./src/components/OtpInput.vue')['default']

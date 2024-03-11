@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { api } from "@/routes/apiRouter";
+import type { iGame } from "@/types/props";
+
+const appStore = useAppStore();
 const meStore = useMeStore();
 
 const infos = computed(() => {
@@ -8,6 +12,15 @@ const infos = computed(() => {
     { name: "Status", value: "Online" },
     { name: "2FA", value: meStore.is2FA ? "Enabled" : "Disabled" },
   ];
+});
+const games = ref<iGame[]>([]);
+
+onMounted(async () => {
+  const res = await api.getUserGames(meStore.data?.username ?? "");
+  if (!res.ok) {
+    appStore.changeMessageLog("Error: could not fetch match history");
+  }
+  games.value = await res.json();
 });
 </script>
 
@@ -42,7 +55,9 @@ const infos = computed(() => {
         </ul>
       </div>
 
-      <div class="column h-full separate rounded relative items-center md:flex-row border-card"></div>
+      <div class="border-card overflow-x-auto h-full">
+        <OGamesHistory :games="games" />
+      </div>
     </div>
   </main>
 </template>
