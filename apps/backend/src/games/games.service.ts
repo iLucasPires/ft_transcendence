@@ -68,7 +68,7 @@ interface FindUserGamesQueryResult {
   rightPlayer_id: string;
   rightPlayer_username: string;
   rightPlayer_avatar_url: string;
-  result: "Victory" | "Defeat";
+  result: "Victory" | "Defeat" | "Terminated" | "In Progress";
   winner_id: string;
   winner_username: string;
   winner_avatar_url: string;
@@ -111,6 +111,8 @@ export class GamesService {
     const result = await this.selectGames()
       .addSelect(
         `CASE
+          WHEN game.status IN ('pending', 'in_progress')
+          THEN 'In Progress'
           WHEN game.status = 'terminated'
           THEN 'Terminated'
           WHEN winner.id = :id
@@ -184,6 +186,7 @@ export class GamesService {
   }
 
   async finishGame(gameId: string, winnerId: string, score: Score) {
+    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
     delete this.games[gameId];
     await this.gamesRepository.update(gameId, {
       winner: { id: winnerId },
@@ -191,17 +194,16 @@ export class GamesService {
       status: "finished",
       endedAt: new Date(Date.now()),
     });
-    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
   }
 
   async terminateGame(gameId: string, score: Score) {
+    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
     delete this.games[gameId];
     await this.gamesRepository.update(gameId, {
       score,
       status: "terminated",
       endedAt: new Date(Date.now()),
     });
-    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
   }
 
   async gameLoop(server: Server, room: GameRoom) {

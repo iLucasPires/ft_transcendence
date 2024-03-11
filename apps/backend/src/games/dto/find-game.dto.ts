@@ -39,8 +39,8 @@ export class FindGameDto {
   @ApiResponseProperty({ type: ScoreDto })
   score: ScoreDto;
 
-  @ApiResponseProperty({ type: String, enum: ["Victory", "Defeat", "Terminated"] })
-  result: "Victory" | "Defeat" | "Terminated";
+  @ApiResponseProperty({ type: String, enum: ["In Progress", "Victory", "Defeat", "Terminated"] })
+  result: "In Progress" | "Victory" | "Defeat" | "Terminated";
 
   @ApiResponseProperty({ type: Date })
   startedAt?: Date;
