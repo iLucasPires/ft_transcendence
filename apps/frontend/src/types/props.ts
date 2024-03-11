@@ -63,9 +63,14 @@ export type iChatException = {
 
 export type iGame = {
   id: string;
+  status: "pending" | "in_progress" | "finished" | "terminated";
   leftPlayer: Pick<iUser, "id" | "username" | "avatarUrl">;
   rightPlayer: Pick<iUser, "id" | "username" | "avatarUrl">;
   winner?: Pick<iUser, "id" | "username" | "avatarUrl">;
+  score: Score;
+  result: "In Progress" | "Victory" | "Defeat" | "Terminated";
+  startedAt: string;
+  endedAt: string;
   createdAt: string;
   updatedAt: string;
 };
