@@ -16,10 +16,6 @@ const isOwnUser = (user: iUser) => user.username === meStore.data?.username;
   >
     <AAvatar :username="user.username" :avatarUrl="user.avatarUrl" :isConnected="user.isConnected" />
     <h2 class="title">{{ user.username }}</h2>
-    <div class="wrap gap-2">
-      <div class="btn btn-sm">Wins<span class="badge badge-primary">10</span></div>
-      <div class="btn btn-sm">Losses<span class="badge badge-primary">10</span></div>
-    </div>
 
     <div v-if="!isOwnUser(user)" class="dropdown dropdown-end z-50 absolute top-5 right-5">
       <div tabindex="0" role="button" class="btn btn-sm">&vellip;</div>

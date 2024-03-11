@@ -7,8 +7,8 @@ const meStore = useMeStore();
 
 const infos = computed(() => {
   return [
-    { name: "Wins", value: 10 },
-    { name: "Losses", value: 10 },
+    { name: "Wins", value: games.value.reduce((acc, game) => acc + Number(game.result === "Victory"), 0) },
+    { name: "Losses", value: games.value.reduce((acc, game) => acc + Number(game.result === "Defeat"), 0) },
     { name: "Status", value: "Online" },
     { name: "2FA", value: meStore.is2FA ? "Enabled" : "Disabled" },
   ];
