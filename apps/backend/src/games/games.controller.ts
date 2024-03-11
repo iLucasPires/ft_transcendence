@@ -1,10 +1,13 @@
+import { TwoFactorAuthGuard } from "@/auth/guards/2fa.guard";
 import { UsersService } from "@/users/users.service";
-import { Controller, Get, HttpStatus, NotFoundException, Param } from "@nestjs/common";
-import { ApiResponse } from "@nestjs/swagger";
+import { Controller, Get, HttpStatus, NotFoundException, Param, UseGuards } from "@nestjs/common";
+import { ApiCookieAuth, ApiResponse } from "@nestjs/swagger";
 import { FindGameDto } from "./dto";
 import { GamesService } from "./games.service";
 
 @Controller("games")
+@UseGuards(TwoFactorAuthGuard)
+@ApiCookieAuth("connect.sid")
 export class GamesController {
   constructor(
     private readonly gamesService: GamesService,
