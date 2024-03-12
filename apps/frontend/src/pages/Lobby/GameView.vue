@@ -4,8 +4,9 @@ import type { iGame, iGameResult } from "@/types/props";
 
 const appStore = useAppStore();
 const meStore = useMeStore();
+
+const { currentGame } = storeToRefs(meStore);
 const status = ref<"idle" | "in-queue" | "in-game" | "post-game">("idle");
-const game = ref<iGame | null>(null);
 const gameResult = ref<string | null>(null);
 const gameScore = ref<iGameResult["score"] | null>(null);
 const map = ref<"classic" | "soccer" | "tennis-green" | "tennis-orange" | null>(null);
@@ -21,11 +22,11 @@ const handleClickLeaveQueue = () => {
 };
 
 const reset = () => {
+  map.value = null;
   status.value = "idle";
-  game.value = null;
   gameResult.value = null;
   gameScore.value = null;
-  meStore.status.inGame = false;
+  meStore.changeStatusGame(null);
 };
 
 onMounted(() => {
@@ -37,33 +38,35 @@ onMounted(() => {
     appStore.changeMessageLog("Warning: couldn't find an opponent, you were removed from the queue.");
   });
   gameSocket.on("matchFound", (match: iGame) => {
-    game.value = match;
     status.value = "in-game";
-    meStore.status.inGame = true;
+    meStore.changeStatusGame(match);
   });
   gameSocket.on("matchTerminated", ({ reason }: { reason: string }) => {
-    map.value = null;
-    meStore.status.inGame = false;
     appStore.changeMessageLog(`Warning! Match terminated: ${reason}`);
     setTimeout(() => {
-      game.value = null;
+      map.value = null;
       status.value = "idle";
+      meStore.changeStatusGame(null);
     }, 2000);
   });
   gameSocket.on("endOfGame", ({ winnerId, score }: iGameResult) => {
     map.value = null;
     gameScore.value = score;
     status.value = "post-game";
-    meStore.status.inGame = false;
+    meStore.changeStatusGame(null);
     if (winnerId === meStore.data!.id) {
       gameResult.value = "Victory";
     } else {
       gameResult.value = "Defeat";
     }
   });
+  if (!!currentGame.value) {
+    status.value = "in-game";
+  }
 });
 
 onUnmounted(() => {
+  meStore.changeStatusGame(null);
   gameSocket.removeAllListeners();
   if (status.value === "in-queue") {
     gameSocket.emit("leaveQueue");
@@ -96,7 +99,7 @@ onUnmounted(() => {
           </template>
         </div>
         <MMapPicker v-else-if="!map" v-model="map" />
-        <OGameCanvas v-else-if="!!game && !!map" :map="map" :game="game" />
+        <OGameCanvas v-else-if="!!currentGame && !!map" :map="map" :game="currentGame" />
       </div>
     </div>
   </div>

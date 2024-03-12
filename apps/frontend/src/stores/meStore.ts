@@ -1,6 +1,6 @@
 import { api, utils } from "@/routes/apiRouter";
 import { chatSocket, socket } from "@/socket";
-import type { iUser } from "@/types/props.js";
+import type { iGame, iUser } from "@/types/props.js";
 import { defineStore } from "pinia";
 
 export const useMeStore = defineStore("meStore", {
@@ -8,6 +8,7 @@ export const useMeStore = defineStore("meStore", {
     return {
       data: null as iUser | null,
       status: { inGame: false },
+      currentGame: null as iGame | null,
     };
   },
 
@@ -91,8 +92,9 @@ export const useMeStore = defineStore("meStore", {
       return `Failed: ${await utils.handleMessage(res)}`;
     },
 
-    changeStatusGame() {
-      this.status.inGame = !this.status.inGame;
+    changeStatusGame(game: iGame | null) {
+      this.currentGame = game;
+      this.status.inGame = Boolean(game);
     },
 
     async verify2FA(totp: string) {
