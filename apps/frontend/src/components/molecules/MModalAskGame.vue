@@ -7,7 +7,7 @@ const appStore = useAppStore();
 const meStore = useMeStore();
 
 const gameInvite = ref<iGameInvite | null>(null);
-const showModal = computed(() => Boolean(gameInvite.value));
+const showModal = ref<boolean>(false);
 
 const onAcceptInvite = () => {
   gameSocket.emit("acceptInvite", gameInvite.value!.id);
@@ -57,6 +57,10 @@ onUnmounted(() => {
   gameSocket.removeListener("privateGameCreated");
   gameSocket.removeListener("inviteTimeout");
   gameSocket.removeListener("inviteRejected");
+});
+
+watch(gameInvite, (value) => {
+  showModal.value = Boolean(value);
 });
 </script>
 
