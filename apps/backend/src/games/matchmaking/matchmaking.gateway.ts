@@ -50,6 +50,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (this.matchmakingService.isInQueue(loggedInUser)) {
       this.matchmakingService.removeFromQueue(loggedInUser);
     }
+    if (this.matchmakingService.userHasInvite(loggedInUser)) {
+      const invite = this.matchmakingService.findInviteById(loggedInUser.id);
+      this.server.to(invite.from.id).emit("inviteRejected", loggedInUser.username);
+      this.matchmakingService.removeInvite(invite.id);
+    }
   }
 
   @SubscribeMessage("findGame")
