@@ -79,8 +79,8 @@ export class MatchmakingService {
     return this.invites.find((invite) => invite.id === inviteId);
   }
 
-  userHasInvite(user: UserEntity) {
-    return this.invites.some((invite) => invite.to.id === user.id);
+  findUserInvite(user: UserEntity) {
+    return this.invites.find((invite) => invite.to.id === user.id);
   }
 
   removeInvite(inviteId: string) {

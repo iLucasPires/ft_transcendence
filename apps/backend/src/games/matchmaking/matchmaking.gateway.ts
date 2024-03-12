@@ -50,9 +50,10 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (this.matchmakingService.isInQueue(loggedInUser)) {
       this.matchmakingService.removeFromQueue(loggedInUser);
     }
-    if (this.matchmakingService.userHasInvite(loggedInUser)) {
-      const invite = this.matchmakingService.findInviteById(loggedInUser.id);
-      this.server.to(invite.from.id).emit("inviteRejected", loggedInUser.username);
+    const invite = this.matchmakingService.findUserInvite(loggedInUser);
+    if (invite) {
+      const opponentId = invite.from.id === loggedInUser.id ? invite.to.id : invite.from.id;
+      this.server.to(opponentId).emit("inviteCancelled", "The opponent has disconnected");
       this.matchmakingService.removeInvite(invite.id);
     }
   }
@@ -90,7 +91,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (!this.connectionStatusService.isConnected(opponent.id)) {
       throw new WsException("Couldn't invite user, user is offline");
     }
-    if (this.matchmakingService.userHasInvite(opponent)) {
+    if (!!this.matchmakingService.findUserInvite(opponent)) {
       throw new WsException("Couldn't invite user, user is answering another invite");
     }
     if (!!this.gamesService.findRoomByPlayer(opponent.id)) {

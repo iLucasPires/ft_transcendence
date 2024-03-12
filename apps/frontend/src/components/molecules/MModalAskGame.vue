@@ -37,6 +37,12 @@ onMounted(() => {
     // From
     appStore.changeMessageLog(`The user ${username} didn't respond to your invite.`);
   });
+  gameSocket.on("inviteCancelled", (message: string) => {
+    if (gameInvite.value) {
+      gameInvite.value = null;
+    }
+    appStore.changeMessageLog(`The game invite was cancelled: ${message}`);
+  });
   gameSocket.on("inviteRejected", (username: string) => {
     appStore.changeMessageLog(`The user ${username} rejected your invite.`);
   });
