@@ -90,3 +90,5 @@ export type iGameResult = {
   score: Score;
   winnerId: string;
 };
+
+export type iMap = "classic" | "soccer" | "tennis-green" | "tennis-orange";

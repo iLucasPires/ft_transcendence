@@ -3,7 +3,7 @@ import { scaleCanvas, updateGameCanvas } from "@/lib/gameCanvas";
 import { gameSocket } from "@/socket";
 import type { iGame, iGameState } from "@/types/props";
 
-defineProps<{ game: iGame }>();
+defineProps<{ game: iGame; map: "classic" | "soccer" | "tennis-green" | "tennis-orange" }>();
 
 const meStore = useMeStore();
 
@@ -71,7 +71,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="aspect-4/3 relative bg-base-200 w-[var(--canvas-width)]">
+  <div ref="wrapperRef" class="aspect-4/3 relative w-[var(--canvas-width)]">
     <div class="absolute z-40 top-0 left-0 p-4 flex items-center justify-around w-full select-none">
       <div class="flex flex-1 items-center gap-4">
         <img
@@ -93,6 +93,9 @@ onUnmounted(() => {
         />
       </div>
     </div>
-    <canvas id="pong" ref="canvasRef" class="size-full"></canvas>
+    <canvas id="pong" ref="canvasRef" class="absolute size-full top-0 z-30"></canvas>
+    <div class="absolute size-full top-0 z-20">
+      <img :src="`/maps/${map}.png`" />
+    </div>
   </div>
 </template>

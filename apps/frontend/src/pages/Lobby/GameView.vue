@@ -9,6 +9,7 @@ const status = ref<"idle" | "in-queue" | "in-game" | "post-game">("idle");
 const game = ref<iGame | null>(null);
 const gameResult = ref<string | null>(null);
 const gameScore = ref<iGameResult["score"] | null>(null);
+const map = ref<"classic" | "soccer" | "tennis-green" | "tennis-orange" | null>(null);
 
 const handleClickFindGame = () => {
   gameSocket.emit("findGame");
@@ -42,6 +43,7 @@ onMounted(() => {
     meStore.status.inGame = true;
   });
   gameSocket.on("matchTerminated", ({ reason }: { reason: string }) => {
+    map.value = null;
     meStore.status.inGame = false;
     appStore.changeMessageLog(`Warning! Match terminated: ${reason}`);
     setTimeout(() => {
@@ -50,6 +52,7 @@ onMounted(() => {
     }, 2000);
   });
   gameSocket.on("endOfGame", ({ winnerId, score }: iGameResult) => {
+    map.value = null;
     gameScore.value = score;
     status.value = "post-game";
     meStore.status.inGame = false;
@@ -93,7 +96,8 @@ onUnmounted(() => {
             </template>
           </template>
         </div>
-        <OGameCanvas v-else-if="!!game" :game="game" />
+        <MMapPicker v-else-if="!map" v-model="map" />
+        <OGameCanvas v-else-if="!!game && !!map" :map="map" :game="game" />
       </div>
     </div>
   </div>
