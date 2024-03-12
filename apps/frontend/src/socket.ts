@@ -20,3 +20,8 @@ chatSocket.on("exception", ({ message }: iChatException) => {
   const appStore = useAppStore();
   appStore.changeMessageLog(`Error: ${message}`);
 });
+
+gameSocket.on("exception", ({ message }: iChatException) => {
+  const appStore = useAppStore();
+  appStore.changeMessageLog(`Error: ${message}`);
+});
