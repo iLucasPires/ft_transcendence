@@ -124,7 +124,7 @@ export class GamesService {
       .leftJoinAndSelect("game.winner", "winner")
       .where("leftPlayer.id = :id OR rightPlayer.id = :id")
       .andWhere("game.status IN ('finished', 'terminated')")
-      .orderBy("game.startedAt", "DESC")
+      .orderBy("game.createdAt", "DESC")
       .setParameter("id", userId)
       .getRawMany<FindUserGamesQueryResult>();
 
