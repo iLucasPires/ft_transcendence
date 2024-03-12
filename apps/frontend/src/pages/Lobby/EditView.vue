@@ -15,11 +15,11 @@ async function handleSubmit2fa(code: string) {
   const is2FA = meStore.is2FA;
   const message = await meStore.change2FA(code, !is2FA);
 
-  qrCode.value = "";
   appStore.changeMessageLog(message);
   if (message.includes("Failed")) {
     return;
   }
+  qrCode.value = "";
   modal.value?.close();
 }
 
