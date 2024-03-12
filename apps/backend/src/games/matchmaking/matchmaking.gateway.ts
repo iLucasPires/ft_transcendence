@@ -83,13 +83,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       throw new WsException("Opponent not found");
     }
     if (!this.connectionStatusService.isConnected(opponent.id)) {
-      throw new WsException("Error: couldn't invite user, user is offline");
+      throw new WsException("Couldn't invite user, user is offline");
     }
     if (this.matchmakingService.userHasInvite(opponent)) {
-      throw new WsException("Error: couldn't invite user, user is answering another invite");
+      throw new WsException("Couldn't invite user, user is answering another invite");
     }
     if (!!this.gamesService.findRoomByPlayer(opponent.id)) {
-      throw new WsException("Error: couldn't invite user, user is already in a game");
+      throw new WsException("Couldn't invite user, user is already in a game");
     }
     const invite = this.matchmakingService.createInvite(loggedInUser, opponent, ({ from, to }) => {
       this.server.to(to.id).emit("inviteTimeout");
@@ -121,8 +121,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (!invite) {
       throw new WsException("Invite not found");
     }
-
-    console.log("rejected");
 
     this.server.to(invite.from.id).emit("inviteRejected", loggedInUser.username);
     this.matchmakingService.removeInvite(inviteId);
