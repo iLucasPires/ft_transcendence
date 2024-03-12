@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import router from "@/routes/vueRouter";
 import { gameSocket } from "@/socket";
 import type { iGame, iGameResult } from "@/types/props";
 
