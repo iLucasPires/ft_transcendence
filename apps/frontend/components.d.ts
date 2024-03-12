@@ -19,6 +19,7 @@ declare module 'vue' {
     MCardUser: typeof import('./src/components/molecules/MCardUser.vue')['default']
     MDropDownChat: typeof import('./src/components/molecules/MDropDownChat.vue')['default']
     MMapPicker: typeof import('./src/components/molecules/MMapPicker.vue')['default']
+    MModalAskGame: typeof import('./src/components/molecules/MModalAskGame.vue')['default']
     MModalBans: typeof import('./src/components/molecules/MModalBans.vue')['default']
     MModalProfile: typeof import('./src/components/molecules/MModalProfile.vue')['default']
     MModalSearch: typeof import('./src/components/molecules/MModalSearch.vue')['default']

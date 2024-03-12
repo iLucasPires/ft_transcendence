@@ -92,3 +92,9 @@ export type iGameResult = {
 };
 
 export type iMap = "classic" | "soccer" | "tennis-green" | "tennis-orange";
+
+export type iGameInvite = {
+  id: string;
+  from: Pick<iUser, "id" | "username" | "avatarUrl">;
+  to: Pick<iUser, "id" | "username" | "avatarUrl">;
+};

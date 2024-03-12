@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-
-import AsideNavbar from "@/components/AsideNavbar.vue";
-import ModalWelcome from "@/components/ModalWelcome.vue";
 </script>
 
 <template>
   <div class="size-full relative flex flex-row pl-16 md:pl-24">
     <ModalWelcome />
+    <MModalAskGame />
     <AsideNavbar />
     <RouterView />
   </div>

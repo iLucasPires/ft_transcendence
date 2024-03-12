@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { chatSocket } from "@/socket";
+import { chatSocket, gameSocket } from "@/socket";
 import type { iChannel, iMember, iUser } from "@/types/props";
 
 const meStore = useMeStore();
@@ -26,6 +26,10 @@ const handleOpenProfile = (username: string) => {
   chatSocket.emit("fetchUserProfile", username, (user: iUser) => {
     userProfile.value = user;
   });
+};
+
+const handleInviteToGame = (username: string) => {
+  gameSocket.emit("inviteToGame", username);
 };
 
 const handleLeaveChat = () => {
@@ -166,8 +170,8 @@ const handleCloseChangePasswordModal = () => {
                 class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Invite to Game"
                 icon="md-videogameasset"
-                :disabled="member.isBlocked"
-                @click.prevent=""
+                :disabled="member.isBlocked || !member.isConnected"
+                @click.prevent="handleInviteToGame(member.username)"
               />
               <template v-if="member.id !== meStore.data?.id">
                 <AButton
