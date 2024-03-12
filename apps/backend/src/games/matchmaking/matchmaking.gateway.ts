@@ -117,6 +117,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     this.server.to([loggedInUser.id, invite.from.id]).emit("privateGameCreated", game);
     this.matchmakingService.removeInvite(inviteId);
+    if (this.matchmakingService.isInQueue(loggedInUser)) {
+      this.matchmakingService.removeFromQueue(loggedInUser);
+    }
   }
 
   @SubscribeMessage("rejectInvite")
