@@ -186,8 +186,12 @@ export class GamesService {
   }
 
   async finishGame(gameId: string, winnerId: string, score: Score) {
-    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
-    delete this.games[gameId];
+    if (this.schedulerRegistry.doesExist("interval", `game-${gameId}`)) {
+      this.schedulerRegistry.deleteInterval(`game-${gameId}`);
+    }
+    if (gameId in this.games) {
+      delete this.games[gameId];
+    }
     await this.gamesRepository.update(gameId, {
       winner: { id: winnerId },
       score,
@@ -197,8 +201,12 @@ export class GamesService {
   }
 
   async terminateGame(gameId: string, score: Score) {
-    this.schedulerRegistry.deleteInterval(`game-${gameId}`);
-    delete this.games[gameId];
+    if (this.schedulerRegistry.doesExist("interval", `game-${gameId}`)) {
+      this.schedulerRegistry.deleteInterval(`game-${gameId}`);
+    }
+    if (gameId in this.games) {
+      delete this.games[gameId];
+    }
     await this.gamesRepository.update(gameId, {
       score,
       status: "terminated",
