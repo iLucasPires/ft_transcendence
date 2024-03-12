@@ -65,7 +65,11 @@ onUnmounted(() => {
     <div class="modal-box">
       <div class="flex flex-col items-center gap-2 mb-2">
         <h3 class="title text-primary">Game Invite</h3>
-        <img :src="gameInvite!.from.avatarUrl" alt="avatar user" class="size-20 rounded-full" />
+        <img
+          :src="gameInvite!.from.avatarUrl || `https://robohash.org/${gameInvite!.from.username}.png`"
+          alt="avatar user"
+          class="size-20 rounded-full"
+        />
         <h2 class="font-bold">{{ gameInvite!.from.username }}</h2>
       </div>
       <div class="flex w-full gap-2">
