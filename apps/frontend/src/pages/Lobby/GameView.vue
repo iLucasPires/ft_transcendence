@@ -38,7 +38,6 @@ onMounted(() => {
     appStore.changeMessageLog("Warning: couldn't find an opponent, you were removed from the queue.");
   });
   gameSocket.on("matchFound", (match: iGame) => {
-    status.value = "in-game";
     meStore.changeStatusGame(match);
   });
   gameSocket.on("matchTerminated", ({ reason }: { reason: string }) => {
@@ -70,6 +69,11 @@ onUnmounted(() => {
   gameSocket.removeAllListeners();
   if (status.value === "in-queue") {
     gameSocket.emit("leaveQueue");
+  }
+});
+watch(currentGame, (value) => {
+  if (value) {
+    status.value = "in-game";
   }
 });
 </script>
