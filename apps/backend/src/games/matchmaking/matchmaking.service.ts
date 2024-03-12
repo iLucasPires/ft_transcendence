@@ -36,7 +36,9 @@ export class MatchmakingService {
 
   removeFromQueue(user: UserEntity) {
     this.queue = this.queue.filter((u) => u.id !== user.id);
-    this.schedulerRegistry.deleteTimeout(`removeFromQueue-${user.id}`);
+    if (this.schedulerRegistry.doesExist("timeout", `removeFromQueue-${user.id}`)) {
+      this.schedulerRegistry.deleteTimeout(`removeFromQueue-${user.id}`);
+    }
   }
 
   isInQueue(user: UserEntity) {
