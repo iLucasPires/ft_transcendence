@@ -41,7 +41,12 @@ onMounted(() => {
     appStore.changeMessageLog(`The user ${username} rejected your invite.`);
   });
 });
+
 onUnmounted(() => {
+  if (gameInvite.value) {
+    gameSocket.emit("rejectInvite", gameInvite.value.id);
+    gameInvite.value = null;
+  }
   gameSocket.removeListener("gameInvite");
   gameSocket.removeListener("privateGameCreated");
   gameSocket.removeListener("inviteTimeout");
