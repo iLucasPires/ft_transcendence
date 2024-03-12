@@ -1,3 +1,4 @@
+import { ConnectionStatusModule } from "@/connection-status/connection-status.module";
 import { UsersModule } from "@/users/users.module";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -9,7 +10,7 @@ import { MatchmakingGateway } from "./matchmaking/matchmaking.gateway";
 import { MatchmakingService } from "./matchmaking/matchmaking.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GameEntity]), UsersModule],
+  imports: [TypeOrmModule.forFeature([GameEntity]), UsersModule, ConnectionStatusModule],
   providers: [MatchmakingGateway, MatchmakingService, GamesService, GamesGateway],
   controllers: [GamesController],
 })

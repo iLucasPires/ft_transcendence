@@ -170,7 +170,7 @@ const handleCloseChangePasswordModal = () => {
                 class="btn-sm btn-ghost join-item justify-start w-full"
                 text="Invite to Game"
                 icon="md-videogameasset"
-                :disabled="member.isBlocked || !member.isConnected"
+                :disabled="member.isBlocked"
                 @click.prevent="handleInviteToGame(member.username)"
               />
               <template v-if="member.id !== meStore.data?.id">

@@ -79,6 +79,10 @@ export class MatchmakingService {
     return this.invites.find((invite) => invite.id === inviteId);
   }
 
+  userHasInvite(user: UserEntity) {
+    return this.invites.some((invite) => invite.to.id === user.id);
+  }
+
   removeInvite(inviteId: string) {
     this.invites = this.invites.filter((invite) => invite.id !== inviteId);
     if (this.schedulerRegistry.doesExist("timeout", `remove-invite-${inviteId}`)) {

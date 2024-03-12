@@ -1,3 +1,4 @@
+import { ConnectionStatusService } from "@/connection-status/connection-status.service";
 import { UsersService } from "@/users/users.service";
 import { Inject } from "@nestjs/common";
 import {
@@ -19,6 +20,8 @@ import { MatchmakingService } from "./matchmaking.service";
   path: "/api/socket.io",
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  @Inject()
+  connectionStatusService: ConnectionStatusService;
   @Inject()
   gamesService: GamesService;
   @Inject()
@@ -78,6 +81,15 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     if (!opponent) {
       throw new WsException("Opponent not found");
+    }
+    if (!this.connectionStatusService.isConnected(opponent.id)) {
+      throw new WsException("Error: couldn't invite user, user is offline");
+    }
+    if (this.matchmakingService.userHasInvite(opponent)) {
+      throw new WsException("Error: couldn't invite user, user is answering another invite");
+    }
+    if (!!this.gamesService.findRoomByPlayer(opponent.id)) {
+      throw new WsException("Error: couldn't invite user, user is already in a game");
     }
     const invite = this.matchmakingService.createInvite(loggedInUser, opponent, ({ from, to }) => {
       this.server.to(to.id).emit("inviteTimeout");
