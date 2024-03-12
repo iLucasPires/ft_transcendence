@@ -57,6 +57,7 @@ onUnmounted(() => {
   gameSocket.removeListener("privateGameCreated");
   gameSocket.removeListener("inviteTimeout");
   gameSocket.removeListener("inviteRejected");
+  gameSocket.removeListener("inviteCancelled");
 });
 
 watch(gameInvite, (value) => {
