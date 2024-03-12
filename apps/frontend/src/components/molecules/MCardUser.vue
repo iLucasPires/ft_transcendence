@@ -2,7 +2,7 @@
 import type { iUser } from "@/types/props";
 
 defineProps<{ user: iUser }>();
-defineEmits(["handleSendMessage", "handleBlock", "handleFriendship", "showProfile"]);
+defineEmits(["handleSendMessage", "handleBlock", "handleFriendship", "showProfile", "inviteToGame"]);
 
 const appStore = useAppStore();
 const meStore = useMeStore();
@@ -26,6 +26,13 @@ const isOwnUser = (user: iUser) => user.username === meStore.data?.username;
           :text="user.isFriendsWith ? 'Unfriend' : 'Add Friend'"
           class="w-full btn-sm justify-start"
           @click="$emit('handleFriendship', user)"
+        />
+        <AButton
+          v-if="appStore.tab !== 'blocked'"
+          icon="md-videogameasset"
+          text="Invite to Game"
+          class="w-full btn-sm justify-start"
+          @click="$emit('inviteToGame', user.username)"
         />
         <AButton
           icon="md-block"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { iUser } from "@/types/props";
 import { api } from "@/routes/apiRouter";
+import { gameSocket } from "@/socket";
 
 const appStore = useAppStore();
 const chatStore = useChatStore();
@@ -66,6 +67,10 @@ async function handleTabChange() {
   users.value = await fetchUsers(appStore.tab);
 }
 
+const handleInviteToGame = (username: string) => {
+  gameSocket.emit("inviteToGame", username);
+};
+
 onMounted(handleTabChange);
 </script>
 
@@ -83,6 +88,7 @@ onMounted(handleTabChange);
           @handleBlock="handleClickBlock"
           @handleFriendship="handleClickFriendshipAction"
           @showProfile="detailProfile = user"
+          @invite-to-game="handleInviteToGame"
         />
       </ul>
     </div>
