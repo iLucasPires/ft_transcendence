@@ -65,11 +65,15 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  meStore.changeStatusGame(null);
-  gameSocket.removeAllListeners();
   if (status.value === "in-queue") {
     gameSocket.emit("leaveQueue");
   }
+  meStore.changeStatusGame(null);
+  gameSocket.removeListener("waitingInQueue");
+  gameSocket.removeListener("matchmakingTimeout");
+  gameSocket.removeListener("matchFound");
+  gameSocket.removeListener("matchTerminated");
+  gameSocket.removeListener("endOfGame");
 });
 watch(currentGame, (value) => {
   if (value) {
